@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark mode color overrides -->
+    <!-- Keep the same color names, but provide different values for dark mode -->
+    
+
+    <!-- You can keep brand colors the same or adjust them for dark mode -->
+    <color name="chef_primary_color">#FFA958</color>
+    <color name="chef_secondary_color">#FFC997</color>
+
+    <color name="diner_primary_color">#22F3BB</color>
+    <color name="diner_secondary_color">#99F8DF</color>
+
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#BDBDBD</color>
+
+
+    <!-- Standard colors for dark mode -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+</resources>
+
