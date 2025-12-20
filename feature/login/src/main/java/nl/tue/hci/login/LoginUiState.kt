@@ -16,6 +16,7 @@ data class LoginUiState(
     val errorMessage: String? = null,
     val navigationEvent: LoginNavigationEvent? = null,
     val isSigningUp: Boolean = false,
+    val isSigningIn: Boolean = false,
 )
 
 /**

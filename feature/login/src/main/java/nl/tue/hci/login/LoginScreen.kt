@@ -42,7 +42,8 @@ fun LoginScreenPreview() {
         
         // 设置 isSigningUp 为 true 以显示密码字段和角色选择器
         LaunchedEffect(Unit) {
-            viewModel.enableSignUp()
+//            viewModel.enableSignUp()
+            viewModel.enableSignIn()
             viewModel.selectRole(UserRole.DINER)
         }
         
@@ -160,8 +161,25 @@ fun LoginScreen(
             // Password input fields (only shown when signing up)
             if (uiState.isSigningUp) {
                 Spacer(modifier = Modifier.height(16.dp))
-                
-                // Password field
+
+                ConfirmPasswordInput(
+                    viewModel = viewModel
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Role selector
+                RoleSelector(
+                    selectedRole = uiState.selectedRole,
+                    onRoleSelected = { viewModel.selectRole(it) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+            } else if (uiState.isSigningIn) {
+                // TODO: when account exists, input the password
+                Spacer(modifier = Modifier.height(16.dp))
+
                 OutlinedTextField(
                     value = uiState.password,
                     onValueChange = { viewModel.updatePassword(it) },
@@ -196,55 +214,6 @@ fun LoginScreen(
                         }
                     }
                 )
-
-                Spacer(modifier = Modifier.height(1.dp))
-
-                // Confirm password field
-                OutlinedTextField(
-                    value = uiState.confirmPassword,
-                    onValueChange = { viewModel.updateConfirmPassword(it) },
-                    placeholder = {
-                        Text(
-                            text = "confirm password...",
-                            color = colorResource(R.color.text_secondary)
-                        )
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        focusedBorderColor = colorResource(R.color.outline_light),
-                        unfocusedBorderColor = colorResource(R.color.outline_light),
-                        errorBorderColor = MaterialTheme.colorScheme.error,
-                    ),
-                    singleLine = true,
-                    enabled = !uiState.isLoading,
-                    isError = uiState.errorMessage != null,
-                    visualTransformation = if (uiState.confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        IconButton(onClick = { viewModel.toggleConfirmPasswordVisibility() }) {
-                            Icon(
-                                imageVector = if (uiState.confirmPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                contentDescription = if (uiState.confirmPasswordVisible) "Hide password" else "Show password",
-                                tint = colorResource(R.color.text_secondary)
-                            )
-                        }
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Role selector
-                RoleSelector(
-                    selectedRole = uiState.selectedRole,
-                    onRoleSelected = { viewModel.selectRole(it) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -512,3 +481,83 @@ fun LegalDisclaimer(
 }
 
 
+@Composable
+fun ConfirmPasswordInput(
+    viewModel: LoginViewModel
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    // Password field
+    OutlinedTextField(
+        value = uiState.password,
+        onValueChange = { viewModel.updatePassword(it) },
+        placeholder = {
+            Text(
+                text = "password",
+                color = colorResource(R.color.text_secondary)
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            focusedBorderColor = colorResource(R.color.outline_light),
+            unfocusedBorderColor = colorResource(R.color.outline_light),
+            errorBorderColor = MaterialTheme.colorScheme.error,
+        ),
+        singleLine = true,
+        enabled = !uiState.isLoading,
+        isError = uiState.errorMessage != null,
+        visualTransformation = if (uiState.passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+            IconButton(onClick = { viewModel.togglePasswordVisibility() }) {
+                Icon(
+                    imageVector = if (uiState.passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                    contentDescription = if (uiState.passwordVisible) "Hide password" else "Show password",
+                    tint = colorResource(R.color.text_secondary)
+                )
+            }
+        }
+    )
+
+    Spacer(modifier = Modifier.height(1.dp))
+
+    // Confirm password field
+    OutlinedTextField(
+        value = uiState.confirmPassword,
+        onValueChange = { viewModel.updateConfirmPassword(it) },
+        placeholder = {
+            Text(
+                text = "confirm password...",
+                color = colorResource(R.color.text_secondary)
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.White,
+            unfocusedContainerColor = Color.White,
+            focusedBorderColor = colorResource(R.color.outline_light),
+            unfocusedBorderColor = colorResource(R.color.outline_light),
+            errorBorderColor = MaterialTheme.colorScheme.error,
+        ),
+        singleLine = true,
+        enabled = !uiState.isLoading,
+        isError = uiState.errorMessage != null,
+        visualTransformation = if (uiState.confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+            IconButton(onClick = { viewModel.toggleConfirmPasswordVisibility() }) {
+                Icon(
+                    imageVector = if (uiState.confirmPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                    contentDescription = if (uiState.confirmPasswordVisible) "Hide password" else "Show password",
+                    tint = colorResource(R.color.text_secondary)
+                )
+            }
+        }
+    )
+}

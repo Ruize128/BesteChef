@@ -64,7 +64,17 @@ class LoginViewModel : ViewModel() {
      * Enable sign up mode
      */
     fun enableSignUp() {
-        _uiState.update { it.copy(isSigningUp = true) }
+        _uiState.update {
+            it.copy(isSigningUp = true)
+            it.copy(isSigningIn = false)
+        }
+    }
+
+    fun enableSignIn() {
+        _uiState.update {
+            it.copy(isSigningIn = true)
+            it.copy(isSigningUp = false)
+        }
     }
 
     /**
@@ -96,21 +106,12 @@ class LoginViewModel : ViewModel() {
                 // TODO: Replace with actual authentication logic
                 kotlinx.coroutines.delay(500) // Simulate network delay
 
-                if (email == "newcomer@domain.com") {
-                    // Enable sign up mode and set default role to CHEF
-                    _uiState.update { 
-                        it.copy(
-                            isLoading = false,
-                            isSigningUp = true,
-                            selectedRole = UserRole.CHEF
-                        ) 
-                    }
-                    return@launch
-                } else if (email == "diner@domain.com") {
+                if (email == "diner@domain.com") {
                     // Auto-login as DINER
                     _uiState.update { 
                         it.copy(
                             isLoading = false,
+                            isSigningIn = true,
                             navigationEvent = LoginNavigationEvent.NavigateToRoleSelection(email)
                         ) 
                     }
@@ -120,19 +121,30 @@ class LoginViewModel : ViewModel() {
                     _uiState.update { 
                         it.copy(
                             isLoading = false,
+                            isSigningIn = true,
                             navigationEvent = LoginNavigationEvent.NavigateToRoleSelection(email)
                         ) 
+                    }
+                    return@launch
+                } else { // if (email == "newcomer@domain.com") {
+                    // Enable sign up mode and set default role to CHEF
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            isSigningUp = true,
+                            selectedRole = UserRole.CHEF
+                        )
                     }
                     return@launch
                 }
                 
                 // Navigate to role selection or next screen
-                _uiState.update { 
-                    it.copy(
-                        isLoading = false,
-                        navigationEvent = LoginNavigationEvent.NavigateToRoleSelection(email)
-                    ) 
-                }
+//                _uiState.update {
+//                    it.copy(
+//                        isLoading = false,
+//                        navigationEvent = LoginNavigationEvent.NavigateToRoleSelection(email)
+//                    )
+//                }
             } catch (e: Exception) {
                 _uiState.update { 
                     it.copy(
