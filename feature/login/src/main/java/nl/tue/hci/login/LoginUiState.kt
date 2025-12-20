@@ -27,6 +27,7 @@ sealed class LoginNavigationEvent {
     data class NavigateToRoleSelection(val email: String) : LoginNavigationEvent()
     data class NavigateWithGoogle(val email: String? = null) : LoginNavigationEvent()
     data class NavigateWithApple(val email: String? = null) : LoginNavigationEvent()
+    data class NavigateToDinerMainPage(val role: UserRole) : LoginNavigationEvent()
     
     // Clear the event after it's been handled
     object Consumed : LoginNavigationEvent()

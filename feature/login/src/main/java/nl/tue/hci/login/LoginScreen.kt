@@ -15,7 +15,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
+import android.content.Intent
+import android.util.Log
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -47,21 +50,22 @@ fun LoginScreenPreview() {
             viewModel.selectRole(UserRole.DINER)
         }
         
-        LoginScreen(
-            onRoleSelected = {},
-            modifier = Modifier.background(color = Color.White),
-            viewModel = viewModel
-        )
+    LoginScreen(
+        onLogin = {},
+        modifier = Modifier.background(color = Color.White),
+        viewModel = viewModel
+    )
     }
 }
 
 @Composable
 fun LoginScreen(
-    onRoleSelected: (UserRole) -> Unit,
+    onLogin: (UserRole) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     // Handle navigation events
     LaunchedEffect(uiState.navigationEvent) {
@@ -70,6 +74,11 @@ fun LoginScreen(
                 // TODO: Navigate to role selection screen or handle email login
                 // For now, you can trigger role selection callback
                 // onRoleSelected(UserRole.DINER) // Example
+                viewModel.consumeNavigationEvent()
+            }
+            is LoginNavigationEvent.NavigateToDinerMainPage -> {
+                // Jump to Diner Main Page directly (UI prototype - no validation)
+                onLogin(event.role)
                 viewModel.consumeNavigationEvent()
             }
             is LoginNavigationEvent.NavigateWithGoogle -> {
@@ -100,25 +109,25 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            // Welcome Title
-            Text(
-                text = "BesteChef",
-                style = MaterialTheme.typography.headlineLarge,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Welcome Title
+        Text(
+            text = "BesteChef",
+            style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(bottom = 8.dp),
                 color = colorResource(R.color.text_primary),
-            )
-
-            Text(
-                text = "Match your ... (TODO)",
-                style = MaterialTheme.typography.bodyLarge,
+        )
+        
+        Text(
+            text = "Match your ... (TODO)",
+            style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(bottom = 32.dp),
                 color = colorResource(R.color.text_primary),
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
 
             // Error message display
             uiState.errorMessage?.let { error ->
@@ -177,7 +186,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
             } else if (uiState.isSigningIn) {
-                // TODO: when account exists, input the password
+                // when account exists, input the password
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
@@ -216,17 +225,17 @@ fun LoginScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
             // Continue button (mint green)
-            Button(
+        Button(
                 onClick = { viewModel.onContinueClick() },
-                modifier = Modifier
-                    .fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                     .height(40.dp),
                 shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.diner_primary_color)
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.diner_primary_color)
                 ),
                 enabled = !uiState.isLoading
             ) {

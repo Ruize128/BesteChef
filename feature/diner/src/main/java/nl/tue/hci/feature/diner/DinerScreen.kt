@@ -28,7 +28,8 @@ fun DinerScreenPreview() {
 
 @Composable
 fun DinerScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLogout: () -> Unit = {}
 ) {
     BesteChefTheme {
         var currentDestination by rememberSaveable { mutableStateOf(DinerDestinations.HOME) }
@@ -59,7 +60,8 @@ fun DinerScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                     DinerDestinations.PROFILE -> DinerProfileScreen(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        onLogout = onLogout
                     )
                 }
             }
@@ -115,7 +117,10 @@ fun DinerFavoritesScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun DinerProfileScreen(modifier: Modifier = Modifier) {
+fun DinerProfileScreen(
+    modifier: Modifier = Modifier,
+    onLogout: () -> Unit = {}
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -130,6 +135,16 @@ fun DinerProfileScreen(modifier: Modifier = Modifier) {
             text = "Manage your diner profile and preferences.",
             style = MaterialTheme.typography.bodyLarge
         )
+        
+        Spacer(modifier = Modifier.weight(1f))
+        
+        // Logout button
+        Button(
+            onClick = onLogout,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Logout")
+        }
     }
 }
 

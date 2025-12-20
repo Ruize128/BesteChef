@@ -29,7 +29,8 @@ fun ChefScreenPreview() {
 
 @Composable
 fun ChefScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLogout: () -> Unit = {}
 ) {
     BesteChefTheme {
         var currentDestination by rememberSaveable { mutableStateOf(ChefDestinations.HOME) }
@@ -60,7 +61,8 @@ fun ChefScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                     ChefDestinations.PROFILE -> ChefProfileScreen(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        onLogout = onLogout
                     )
                 }
             }
@@ -116,7 +118,10 @@ fun ChefOrdersScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ChefProfileScreen(modifier: Modifier = Modifier) {
+fun ChefProfileScreen(
+    modifier: Modifier = Modifier,
+    onLogout: () -> Unit = {}
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -131,6 +136,16 @@ fun ChefProfileScreen(modifier: Modifier = Modifier) {
             text = "Manage your chef profile and settings.",
             style = MaterialTheme.typography.bodyLarge
         )
+        
+        Spacer(modifier = Modifier.weight(1f))
+        
+        // Logout button
+        Button(
+            onClick = onLogout,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Logout")
+        }
     }
 }
 

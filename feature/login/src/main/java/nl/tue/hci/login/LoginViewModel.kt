@@ -108,12 +108,25 @@ class LoginViewModel : ViewModel() {
 
                 if (email == "diner@domain.com") {
                     // Auto-login as DINER
-                    _uiState.update { 
-                        it.copy(
-                            isLoading = false,
-                            isSigningIn = true,
-                            navigationEvent = LoginNavigationEvent.NavigateToRoleSelection(email)
-                        ) 
+                    val currentState = _uiState.value
+                    
+                    // If isSigningIn == true, jump to Diner Main Page directly
+                    if (currentState.isSigningIn) {
+                        // mock check password
+                        _uiState.update { 
+                            it.copy(
+                                isLoading = false,
+                                navigationEvent = LoginNavigationEvent.NavigateToDinerMainPage(UserRole.DINER)
+                            ) 
+                        }
+                    } else {
+                        _uiState.update { 
+                            it.copy(
+                                isLoading = false,
+                                isSigningIn = true,
+                                navigationEvent = LoginNavigationEvent.NavigateToRoleSelection(email)
+                            ) 
+                        }
                     }
                     return@launch
                 } else if (email == "chef@domain.com") {

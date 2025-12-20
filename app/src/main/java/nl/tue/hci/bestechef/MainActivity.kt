@@ -52,7 +52,7 @@ fun BesteChefApp(userSessionRepository: UserSessionRepository) {
         null -> {
             // Show login screen
             LoginScreen(
-                onRoleSelected = { selectedRole ->
+                onLogin = { selectedRole ->
                     // Save role and navigate (handled by state change)
                     coroutineScope.launch {
                         userSessionRepository.setUserRole(selectedRole)
@@ -61,10 +61,22 @@ fun BesteChefApp(userSessionRepository: UserSessionRepository) {
             )
         }
         UserRole.CHEF -> {
-            ChefScreen()
+            ChefScreen(
+                onLogout = {
+                    coroutineScope.launch {
+                        userSessionRepository.clearSession()
+                    }
+                }
+            )
         }
         UserRole.DINER -> {
-            DinerScreen()
+            DinerScreen(
+                onLogout = {
+                    coroutineScope.launch {
+                        userSessionRepository.clearSession()
+                    }
+                }
+            )
         }
     }
 }

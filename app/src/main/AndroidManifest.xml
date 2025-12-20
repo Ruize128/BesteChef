@@ -22,6 +22,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="nl.tue.hci.feature.diner.DinerMainActivity"
+            android:exported="false"
+            android:label="Diner"
+            android:theme="@style/Theme.BesteChef" />
+        <activity
+            android:name="nl.tue.hci.feature.chef.ChefMainActivity"
+            android:exported="false"
+            android:label="Chef"
+            android:theme="@style/Theme.BesteChef" />
     </application>
 
 </manifest>
