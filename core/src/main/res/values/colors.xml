@@ -16,4 +16,8 @@
 
     <color name="text_primary">#FF212121</color>
     <color name="text_secondary">#FF757575</color>
+
+    <color name="outline_light">#E0E0E0</color>
+
+    <color name="button_grey">#F2F4F7</color>
 </resources>
