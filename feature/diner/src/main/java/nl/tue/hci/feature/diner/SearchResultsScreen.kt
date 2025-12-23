@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -20,12 +21,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import nl.tue.hci.core.R
 import java.time.LocalDate
 
 
@@ -34,6 +39,19 @@ import java.time.LocalDate
 fun SearchResultScreenPreview() {
     SearchResultsScreen(
         modifier = Modifier
+    )
+}
+
+@Preview
+@Composable
+fun FilterModalPreview_onSearchResultsScreen() {
+    FilterModal(
+        onDismiss = {},
+        onConfirm = {},
+        selectedAllergens = null,
+        onAllergensSelected = {},
+        selectedCuisine = null,
+        onCuisineSelected = {},
     )
 }
 
@@ -52,6 +70,11 @@ fun SearchResultsScreen(
     var isDateDropdownOpen by rememberSaveable { mutableStateOf(false) }
     
     var guestsNumber by rememberSaveable { mutableStateOf("6") }
+    
+    // Filter modal state
+    var isFilterModalOpen by rememberSaveable { mutableStateOf(false) }
+    var selectedAllergens by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedCuisine by rememberSaveable { mutableStateOf<String?>(null) }
     
     val chefs = listOf(
         ChefResult(
@@ -235,7 +258,7 @@ fun SearchResultsScreen(
 //                                    .wrapContentWidth(),
                                     .width(24.dp),
                                 textStyle = MaterialTheme.typography.bodyMedium,
-                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                                keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Number
                                 ),
 //                                decorationBox = { innerTextField ->
@@ -275,20 +298,71 @@ fun SearchResultsScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            ActionButton(
-                text = "Filter",
-                icon = Icons.Default.Home,
-                modifier = Modifier.weight(1f)
-            )
+            // Filter button with active state
+            Surface(
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(12.dp),
+                color = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
+                    colorResource(R.color.diner_primary_color)
+                } else {
+                    MaterialTheme.colorScheme.surface
+                },
+                onClick = { isFilterModalOpen = true }
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "Filter",
+                        modifier = Modifier.size(18.dp),
+                        tint = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
+                            Color.White
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Filter",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
+                            Color.White
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
+                    )
+                }
+            }
+            
             ActionButton(
                 text = "Sort",
-                icon = Icons.Default.Favorite,
+                icon = Icons.Default.Home,
                 modifier = Modifier.weight(1f)
             )
             ActionButton(
                 text = "Search text",
                 icon = Icons.Default.Search,
                 modifier = Modifier.weight(1f)
+            )
+        }
+        
+        // Filter modal
+        if (isFilterModalOpen) {
+            FilterModal(
+                onDismiss = { isFilterModalOpen = false },
+                onConfirm = {
+                    isFilterModalOpen = false
+                    // Filter logic can be added here
+                },
+                selectedAllergens = selectedAllergens,
+                onAllergensSelected = { selectedAllergens = it },
+                selectedCuisine = selectedCuisine,
+                onCuisineSelected = { selectedCuisine = it }
             )
         }
         
@@ -300,6 +374,142 @@ fun SearchResultsScreen(
         ) {
             items(chefs) { chef ->
                 ChefResultCard(chef = chef)
+            }
+        }
+    }
+}
+
+
+
+/**
+ * Filter modal dialog component
+ */
+@Composable
+private fun FilterModal(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    selectedAllergens: String?,
+    onAllergensSelected: (String?) -> Unit,
+    selectedCuisine: String?,
+    onCuisineSelected: (String?) -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = true
+        )
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Title
+                Text(
+                    text = "Filters",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                
+                // Allergens field
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    onClick = {
+                        // Placeholder for allergens selection
+                        onAllergensSelected("nuts")
+                    }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = selectedAllergens?.let { "Allergens: $it" } ?: "Allergens (optional) — e.g. nuts, dairy",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (selectedAllergens != null) {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            }
+                        )
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Dropdown",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+                
+                // Cuisine field
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    onClick = {
+                        // Placeholder for cuisine selection
+                        onCuisineSelected("Japanese Fusion")
+                    }
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = selectedCuisine?.let { "Cuisine: $it" } ?: "Cuisine (optional) — e.g. Japanese",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (selectedCuisine != null) {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            }
+                        )
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Dropdown",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // Confirm button
+                Button(
+                    onClick = onConfirm,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.End),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(R.color.diner_primary_color)
+                    )
+                ) {
+                    Text(
+                        text = "Confirm",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+                    )
+                }
             }
         }
     }
