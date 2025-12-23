@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
 
 
 
@@ -44,6 +45,26 @@ fun LocationDropdownMenuPreview_subcomponent() {
     )
 }
 
+@Preview
+@Composable
+fun DateDropdownPreview_subcomponent() {
+//    DateDropdownMenu(
+//        expanded = true,
+//        onDismissRequest = {},
+//        selectedDate = LocalDate.now(),
+//        onDateSelected = {},
+//    )
+
+    MaterialTheme {
+        DateDropdownMenu(
+            expanded = true,
+            onDismissRequest = {},
+            selectedDate = LocalDate.now(),
+            onDateSelected = {},
+        )
+    }
+}
+
 
 
 @Composable
@@ -62,6 +83,10 @@ fun SearchScreen(
     var selectedLocation by rememberSaveable { mutableStateOf<String?>(null) }
     var isLocationDropdownOpen by rememberSaveable { mutableStateOf(false) }
     var locationSearchQuery by rememberSaveable { mutableStateOf("") }
+    
+    // Date state
+    var selectedDate by rememberSaveable { mutableStateOf<LocalDate?>(null) }
+    var isDateDropdownOpen by rememberSaveable { mutableStateOf(false) }
     
     Column(
         modifier = modifier
@@ -145,21 +170,45 @@ fun SearchScreen(
                 )
                 
                 // Date field
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(16.dp)
+                Box(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text(
-                        text = "Date",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = datePlaceholder,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(top = 4.dp)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .clickable { isDateDropdownOpen = true }
+                    ) {
+                        Text(
+                            text = "Date",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = if (selectedDate != null) {
+                                formatDate(selectedDate)
+                            } else {
+                                datePlaceholder
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (selectedDate != null) {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            },
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                    
+                    // Date dropdown menu
+                    DateDropdownMenu(
+                        expanded = isDateDropdownOpen,
+                        onDismissRequest = { isDateDropdownOpen = false },
+                        selectedDate = selectedDate,
+                        onDateSelected = { date ->
+                            selectedDate = date
+                            isDateDropdownOpen = false
+                        }
                     )
                 }
                 
