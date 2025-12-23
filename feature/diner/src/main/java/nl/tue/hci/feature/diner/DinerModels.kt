@@ -1,0 +1,16 @@
+package nl.tue.hci.feature.diner
+
+import androidx.compose.ui.graphics.Color
+
+// Data classes for static data
+data class ChefResult(
+    val name: String,
+    val rating: Float,
+    val reviewCount: Int,
+    val eventCount: Int,
+    val canTravel: Boolean,
+    val availableOnDate: Boolean,
+    val quote: String,
+    val imageColor: Color
+)
+
