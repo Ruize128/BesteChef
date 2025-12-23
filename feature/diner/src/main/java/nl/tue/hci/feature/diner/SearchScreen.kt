@@ -37,7 +37,7 @@ fun SearchScreenPreview() {
 
 @Preview
 @Composable
-fun LocationDropdownMenuPreview_subcomponent() {
+fun LocationDropdownMenuPreview_onSearchScreen() {
     LocationDropdownMenu(
         expanded = true,
         onDismissRequest = {},
@@ -49,22 +49,13 @@ fun LocationDropdownMenuPreview_subcomponent() {
 
 @Preview
 @Composable
-fun DateDropdownPreview_subcomponent() {
-//    DateDropdownMenu(
-//        expanded = true,
-//        onDismissRequest = {},
-//        selectedDate = LocalDate.now(),
-//        onDateSelected = {},
-//    )
-
-    MaterialTheme {
-        DateDropdownMenu(
-            expanded = true,
-            onDismissRequest = {},
-            selectedDate = LocalDate.now(),
-            onDateSelected = {},
-        )
-    }
+fun DateDropdownPreview_onSearchScreen() {
+    DateDropdownMenu(
+        expanded = true,
+        onDismissRequest = {},
+        selectedDate = LocalDate.now(),
+        onDateSelected = {},
+    )
 }
 
 
