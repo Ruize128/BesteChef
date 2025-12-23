@@ -12,10 +12,34 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
+import nl.tue.hci.core.R
+
+
+@Preview
+@Composable
+fun ChefResultCardPreview() {
+    val chef = ChefResult(
+        name = "Chef Marius van Vlaanderen",
+        rating = 5.0f,
+        reviewCount = 2,
+        eventCount = 13,
+        canTravel = true,
+        availableOnDate = true,
+        quote = "Enhancing classic flavors with a touch of style",
+        imageColor = Color(0xFFB2E5D4) // Light mint green
+    )
+
+    ChefResultCard(
+        chef = chef
+    )
+}
 
 @Composable
 fun SearchParameterChip(
@@ -85,7 +109,10 @@ fun ChefResultCard(chef: ChefResult) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        )
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -94,23 +121,30 @@ fun ChefResultCard(chef: ChefResult) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .background(chef.imageColor)
+                    .padding(12.dp)
             ) {
-                // Image carousel indicators
-                Row(
+                Box(
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(chef.imageColor)
                 ) {
-                    repeat(3) {
-                        Box(
-                            modifier = Modifier
-                                .size(6.dp)
-                                .clip(RoundedCornerShape(50))
-                                .background(Color.White.copy(alpha = 0.6f))
-                        )
+                    // Image carousel indicators
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        repeat(3) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(RoundedCornerShape(50))
+                                    .background(Color.White.copy(alpha = 0.6f))
+                            )
+                        }
                     }
                 }
             }
@@ -195,8 +229,8 @@ fun ChefResultCard(chef: ChefResult) {
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = chef.imageColor,
-                        contentColor = Color.White
+                        containerColor = colorResource(R.color.diner_primary_color),
+                        contentColor = colorResource(R.color.text_primary),
                     )
                 ) {
                     Text(
