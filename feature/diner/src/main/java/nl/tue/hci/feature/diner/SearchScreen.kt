@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -87,6 +89,9 @@ fun SearchScreen(
     // Date state
     var selectedDate by rememberSaveable { mutableStateOf<LocalDate?>(null) }
     var isDateDropdownOpen by rememberSaveable { mutableStateOf(false) }
+    
+    // Guests state
+    var guestsNumber by rememberSaveable { mutableStateOf("") }
     
     Column(
         modifier = modifier
@@ -228,11 +233,41 @@ fun SearchScreen(
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Text(
-                        text = guestsPlaceholder,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(top = 4.dp)
+                    // Invisible TextField that looks like the other fields
+                    BasicTextField(
+                        value = guestsNumber,
+                        onValueChange = { newValue ->
+                            // Only allow digits
+                            if (newValue.all { it.isDigit() }) {
+                                guestsNumber = newValue
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(
+                            color = if (guestsNumber.isNotEmpty()) {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            }
+                        ),
+                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                            keyboardType = KeyboardType.Number
+                        ),
+                        decorationBox = { innerTextField ->
+                            Box {
+                                if (guestsNumber.isEmpty()) {
+                                    Text(
+                                        text = guestsPlaceholder,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        },
+                        singleLine = true
                     )
                 }
                 
