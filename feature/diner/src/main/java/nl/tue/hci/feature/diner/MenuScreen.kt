@@ -9,6 +9,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +41,36 @@ fun MenuScreen(
     chefName: String,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {}
+) {
+    // Navigation state
+    var showChatScreen by rememberSaveable { mutableStateOf(false) }
+    
+    if (showChatScreen) {
+        ChatScreen(
+            chefName = chefName,
+            modifier = modifier,
+            onBackClick = {
+                showChatScreen = false
+            }
+        )
+    } else {
+        MenuContent(
+            chefName = chefName,
+            modifier = modifier,
+            onBackClick = onBackClick,
+            onChatClick = {
+                showChatScreen = true
+            }
+        )
+    }
+}
+
+@Composable
+private fun MenuContent(
+    chefName: String,
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit = {},
+    onChatClick: () -> Unit = {}
 ) {
     // Hardcoded menu items
     val menuItems = listOf(
@@ -107,7 +141,7 @@ fun MenuScreen(
             )
             
             IconButton(
-                onClick = { },
+                onClick = onChatClick,
                 modifier = Modifier.size(40.dp)
             ) {
                 Icon(
@@ -125,14 +159,20 @@ fun MenuScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(menuItems) { item ->
-                MenuItemCard(menuItem = item)
+                MenuItemCard(
+                    menuItem = item,
+                    onAskClick = onChatClick
+                )
             }
         }
     }
 }
 
 @Composable
-fun MenuItemCard(menuItem: MenuItem) {
+fun MenuItemCard(
+    menuItem: MenuItem,
+    onAskClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -225,7 +265,7 @@ fun MenuItemCard(menuItem: MenuItem) {
                 ) {
                     // Ask button
                     Button(
-                        onClick = { },
+                        onClick = onAskClick,
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(

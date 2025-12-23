@@ -22,3 +22,10 @@ data class MenuItem(
     val imageColor: Color
 )
 
+data class ChatMessage(
+    val text: String,
+    val timestamp: String,
+    val isFromChef: Boolean,
+    val imagePreview: String? = null // For image previews like "Yuzu mousse (preview)"
+)
+
