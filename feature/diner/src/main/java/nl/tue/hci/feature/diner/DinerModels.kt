@@ -14,3 +14,11 @@ data class ChefResult(
     val imageColor: Color
 )
 
+data class MenuItem(
+    val title: String,
+    val description: String,
+    val serves: String,
+    val prepTime: String,
+    val imageColor: Color
+)
+

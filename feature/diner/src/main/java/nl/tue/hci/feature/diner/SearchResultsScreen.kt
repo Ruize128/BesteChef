@@ -61,6 +61,10 @@ fun SearchResultsScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {}
 ) {
+    // Navigation state
+    var showMenuScreen by rememberSaveable { mutableStateOf(false) }
+    var selectedChefName by rememberSaveable { mutableStateOf<String?>(null) }
+    
     // Search parameters state
     var selectedLocation by rememberSaveable { mutableStateOf<String?>("Eindhoven") }
     var isLocationDropdownOpen by rememberSaveable { mutableStateOf(false) }
@@ -109,11 +113,21 @@ fun SearchResultsScreen(
         )
     )
     
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
+    if (showMenuScreen) {
+        MenuScreen(
+            chefName = selectedChefName ?: "Chef",
+            modifier = modifier,
+            onBackClick = {
+                showMenuScreen = false
+                selectedChefName = null
+            }
+        )
+    } else {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
         // Title with back button
         Row(
             modifier = Modifier
@@ -373,9 +387,16 @@ fun SearchResultsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(chefs) { chef ->
-                ChefResultCard(chef = chef)
+                ChefResultCard(
+                    chef = chef,
+                    onButtonClick = {
+                        selectedChefName = chef.name
+                        showMenuScreen = true
+                    }
+                )
             }
         }
+    }
     }
 }
 

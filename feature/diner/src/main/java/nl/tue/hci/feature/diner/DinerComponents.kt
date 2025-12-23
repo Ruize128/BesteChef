@@ -37,7 +37,8 @@ fun ChefResultCardPreview() {
     )
 
     ChefResultCard(
-        chef = chef
+        chef = chef,
+        onButtonClick = {}
     )
 }
 
@@ -105,7 +106,10 @@ fun ActionButton(
 }
 
 @Composable
-fun ChefResultCard(chef: ChefResult) {
+fun ChefResultCard(
+    chef: ChefResult,
+    onButtonClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -225,7 +229,7 @@ fun ChefResultCard(chef: ChefResult) {
                 
                 // CTA Button
                 Button(
-                    onClick = { },
+                    onClick = onButtonClick,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
