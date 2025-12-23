@@ -1,6 +1,7 @@
 package nl.tue.hci.feature.diner
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -8,6 +9,10 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +32,19 @@ fun SearchScreenPreview() {
     )
 }
 
+@Preview
+@Composable
+fun LocationDropdownMenuPreview_subcomponent() {
+    LocationDropdownMenu(
+        expanded = true,
+        onDismissRequest = {},
+        searchQuery = "Am",
+        onSearchQueryChange = {},
+        onLocationSelected = {},
+    )
+}
+
+
 
 @Composable
 fun SearchScreen(
@@ -39,6 +57,11 @@ fun SearchScreen(
     val guestsPlaceholder = "Who?"
     val allergensPlaceholder = "Allergens (optional) — e.g. nuts, dairy"
     val cuisinePlaceholder = "Cuisine (optional) — e.g. Japanese"
+    
+    // Location state
+    var selectedLocation by rememberSaveable { mutableStateOf<String?>(null) }
+    var isLocationDropdownOpen by rememberSaveable { mutableStateOf(false) }
+    var locationSearchQuery by rememberSaveable { mutableStateOf("") }
     
     Column(
         modifier = modifier
@@ -73,21 +96,46 @@ fun SearchScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Location field
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(16.dp)
+                Box(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text(
-                        text = "Location",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = locationPlaceholder,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(top = 4.dp)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .clickable { isLocationDropdownOpen = true }
+                    ) {
+                        Text(
+                            text = "Location",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = selectedLocation ?: locationPlaceholder,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (selectedLocation != null) {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            },
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                    
+                    // Location dropdown menu
+                    LocationDropdownMenu(
+                        expanded = isLocationDropdownOpen,
+                        onDismissRequest = { 
+                            isLocationDropdownOpen = false
+                            locationSearchQuery = ""
+                        },
+                        searchQuery = locationSearchQuery,
+                        onSearchQueryChange = { locationSearchQuery = it },
+                        onLocationSelected = { location ->
+                            selectedLocation = location
+                            isLocationDropdownOpen = false
+                            locationSearchQuery = ""
+                        }
                     )
                 }
                 
@@ -145,7 +193,7 @@ fun SearchScreen(
                     modifier = Modifier
                         .padding(8.dp)
                         .size(56.dp),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFB2E5D4) // Light mint green
                     )
@@ -153,7 +201,7 @@ fun SearchScreen(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search",
-                        tint = Color.White
+                        tint = Color.Black,
                     )
                 }
             }
