@@ -1,22 +1,32 @@
 package nl.tue.hci.feature.diner
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import java.time.LocalDate
 
 
 @Preview
@@ -33,10 +43,15 @@ fun SearchResultsScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {}
 ) {
-    // Static data
-    val searchLocation = "Eindhoven"
-    val searchDate = "12-12-2025"
-    val searchGuests = "6 guests"
+    // Search parameters state
+    var selectedLocation by rememberSaveable { mutableStateOf<String?>("Eindhoven") }
+    var isLocationDropdownOpen by rememberSaveable { mutableStateOf(false) }
+    var locationSearchQuery by rememberSaveable { mutableStateOf("") }
+    
+    var selectedDate by rememberSaveable { mutableStateOf<LocalDate?>(LocalDate.of(2025, 12, 12)) }
+    var isDateDropdownOpen by rememberSaveable { mutableStateOf(false) }
+    
+    var guestsNumber by rememberSaveable { mutableStateOf("6") }
     
     val chefs = listOf(
         ChefResult(
@@ -102,66 +117,154 @@ fun SearchResultsScreen(
         }
         
         // Search parameters row
-        Row(
+        Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .background(
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(20.dp)   // TODO: color
-                ),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(20.dp),
+            color = Color(0xFFF6F6F6),
+            border = BorderStroke(width = 1.dp, color = Color.LightGray)
         ) {
-            Box(
-                modifier = Modifier.weight(1f),
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Eindhoven",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
+                // Location field
+                Box(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 10.dp)
+                            .clickable { isLocationDropdownOpen = true }
+                    ) {
+                        Text(
+                            text = selectedLocation ?: "Location",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    
+                    // Location dropdown menu
+                    LocationDropdownMenu(
+                        expanded = isLocationDropdownOpen,
+                        onDismissRequest = { 
+                            isLocationDropdownOpen = false
+                            locationSearchQuery = ""
+                        },
+                        searchQuery = locationSearchQuery,
+                        onSearchQueryChange = { locationSearchQuery = it },
+                        onLocationSelected = { location ->
+                            selectedLocation = location
+                            isLocationDropdownOpen = false
+                            locationSearchQuery = ""
+                        }
+                    )
+                }
+
+                VerticalDivider(
+                    modifier = Modifier.height(16.dp),
+                    color = Color.DarkGray
                 )
-            }
 
-            HorizontalDivider(
-                modifier = Modifier.size(width = 1.dp, height = 16.dp)
-                    .background(Color.DarkGray)
-                    .align(Alignment.CenterVertically)
-            )
+                // Date field
+                Box(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 10.dp)
+                            .clickable { isDateDropdownOpen = true }
+                    ) {
+                        Text(
+                            text = if (selectedDate != null) {
+                                formatDate(selectedDate)
+                            } else {
+                                "Date"
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    
+                    // Date dropdown menu
+                    DateDropdownMenu(
+                        expanded = isDateDropdownOpen,
+                        onDismissRequest = { isDateDropdownOpen = false },
+                        selectedDate = selectedDate,
+                        onDateSelected = { date ->
+                            selectedDate = date
+                            isDateDropdownOpen = false
+                        }
+                    )
+                }
 
-            Box(
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(
-                    text = "12-12-2025",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
+                VerticalDivider(
+                    modifier = Modifier.height(16.dp),
+                    color = Color.DarkGray
                 )
-            }
 
-            HorizontalDivider(
-                modifier = Modifier.size(width = 1.dp, height = 16.dp)
-                    .background(Color.DarkGray)
-                    .align(Alignment.CenterVertically)
-            )
-
-            Box(
-                modifier = Modifier.weight(1f),
-            ) {
-                Text(
-                    text = "6 guests",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                )
+                // Guests field
+                Box(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            BasicTextField(
+                                value = guestsNumber,
+                                onValueChange = { newValue ->
+                                    // Only allow digits
+                                    if (newValue.all { it.isDigit() }) {
+                                        guestsNumber = newValue
+                                    }
+                                },
+                                modifier = Modifier
+//                                    .wrapContentWidth(),
+                                    .width(24.dp),
+                                textStyle = MaterialTheme.typography.bodyMedium,
+                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                                    keyboardType = KeyboardType.Number
+                                ),
+//                                decorationBox = { innerTextField ->
+//                                    Box {
+//                                        if (guestsNumber.isEmpty()) {
+//                                            Text(
+//                                                text = "Guests",
+//                                                style = MaterialTheme.typography.bodyMedium,
+//                                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+//                                                maxLines = 1
+//                                            )
+//                                        } else {
+//                                            innerTextField()
+//                                        }
+//                                    }
+//                                },
+                                singleLine = true
+                            )
+//                            if (guestsNumber.isNotEmpty()) {
+// //                               Spacer(modifier = Modifier.width(2.dp))
+                                Text(
+                                    text = if (guestsNumber.isEmpty()) "Guests" else "guests",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 1
+                                )
+//                            }
+                        }
+                    }
+                }
             }
         }
         
