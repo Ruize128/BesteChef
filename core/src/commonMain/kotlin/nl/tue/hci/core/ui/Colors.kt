@@ -17,5 +17,11 @@ object AppColors {
     
     val White = Color(0xFFFFFFFF)
     val Black = Color(0xFF000000)
+    
+    // Status badge colors
+    val StatusNewBackground = Color(0xFFFFEBEE)
+    val StatusNewText = Color(0xFFD32F2F)
+    val StatusConfirmedBackground = Color(0xFFE8F5E9)
+    val StatusConfirmedText = Color(0xFF2E7D32)
 }
 

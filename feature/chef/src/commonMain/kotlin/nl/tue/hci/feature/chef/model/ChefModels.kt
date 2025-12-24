@@ -17,3 +17,20 @@ data class ChefMenuItem(
     val imageColor: Color
 )
 
+data class BookingInquiry(
+    val id: String,
+    val customerName: String,
+    val message: String,
+    val date: String,
+    val guests: Int,
+    val timeAgo: String,
+    val status: BookingStatus,
+    val statusLabel: String
+)
+
+enum class BookingStatus {
+    NEW,
+    CONFIRMED,
+    UNANSWERED
+}
+
