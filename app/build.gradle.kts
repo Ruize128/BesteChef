@@ -14,9 +14,6 @@ kotlin {
     }
     
     wasmJs {
-        compilerOptions {
-            freeCompilerArgs.add("-Xwasm-attach-js-exception")
-        }
         browser {
             commonWebpackConfig {
                 cssSupport {
@@ -27,21 +24,38 @@ kotlin {
         binaries.executable()
     }
     
+    // Helper function to find the Skiko version dynamically
+    fun findSkikoVersion(): String? {
+        val skikoDir = file("${rootProject.layout.buildDirectory.get()}/js/packages_imported/skiko-js-wasm-runtime")
+        if (skikoDir.exists() && skikoDir.isDirectory) {
+            val versions = skikoDir.listFiles()?.filter { it.isDirectory }?.map { it.name }
+            return versions?.maxOrNull()
+        }
+        return null
+    }
+    
     // Copy skiko.mjs to the kotlin output directory so webpack can find it
     // This is needed for both development and production builds
     val copySkikoForDevelopment = tasks.register("copySkikoForDevelopmentWebpack") {
         dependsOn("wasmJsDevelopmentExecutableCompileSync")
         doLast {
-            val skikoSource = file("${rootProject.layout.buildDirectory.get()}/js/packages_imported/skiko-js-wasm-runtime/0.8.15/skiko.mjs")
-            val skikoWasm = file("${rootProject.layout.buildDirectory.get()}/js/packages_imported/skiko-js-wasm-runtime/0.8.15/skiko.wasm")
-            val kotlinOutput = file("${rootProject.layout.buildDirectory.get()}/js/packages/BesteChef-app-wasm-js/kotlin")
-            
-            if (skikoSource.exists() && kotlinOutput.exists()) {
-                copy {
-                    from(skikoSource, skikoWasm)
-                    into(kotlinOutput)
+            val skikoVersion = findSkikoVersion()
+            if (skikoVersion != null) {
+                val skikoSource = file("${rootProject.layout.buildDirectory.get()}/js/packages_imported/skiko-js-wasm-runtime/${skikoVersion}/skiko.mjs")
+                val skikoWasm = file("${rootProject.layout.buildDirectory.get()}/js/packages_imported/skiko-js-wasm-runtime/${skikoVersion}/skiko.wasm")
+                val kotlinOutput = file("${rootProject.layout.buildDirectory.get()}/js/packages/BesteChef-app-wasm-js/kotlin")
+                
+                if (skikoSource.exists() && skikoWasm.exists() && kotlinOutput.exists()) {
+                    copy {
+                        from(skikoSource, skikoWasm)
+                        into(kotlinOutput)
+                    }
+                    println("✓ Copied skiko files (version ${skikoVersion}) to ${kotlinOutput}")
+                } else {
+                    println("⚠ Skiko files not found at expected location (version ${skikoVersion})")
                 }
-                println("✓ Copied skiko files to ${kotlinOutput}")
+            } else {
+                println("⚠ Could not find Skiko version")
             }
         }
     }
@@ -49,16 +63,23 @@ kotlin {
     val copySkikoForProduction = tasks.register("copySkikoForProductionWebpack") {
         dependsOn("wasmJsProductionExecutableCompileSync")
         doLast {
-            val skikoSource = file("${rootProject.layout.buildDirectory.get()}/js/packages_imported/skiko-js-wasm-runtime/0.8.15/skiko.mjs")
-            val skikoWasm = file("${rootProject.layout.buildDirectory.get()}/js/packages_imported/skiko-js-wasm-runtime/0.8.15/skiko.wasm")
-            val kotlinOutput = file("${rootProject.layout.buildDirectory.get()}/js/packages/BesteChef-app-wasm-js/kotlin")
-            
-            if (skikoSource.exists() && kotlinOutput.exists()) {
-                copy {
-                    from(skikoSource, skikoWasm)
-                    into(kotlinOutput)
+            val skikoVersion = findSkikoVersion()
+            if (skikoVersion != null) {
+                val skikoSource = file("${rootProject.layout.buildDirectory.get()}/js/packages_imported/skiko-js-wasm-runtime/${skikoVersion}/skiko.mjs")
+                val skikoWasm = file("${rootProject.layout.buildDirectory.get()}/js/packages_imported/skiko-js-wasm-runtime/${skikoVersion}/skiko.wasm")
+                val kotlinOutput = file("${rootProject.layout.buildDirectory.get()}/js/packages/BesteChef-app-wasm-js/kotlin")
+                
+                if (skikoSource.exists() && skikoWasm.exists() && kotlinOutput.exists()) {
+                    copy {
+                        from(skikoSource, skikoWasm)
+                        into(kotlinOutput)
+                    }
+                    println("✓ Copied skiko files (version ${skikoVersion}) to ${kotlinOutput}")
+                } else {
+                    println("⚠ Skiko files not found at expected location (version ${skikoVersion})")
                 }
-                println("✓ Copied skiko files to ${kotlinOutput}")
+            } else {
+                println("⚠ Could not find Skiko version")
             }
         }
     }
