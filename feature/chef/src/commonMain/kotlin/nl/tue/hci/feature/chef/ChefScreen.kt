@@ -78,24 +78,7 @@ enum class ChefDestinations(
     PROFILE("Profile", Icons.Default.AccountBox),
 }
 
-@Composable
-fun ChefHomeScreen(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = "Chef Dashboard",
-            style = MaterialTheme.typography.headlineMedium
-        )
-        Text(
-            text = "Welcome, Chef! Manage your kitchen and orders here.",
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
-}
+// ChefHomeScreen is now in ChefHomeScreen.kt
 
 @Composable
 fun ChefOrdersScreen(modifier: Modifier = Modifier) {

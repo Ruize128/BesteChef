@@ -75,6 +75,11 @@ fun LoginScreen(
                 onLogin(event.role)
                 loginStateHolder.consumeNavigationEvent()
             }
+            is LoginNavigationEvent.NavigateToChefMainPage -> {
+                // Jump to Diner Main Page directly (UI prototype - no validation)
+                onLogin(event.role)
+                loginStateHolder.consumeNavigationEvent()
+            }
             is LoginNavigationEvent.NavigateWithGoogle -> {
                 // TODO: Handle Google login navigation
                 loginStateHolder.consumeNavigationEvent()

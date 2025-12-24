@@ -30,6 +30,8 @@ kotlin {
                 // Compose Multiplatform uses androidx.compose namespace
                 implementation(libs.compose.multiplatform.ui)
                 implementation(libs.compose.multiplatform.ui.graphics)
+                implementation(libs.compose.multiplatform.foundation)
+                implementation(libs.compose.multiplatform.material3)
             }
         }
         

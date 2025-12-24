@@ -130,12 +130,25 @@ class LoginStateHolder(
                     return@launch
                 } else if (email == "chef@domain.com") {
                     // Auto-login as CHEF
-                    _uiState.update { 
-                        it.copy(
-                            isLoading = false,
-                            isSigningIn = true,
-                            navigationEvent = LoginNavigationEvent.NavigateToRoleSelection(email)
-                        ) 
+                    val currentState = _uiState.value
+
+                    // If isSigningIn == true, jump to Chef Main Page directly
+                    if (currentState.isSigningIn) {
+                        // mock check password
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                navigationEvent = LoginNavigationEvent.NavigateToChefMainPage(UserRole.CHEF)
+                            )
+                        }
+                    } else {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                isSigningIn = true,
+                                navigationEvent = LoginNavigationEvent.NavigateToRoleSelection(email)
+                            )
+                        }
                     }
                     return@launch
                 } else {
