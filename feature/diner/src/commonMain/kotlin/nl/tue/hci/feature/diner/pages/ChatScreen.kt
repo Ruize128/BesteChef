@@ -1,4 +1,4 @@
-package nl.tue.hci.feature.diner
+package nl.tue.hci.feature.diner.pages
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,15 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.feature.diner.ChatMessage
 
-@Composable
-fun ChatScreenPreview() {
-    ChatScreen(
-        chefName = "Chef Ichiraku",
-        modifier = Modifier,
-        onBackClick = {}
-    )
-}
+
 
 @Composable
 fun ChatScreen(

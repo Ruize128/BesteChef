@@ -1,5 +1,4 @@
-package nl.tue.hci.feature.diner
-import nl.tue.hci.core.ui.AppColors
+package nl.tue.hci.feature.diner.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,8 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,13 +15,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import kotlinx.datetime.Clock
@@ -34,17 +29,6 @@ import kotlinx.datetime.todayIn
 
 
 
-@Composable
-fun DateDropdownMenuPreview() {
-    MaterialTheme {
-        DateDropdownMenu(
-            expanded = true,
-            onDismissRequest = {},
-            selectedDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
-            onDateSelected = {},
-        )
-    }
-}
 
 
 /**

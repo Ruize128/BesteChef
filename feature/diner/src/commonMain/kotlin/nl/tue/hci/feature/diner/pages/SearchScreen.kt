@@ -1,11 +1,11 @@
-package nl.tue.hci.feature.diner
-import nl.tue.hci.core.ui.AppColors
+package nl.tue.hci.feature.diner.pages
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
@@ -25,47 +25,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
+import nl.tue.hci.feature.diner.components.DateDropdownMenu
+import nl.tue.hci.feature.diner.components.LocationDropdownMenu
+import nl.tue.hci.feature.diner.components.formatDate
 
 // Saver for LocalDate to make it work with rememberSaveable
 private val LocalDateSaver = Saver<LocalDate?, String>(
     save = { it?.toString() ?: "" },
     restore = { if (it.isEmpty()) null else LocalDate.parse(it) }
 )
-
-
-
-@Composable
-fun SearchScreenPreview() {
-    SearchScreen(
-        modifier = Modifier
-    )
-}
-
-@Composable
-fun LocationDropdownMenuPreview_onSearchScreen() {
-    LocationDropdownMenu(
-        expanded = true,
-        onDismissRequest = {},
-        searchQuery = "Am",
-        onSearchQueryChange = {},
-        onLocationSelected = {},
-    )
-}
-
-@Composable
-fun DateDropdownPreview_onSearchScreen() {
-    DateDropdownMenu(
-        expanded = true,
-        onDismissRequest = {},
-        selectedDate = Clock.System.todayIn(TimeZone.currentSystemDefault()),
-        onDateSelected = {},
-    )
-}
-
 
 
 @Composable
@@ -156,7 +125,7 @@ fun SearchScreen(
                     // Location dropdown menu
                     LocationDropdownMenu(
                         expanded = isLocationDropdownOpen,
-                        onDismissRequest = { 
+                        onDismissRequest = {
                             isLocationDropdownOpen = false
                             locationSearchQuery = ""
                         },
@@ -253,7 +222,7 @@ fun SearchScreen(
                                 MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                             }
                         ),
-                        keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number
                         ),
                         decorationBox = { innerTextField ->

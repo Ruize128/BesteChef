@@ -1,5 +1,4 @@
-package nl.tue.hci.feature.diner
-import nl.tue.hci.core.ui.AppColors
+package nl.tue.hci.feature.diner.pages
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -7,15 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
-
-
-@Composable
-fun DinerFavoritesScreenPreview() {
-    DinerFavoritesScreen(
-        modifier = Modifier
-    )
-}
-
 
 @Composable
 fun DinerFavoritesScreen(modifier: Modifier = Modifier) {

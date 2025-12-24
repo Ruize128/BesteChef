@@ -1,4 +1,4 @@
-package nl.tue.hci.feature.diner
+package nl.tue.hci.feature.diner.pages
 import nl.tue.hci.core.ui.AppColors
 
 import androidx.compose.foundation.BorderStroke
@@ -22,16 +22,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.datetime.LocalDate
+import nl.tue.hci.feature.diner.components.ActionButton
+import nl.tue.hci.feature.diner.ChefResult
+import nl.tue.hci.feature.diner.components.ChefResultCard
+import nl.tue.hci.feature.diner.components.DateDropdownMenu
+import nl.tue.hci.feature.diner.components.LocationDropdownMenu
+import nl.tue.hci.feature.diner.components.formatDate
 
 // Saver for LocalDate to make it work with rememberSaveable
 private val LocalDateSaver = Saver<LocalDate?, String>(
@@ -40,24 +44,6 @@ private val LocalDateSaver = Saver<LocalDate?, String>(
 )
 
 
-@Composable
-fun SearchResultScreenPreview() {
-    SearchResultsScreen(
-        modifier = Modifier
-    )
-}
-
-@Composable
-fun FilterModalPreview_onSearchResultsScreen() {
-    FilterModal(
-        onDismiss = {},
-        onConfirm = {},
-        selectedAllergens = null,
-        onAllergensSelected = {},
-        selectedCuisine = null,
-        onCuisineSelected = {},
-    )
-}
 
 
 @Composable
@@ -194,7 +180,7 @@ fun SearchResultsScreen(
                     // Location dropdown menu
                     LocationDropdownMenu(
                         expanded = isLocationDropdownOpen,
-                        onDismissRequest = { 
+                        onDismissRequest = {
                             isLocationDropdownOpen = false
                             locationSearchQuery = ""
                         },
@@ -358,7 +344,7 @@ fun SearchResultsScreen(
                     )
                 }
             }
-            
+
             ActionButton(
                 text = "Sort",
                 icon = Icons.Default.Home,
@@ -412,7 +398,7 @@ fun SearchResultsScreen(
  * Filter modal dialog component
  */
 @Composable
-private fun FilterModal(
+fun FilterModal(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     selectedAllergens: String?,

@@ -1,5 +1,4 @@
-package nl.tue.hci.feature.diner
-import nl.tue.hci.core.ui.AppColors
+package nl.tue.hci.feature.diner.pages
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -8,14 +7,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 // Preview removed for multiplatform
-
-@Composable
-fun DinerHomeScreenPreview() {
-    DinerHomeScreen(
-        modifier = Modifier
-    )
-}
-
 
 @Composable
 fun DinerHomeScreen(modifier: Modifier = Modifier) {

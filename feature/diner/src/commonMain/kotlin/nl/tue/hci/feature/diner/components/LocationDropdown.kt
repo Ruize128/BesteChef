@@ -1,8 +1,6 @@
-package nl.tue.hci.feature.diner
-import nl.tue.hci.core.ui.AppColors
+package nl.tue.hci.feature.diner.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Place
@@ -14,17 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 // PopupProperties removed for multiplatform compatibility
 
-@Composable
-fun LocationDropdownMenuPreview() {
-    LocationDropdownMenu(
-        expanded = true,
-        onDismissRequest = {},
-        searchQuery = "",
-        onSearchQueryChange = {},
-        onLocationSelected = {},
-        modifier = Modifier,
-    )
-}
 
 /**
  * A reusable location dropdown menu component with search functionality.

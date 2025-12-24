@@ -1,9 +1,8 @@
-package nl.tue.hci.feature.diner
+package nl.tue.hci.feature.diner.pages
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,13 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 // Preview removed for multiplatform
 import nl.tue.hci.feature.diner.ui.theme.BesteChefTheme
-
-@Composable
-fun DinerScreenPreview() {
-    DinerScreen(
-        modifier = Modifier
-    )
-}
 
 @Composable
 fun DinerScreen(

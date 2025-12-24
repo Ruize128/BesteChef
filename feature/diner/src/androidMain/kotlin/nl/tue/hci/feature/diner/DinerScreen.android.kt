@@ -1,13 +1,12 @@
-package nl.tue.hci.feature.diner
+package nl.tue.hci.feature.diner.pages
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import nl.tue.hci.feature.diner.pages.DinerDestinations
 
 actual @Composable
 fun DinerNavigationScaffold(

@@ -14,7 +14,7 @@ import nl.tue.hci.bestechef.ui.theme.BesteChefTheme
 import nl.tue.hci.core.data.createUserSessionRepository
 import nl.tue.hci.core.model.UserRole
 import nl.tue.hci.feature.chef.ChefScreen
-import nl.tue.hci.feature.diner.DinerScreen
+import nl.tue.hci.feature.diner.pages.DinerScreen
 import nl.tue.hci.login.LoginScreen
 import nl.tue.hci.login.LoginStateHolder
 

@@ -1,4 +1,4 @@
-package nl.tue.hci.feature.diner
+package nl.tue.hci.feature.diner.components
 import nl.tue.hci.core.ui.AppColors
 
 import androidx.compose.foundation.background
@@ -18,27 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
-
-
-
-@Composable
-fun ChefResultCardPreview() {
-    val chef = ChefResult(
-        name = "Chef Marius van Vlaanderen",
-        rating = 5.0f,
-        reviewCount = 2,
-        eventCount = 13,
-        canTravel = true,
-        availableOnDate = true,
-        quote = "Enhancing classic flavors with a touch of style",
-        imageColor = Color(0xFFB2E5D4) // Light mint green
-    )
-
-    ChefResultCard(
-        chef = chef,
-        onButtonClick = {}
-    )
-}
+import nl.tue.hci.feature.diner.ChefResult
 
 @Composable
 fun SearchParameterChip(

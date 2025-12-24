@@ -1,4 +1,4 @@
-package nl.tue.hci.feature.diner
+package nl.tue.hci.feature.diner.pages
 import nl.tue.hci.core.ui.AppColors
 
 import androidx.compose.foundation.background
@@ -24,15 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
+import nl.tue.hci.feature.diner.MenuItem
 
-@Composable
-fun MenuScreenPreview() {
-    MenuScreen(
-        chefName = "Chef Marius van Vlaanderen",
-        modifier = Modifier,
-        onBackClick = {}
-    )
-}
 
 @Composable
 fun MenuScreen(
