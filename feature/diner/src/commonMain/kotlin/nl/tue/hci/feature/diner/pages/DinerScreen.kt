@@ -20,23 +20,42 @@ fun DinerScreen(
 ) {
     BesteChefTheme {
         var currentDestination by rememberSaveable { mutableStateOf(DinerDestinations.HOME) }
+        var showChatScreen by rememberSaveable { mutableStateOf(false) }
+        var chatChefName by rememberSaveable { mutableStateOf("") }
 
-        DinerNavigationScaffold(
-            currentDestination = currentDestination,
-            onDestinationChange = { currentDestination = it },
-            modifier = modifier
-        ) { innerPadding ->
-            when (currentDestination) {
-                DinerDestinations.HOME -> DinerHomeScreen(
-                    modifier = Modifier.padding(innerPadding)
-                )
-                DinerDestinations.FAVORITES -> DinerFavoritesScreen(
-                    modifier = Modifier.padding(innerPadding)
-                )
-                DinerDestinations.PROFILE -> DinerProfileScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onLogout = onLogout
-                )
+        if (showChatScreen) {
+            ChatScreen(
+                chefName = chatChefName,
+                modifier = modifier,
+                onBackClick = {
+                    showChatScreen = false
+                }
+            )
+        } else {
+            DinerNavigationScaffold(
+                currentDestination = currentDestination,
+                onDestinationChange = { currentDestination = it },
+                modifier = modifier
+            ) { innerPadding ->
+                when (currentDestination) {
+                    DinerDestinations.HOME -> DinerHomeScreen(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                    DinerDestinations.CHAT -> DinerChatHistoryScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        onChatClick = { chefName ->
+                            chatChefName = chefName
+                            showChatScreen = true
+                        }
+                    )
+                    DinerDestinations.ORDERS -> DinerOrdersScreen(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                    DinerDestinations.PROFILE -> DinerProfileScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        onLogout = onLogout
+                    )
+                }
             }
         }
     }
@@ -55,7 +74,8 @@ enum class DinerDestinations(
     val icon: ImageVector,
 ) {
     HOME("Home", Icons.Default.Home),
-    FAVORITES("Favorites", Icons.Default.Favorite),
+    CHAT("Chat", Icons.Default.Email),
+    ORDERS("Orders", Icons.Default.Favorite),
     PROFILE("Profile", Icons.Default.AccountBox),
 }
 

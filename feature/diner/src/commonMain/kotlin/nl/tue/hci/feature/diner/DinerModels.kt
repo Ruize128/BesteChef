@@ -23,3 +23,29 @@ data class MenuItem(
     val imageColor: Color
 )
 
+data class DinerChatHistoryItem(
+    val id: String,
+    val chefName: String,
+    val lastMessage: String,
+    val timestamp: String,
+    val unreadCount: Int = 0
+)
+
+data class DinerOrder(
+    val id: String,
+    val chefName: String,
+    val orderDate: String,
+    val status: DinerOrderStatus,
+    val totalPrice: String,
+    val itemCount: Int,
+    val timeAgo: String
+)
+
+enum class DinerOrderStatus {
+    PENDING,
+    CONFIRMED,
+    IN_PROGRESS,
+    COMPLETED,
+    CANCELLED
+}
+
