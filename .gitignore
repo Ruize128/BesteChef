@@ -86,6 +86,8 @@ Thumbs.db
 
 # Kotlin
 *.kotlin_module
+.kotlin/
+.kotlinc/
 
 # Kapt
 .kapt/
@@ -97,3 +99,6 @@ Thumbs.db
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+.vscode/
