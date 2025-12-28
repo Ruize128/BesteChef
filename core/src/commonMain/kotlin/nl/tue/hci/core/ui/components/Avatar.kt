@@ -20,7 +20,8 @@ fun Avatar(
     text: String,
     modifier: Modifier = Modifier,
     size: Int = 48,
-    backgroundColor: Color = AppColors.ChefPrimary
+    backgroundColor: Color = AppColors.DinerSecondary,
+    textColor: Color = AppColors.TextPrimary,
 ) {
     Box(
         modifier = modifier
@@ -33,7 +34,7 @@ fun Avatar(
             text = text,
             fontSize = (size * 0.4).sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color.White,
+            color = textColor,
             textAlign = TextAlign.Center
         )
     }

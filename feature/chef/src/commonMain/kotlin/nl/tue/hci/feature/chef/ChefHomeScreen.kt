@@ -31,7 +31,10 @@ import nl.tue.hci.feature.chef.ui.theme.BesteChefTheme
 
 
 @Composable
-fun ChefHomeScreen(modifier: Modifier = Modifier) {
+fun ChefHomeScreen(
+    modifier: Modifier = Modifier,
+    onChatClick: (String) -> Unit = {} // customerName
+) {
     // Hardcoded data
     val bookings = 1
     val inquiries = 1
@@ -184,16 +187,24 @@ fun ChefHomeScreen(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(bookingsList) { booking ->
-                BookingInquiryCard(booking = booking)
+                BookingInquiryCard(
+                    booking = booking,
+                    onClick = { onChatClick(booking.customerName) }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun BookingInquiryCard(booking: BookingInquiry) {
+private fun BookingInquiryCard(
+    booking: BookingInquiry,
+    onClick: () -> Unit = {}
+) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         color = AppColors.White,
         shadowElevation = 1.dp

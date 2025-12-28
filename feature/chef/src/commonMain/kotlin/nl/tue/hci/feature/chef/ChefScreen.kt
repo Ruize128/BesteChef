@@ -3,6 +3,7 @@ package nl.tue.hci.feature.chef
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
+import nl.tue.hci.feature.chef.pages.ChefChatHistoryScreen
 import nl.tue.hci.feature.chef.ui.theme.BesteChefTheme
 
 
@@ -32,38 +34,61 @@ fun ChefScreen(
 ) {
     BesteChefTheme {
         var currentDestination by rememberSaveable { mutableStateOf(ChefDestinations.HOME) }
+        var showChatScreen by rememberSaveable { mutableStateOf(false) }
+        var chatCustomerName by rememberSaveable { mutableStateOf("") }
 
-        Scaffold(
-            bottomBar = {
-                NavigationBar {
-                    ChefDestinations.entries.forEach { destination ->
-                        NavigationBarItem(
-                            icon = {
-                                Icon(
-                                    destination.icon,
-                                    contentDescription = destination.label
-                                )
-                            },
-                            label = { Text(destination.label) },
-                            selected = destination == currentDestination,
-                            onClick = { currentDestination = destination }
-                        )
-                    }
+        if (showChatScreen) {
+            nl.tue.hci.feature.chef.pages.ChefChatScreen(
+                customerName = chatCustomerName,
+                modifier = modifier,
+                onBackClick = {
+                    showChatScreen = false
                 }
-            },
-            modifier = modifier.fillMaxSize()
-        ) { innerPadding ->
-            when (currentDestination) {
-                ChefDestinations.HOME -> ChefHomeScreen(
-                    modifier = Modifier.padding(innerPadding)
-                )
-                ChefDestinations.ORDERS -> ChefOrdersScreen(
-                    modifier = Modifier.padding(innerPadding)
-                )
-                ChefDestinations.PROFILE -> ChefProfileScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onLogout = onLogout
-                )
+            )
+        } else {
+            Scaffold(
+                bottomBar = {
+                    NavigationBar {
+                        ChefDestinations.entries.forEach { destination ->
+                            NavigationBarItem(
+                                icon = {
+                                    Icon(
+                                        destination.icon,
+                                        contentDescription = destination.label
+                                    )
+                                },
+                                label = { Text(destination.label) },
+                                selected = destination == currentDestination,
+                                onClick = { currentDestination = destination }
+                            )
+                        }
+                    }
+                },
+                modifier = modifier.fillMaxSize()
+            ) { innerPadding ->
+                when (currentDestination) {
+                    ChefDestinations.HOME -> ChefHomeScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        onChatClick = { customerName ->
+                            chatCustomerName = customerName
+                            showChatScreen = true
+                        }
+                    )
+                    ChefDestinations.CHAT -> ChefChatHistoryScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        onChatClick = { customerName ->
+                            chatCustomerName = customerName
+                            showChatScreen = true
+                        }
+                    )
+                    ChefDestinations.ORDERS -> ChefOrdersScreen(
+                        modifier = Modifier.padding(innerPadding)
+                    )
+                    ChefDestinations.PROFILE -> ChefProfileScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        onLogout = onLogout
+                    )
+                }
             }
         }
     }
@@ -74,6 +99,7 @@ enum class ChefDestinations(
     val icon: ImageVector,
 ) {
     HOME("Home", Icons.Default.Home),
+    CHAT("Chat", Icons.Default.Email),
     ORDERS("Orders", Icons.Default.Favorite),
     PROFILE("Profile", Icons.Default.AccountBox),
 }

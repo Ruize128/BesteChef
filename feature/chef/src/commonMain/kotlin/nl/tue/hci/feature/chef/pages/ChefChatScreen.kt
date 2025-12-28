@@ -1,4 +1,4 @@
-package nl.tue.hci.feature.diner.pages
+package nl.tue.hci.feature.chef.pages
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -25,19 +25,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.ui.text.style.TextAlign
 import nl.tue.hci.core.ui.AppColors
 import nl.tue.hci.core.ui.components.ChatBubble
 import nl.tue.hci.core.model.ChatMessage
 
-
-
 @Composable
-fun ChatScreen(
-    chefName: String,
+fun ChefChatScreen(
+    customerName: String,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {}
 ) {
-    // Hardcoded initial messages
+    // Hardcoded initial messages (same as diner chat for now)
     val initialMessages = remember {
         listOf(
             ChatMessage(
@@ -106,15 +105,15 @@ fun ChatScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Chat with $chefName",
+                        text = "Chat with $customerName",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = AppColors.TextPrimary
                     )
                     Text(
                         text = "Online",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF4CAF50)
+                        color = AppColors.ChefPrimary,
                     )
                 }
                 
@@ -123,35 +122,67 @@ fun ChatScreen(
             }
         }
         
-        // Chat messages
-        LazyColumn(
-            state = listState,
+        // Chat messages area with floating Edit offer button
+        Box(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .fillMaxWidth()
         ) {
-            // Date separator
-            item {
-                DateSeparator(dateText = "Today • Dec 12, 2025")
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Date separator
+                item {
+                    DateSeparator(dateText = "Today • Dec 12, 2025")
+                }
+                
+                items(messages) { message ->
+                    ChatBubble(message = message)
+                }
             }
             
-            items(messages) { message ->
-                ChatBubble(message = message)
+            // Floating Edit offer button - positioned above chat area
+            Button(
+                onClick = {
+                    // TODO: Implement edit offer functionality
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+                    .width(64.dp)
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(20.dp),
+                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppColors.ChefPrimary,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Edit offer",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center,
+                )
             }
         }
         
         // Message input area
         Surface(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
             color = Color.White,
             shadowElevation = 4.dp
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
+                    .padding(horizontal = 12.dp, vertical = 12.dp)
+                    .padding(bottom = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -196,7 +227,7 @@ fun ChatScreen(
                             val newMessage = ChatMessage(
                                 text = messageText,
                                 timestamp = "Now",
-                                isFromMe = false
+                                isFromMe = true // Chef sends messages
                             )
                             messages.add(newMessage)
                             messageText = ""
@@ -205,7 +236,7 @@ fun ChatScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(AppColors.DinerPrimary),
+                        .background(AppColors.ChefPrimary),
                     enabled = messageText.isNotBlank()
                 ) {
                     Icon(
@@ -239,5 +270,4 @@ fun DateSeparator(dateText: String) {
         }
     }
 }
-
 

@@ -34,3 +34,11 @@ enum class BookingStatus {
     UNANSWERED
 }
 
+data class ChatHistoryItem(
+    val id: String,
+    val customerName: String,
+    val lastMessage: String,
+    val timestamp: String,
+    val unreadCount: Int = 0
+)
+
