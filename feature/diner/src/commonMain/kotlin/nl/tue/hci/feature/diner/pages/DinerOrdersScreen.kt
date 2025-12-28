@@ -8,6 +8,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,15 +27,43 @@ import nl.tue.hci.feature.diner.DinerOrderStatus
 @Composable
 fun DinerOrdersScreen(
     modifier: Modifier = Modifier,
-    onOrderClick: (String) -> Unit = {} // orderId
+    initialOrderId: String = "",
+    onOrderClick: (String) -> Unit = {},
+    onBookAndPayClick: () -> Unit = {}
 ) {
+    var showBookingSummary by rememberSaveable { mutableStateOf(initialOrderId.isNotEmpty()) }
+    var selectedOrderId by rememberSaveable { mutableStateOf(if (initialOrderId.isNotEmpty()) initialOrderId else null) }
+    
+    // Update selectedOrderId when initialOrderId changes
+    androidx.compose.runtime.LaunchedEffect(initialOrderId) {
+        if (initialOrderId.isNotEmpty() && selectedOrderId != initialOrderId) {
+            selectedOrderId = initialOrderId
+            showBookingSummary = true
+        }
+    }
+    
+    if (showBookingSummary && selectedOrderId != null) {
+        BookingSummaryScreen(
+            orderId = selectedOrderId ?: "",
+            modifier = modifier,
+            onBackClick = {
+                showBookingSummary = false
+                selectedOrderId = null
+                onOrderClick("") // Clear the order selection
+            },
+            onBookAndPayClick = {
+                showBookingSummary = false
+                onBookAndPayClick()
+            }
+        )
+    } else {
     // Hardcoded orders for diner
     val orders = listOf(
         DinerOrder(
             id = "1",
             chefName = "Sophie",
             orderDate = "Dec 12, 2025",
-            status = DinerOrderStatus.CONFIRMED,
+            status = DinerOrderStatus.PENDING,
             totalPrice = "€102",
             itemCount = 3,
             timeAgo = "2h ago"
@@ -91,10 +124,15 @@ fun DinerOrdersScreen(
             items(orders) { order ->
                 OrderCard(
                     order = order,
-                    onClick = { onOrderClick(order.id) }
+                    onClick = {
+                        selectedOrderId = order.id
+                        showBookingSummary = true
+                        onOrderClick(order.id)
+                    }
                 )
             }
         }
+    }
     }
 }
 

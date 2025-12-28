@@ -49,3 +49,26 @@ enum class DinerOrderStatus {
     CANCELLED
 }
 
+data class BookingSummaryDetails(
+    val location: String,
+    val date: String,
+    val time: String,
+    val guests: Int,
+    val venue: String
+)
+
+data class BookingSummaryMenuItem(
+    val id: String,
+    val title: String,
+    val description: String,
+    val price: String,
+    val imageColor: Color
+)
+
+data class BookingPriceSummary(
+    val subtotal: String,
+    val serviceFee: String,
+    val depositAmount: String,
+    val depositPercentage: Int
+)
+

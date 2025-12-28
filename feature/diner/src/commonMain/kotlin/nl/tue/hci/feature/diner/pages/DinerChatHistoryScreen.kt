@@ -101,7 +101,7 @@ private fun ChatHistoryItemCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(20.dp),
         color = Color.White,
         shadowElevation = 1.dp
     ) {
@@ -164,7 +164,7 @@ private fun ChatHistoryItemCard(
                     
                     if (chatItem.unreadCount > 0) {
                         Surface(
-                            shape = RoundedCornerShape(12.dp),
+                            shape = RoundedCornerShape(20.dp),
                             color = AppColors.DinerPrimary, // Use diner primary color
                             modifier = Modifier.padding(start = 8.dp)
                         ) {
