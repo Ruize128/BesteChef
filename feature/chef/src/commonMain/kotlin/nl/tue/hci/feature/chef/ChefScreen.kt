@@ -125,7 +125,7 @@ fun ChefOrdersScreen(modifier: Modifier = Modifier) {
             }
         )
     } else if (showComposeOffer) {
-        nl.tue.hci.feature.chef.pages.ComposeOfferScreen(
+        nl.tue.hci.feature.chef.pages.EditOrderScreen(
             orderId = selectedOrderId ?: "",
             modifier = modifier,
             onBackClick = {

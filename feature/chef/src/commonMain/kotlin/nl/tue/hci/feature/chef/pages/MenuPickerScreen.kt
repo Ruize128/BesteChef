@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.core.ui.AppColors
@@ -265,6 +266,7 @@ fun MenuPickerScreen(
                         text = "Insert ${selectedItems.sumOf { it.quantity }} item${if (selectedItems.sumOf { it.quantity } > 1) "s" else ""}",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
+                        fontStyle = FontStyle.Italic,
                         color = AppColors.TextPrimary,
                     )
                     Text(
@@ -274,6 +276,7 @@ fun MenuPickerScreen(
                         }}",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic,
                         color = AppColors.TextPrimary,
                     )
                 }
@@ -359,14 +362,15 @@ private fun MenuPickerItemCard(
                     modifier = Modifier.height(32.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = AppColors.ChefPrimary,
-                        contentColor = Color.White
+                        containerColor = AppColors.ChefSecondary,
+                        contentColor = AppColors.TextPrimary,
                     )
                 ) {
                     Text(
                         text = "Add",
                         style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        color = AppColors.TextPrimary,
                     )
                 }
             }

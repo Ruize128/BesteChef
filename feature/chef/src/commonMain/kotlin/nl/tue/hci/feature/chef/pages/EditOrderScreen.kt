@@ -1,14 +1,12 @@
 package nl.tue.hci.feature.chef.pages
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -22,16 +20,14 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.core.ui.AppColors
-import nl.tue.hci.core.ui.components.EditButton
 import nl.tue.hci.core.ui.components.QuantitySelector
 import nl.tue.hci.feature.chef.model.BookingDetails
 import nl.tue.hci.feature.chef.model.OfferMenuItem
 import nl.tue.hci.feature.chef.model.PriceSummary
 import nl.tue.hci.feature.chef.model.SelectedMenuItem
-import nl.tue.hci.feature.chef.model.MenuPickerItem
 
 @Composable
-fun ComposeOfferScreen(
+fun EditOrderScreen(
     orderId: String,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
@@ -116,7 +112,7 @@ fun ComposeOfferScreen(
             val priceStr = item.price.replace("€", "").replace(",", ".")
             (priceStr.toDoubleOrNull() ?: 0.0) * item.quantity
         }
-        val serviceFee = 10.0
+        val serviceFee = 8.0
         val depositPercentage = 20
         val depositAmount = (subtotal + serviceFee) * depositPercentage / 100.0
         val total = subtotal + serviceFee
@@ -243,15 +239,18 @@ fun ComposeOfferScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 16.dp)
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
+                .height(40.dp),
+            shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = AppColors.ChefPrimary,
-                contentColor = Color.White
-            )
+                contentColor = AppColors.TextPrimary,
+            ),
+            contentPadding = PaddingValues(0.dp),
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -259,13 +258,15 @@ fun ComposeOfferScreen(
                     text = "Send Offer",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    fontStyle = FontStyle.Italic,
+                    color = AppColors.TextPrimary,
                 )
                 Text(
                     text = priceSummary.total,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    fontStyle = FontStyle.Italic,
+                    color = AppColors.TextPrimary,
                 )
             }
         }
