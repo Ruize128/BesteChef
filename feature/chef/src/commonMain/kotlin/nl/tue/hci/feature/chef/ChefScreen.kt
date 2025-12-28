@@ -108,19 +108,46 @@ enum class ChefDestinations(
 
 @Composable
 fun ChefOrdersScreen(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = "Orders",
-            style = MaterialTheme.typography.headlineMedium
+    var showComposeOffer by rememberSaveable { mutableStateOf(false) }
+    var showMenuPicker by rememberSaveable { mutableStateOf(false) }
+    var selectedOrderId by rememberSaveable { mutableStateOf<String?>(null) }
+    var pendingItemsToAdd by rememberSaveable { mutableStateOf<List<nl.tue.hci.feature.chef.model.SelectedMenuItem>?>(null) }
+    
+    if (showMenuPicker) {
+        nl.tue.hci.feature.chef.pages.MenuPickerScreen(
+            modifier = modifier,
+            onClose = {
+                showMenuPicker = false
+            },
+            onItemSelected = { selectedItems ->
+                pendingItemsToAdd = selectedItems
+                showMenuPicker = false
+            }
         )
-        Text(
-            text = "View and manage incoming orders.",
-            style = MaterialTheme.typography.bodyLarge
+    } else if (showComposeOffer) {
+        nl.tue.hci.feature.chef.pages.ComposeOfferScreen(
+            orderId = selectedOrderId ?: "",
+            modifier = modifier,
+            onBackClick = {
+                showComposeOffer = false
+                selectedOrderId = null
+                pendingItemsToAdd = null
+            },
+            onAddDishClick = {
+                showMenuPicker = true
+            },
+            itemsToAdd = pendingItemsToAdd,
+            onItemsAdded = {
+                pendingItemsToAdd = null
+            }
+        )
+    } else {
+        nl.tue.hci.feature.chef.pages.ChefOrdersListScreen(
+            modifier = modifier,
+            onOrderClick = { orderId ->
+                selectedOrderId = orderId
+                showComposeOffer = true
+            }
         )
     }
 }

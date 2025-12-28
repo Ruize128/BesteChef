@@ -32,7 +32,7 @@ fun StatusBadge(
         Text(
             text = text,
             fontSize = 11.sp,
-            fontWeight = FontWeight.W400,
+            fontWeight = FontWeight.Normal,
             color = textColor,
             modifier = Modifier.align(alignment = Alignment.Center)
         )

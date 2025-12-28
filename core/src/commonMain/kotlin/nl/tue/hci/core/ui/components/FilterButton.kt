@@ -31,16 +31,16 @@ fun FilterButton(
                 RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onClick)
-//            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 12.dp)
     ) {
         Text(
             text = text,
             fontSize = 12.sp,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.W400,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             fontStyle = if (isSelected) FontStyle.Italic else FontStyle.Normal,
-            color = AppColors.TextPrimary,
+            color = if (isSelected) Color.White else AppColors.TextPrimary,
             modifier = Modifier
-                .align(alignment = Alignment.Center),
+                .align(alignment = Alignment.Center)
         )
     }
 }
