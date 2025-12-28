@@ -35,13 +35,37 @@ fun ChefScreen(
     BesteChefTheme {
         var currentDestination by rememberSaveable { mutableStateOf(ChefDestinations.HOME) }
         var showChatScreen by rememberSaveable { mutableStateOf(false) }
+        var showBookingConfirmedScreen by rememberSaveable { mutableStateOf(false) }
         var chatCustomerName by rememberSaveable { mutableStateOf("") }
+        var editOrderId by rememberSaveable { mutableStateOf("") }
+        var orderDetailsForConfirmed by rememberSaveable { mutableStateOf<nl.tue.hci.feature.chef.model.OrderDetails?>(null) }
+        var menuItemsForConfirmed by rememberSaveable { mutableStateOf<List<nl.tue.hci.feature.chef.model.OfferMenuItem>>(emptyList()) }
 
-        if (showChatScreen) {
+        if (showBookingConfirmedScreen && orderDetailsForConfirmed != null) {
+            // Only OrderConfirmedScreen is full-screen
+            nl.tue.hci.feature.chef.pages.OrderConfirmedScreen(
+                orderDetails = orderDetailsForConfirmed!!,
+                menuItems = menuItemsForConfirmed,
+                modifier = modifier,
+                onDoneClick = {
+                    showBookingConfirmedScreen = false
+                    orderDetailsForConfirmed = null
+                    menuItemsForConfirmed = emptyList()
+                    // Navigate to home screen
+                    currentDestination = ChefDestinations.HOME
+                }
+            )
+        } else if (showChatScreen) {
             nl.tue.hci.feature.chef.pages.ChefChatScreen(
                 customerName = chatCustomerName,
                 modifier = modifier,
                 onBackClick = {
+                    showChatScreen = false
+                },
+                onEditOrderClick = {
+                    // Navigate to Orders section and open EditOrderScreen there
+                    editOrderId = "chat-${chatCustomerName}" // Generate order ID from customer name
+                    currentDestination = ChefDestinations.ORDERS
                     showChatScreen = false
                 }
             )
@@ -82,7 +106,16 @@ fun ChefScreen(
                         }
                     )
                     ChefDestinations.ORDERS -> ChefOrdersScreen(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        initialOrderId = editOrderId,
+                        onOrderClick = { orderId ->
+                            editOrderId = orderId
+                        },
+                        onSendOfferClick = { orderDetails, menuItems ->
+                            orderDetailsForConfirmed = orderDetails
+                            menuItemsForConfirmed = menuItems
+                            showBookingConfirmedScreen = true
+                        }
                     )
                     ChefDestinations.PROFILE -> ChefProfileScreen(
                         modifier = Modifier.padding(innerPadding),
@@ -107,11 +140,24 @@ enum class ChefDestinations(
 // ChefHomeScreen is now in ChefHomeScreen.kt
 
 @Composable
-fun ChefOrdersScreen(modifier: Modifier = Modifier) {
-    var showComposeOffer by rememberSaveable { mutableStateOf(false) }
+fun ChefOrdersScreen(
+    modifier: Modifier = Modifier,
+    initialOrderId: String = "",
+    onOrderClick: (String) -> Unit = {},
+    onSendOfferClick: (nl.tue.hci.feature.chef.model.OrderDetails, List<nl.tue.hci.feature.chef.model.OfferMenuItem>) -> Unit = { _, _ -> }
+) {
+    var showEditOrder by rememberSaveable { mutableStateOf(initialOrderId.isNotEmpty()) }
     var showMenuPicker by rememberSaveable { mutableStateOf(false) }
-    var selectedOrderId by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedOrderId by rememberSaveable { mutableStateOf(if (initialOrderId.isNotEmpty()) initialOrderId else null) }
     var pendingItemsToAdd by rememberSaveable { mutableStateOf<List<nl.tue.hci.feature.chef.model.SelectedMenuItem>?>(null) }
+    
+    // Update selectedOrderId when initialOrderId changes (e.g., from chat screen)
+    androidx.compose.runtime.LaunchedEffect(initialOrderId) {
+        if (initialOrderId.isNotEmpty() && selectedOrderId != initialOrderId) {
+            selectedOrderId = initialOrderId
+            showEditOrder = true
+        }
+    }
     
     if (showMenuPicker) {
         nl.tue.hci.feature.chef.pages.MenuPickerScreen(
@@ -124,14 +170,15 @@ fun ChefOrdersScreen(modifier: Modifier = Modifier) {
                 showMenuPicker = false
             }
         )
-    } else if (showComposeOffer) {
+    } else if (showEditOrder && selectedOrderId != null) {
         nl.tue.hci.feature.chef.pages.EditOrderScreen(
             orderId = selectedOrderId ?: "",
             modifier = modifier,
             onBackClick = {
-                showComposeOffer = false
+                showEditOrder = false
                 selectedOrderId = null
                 pendingItemsToAdd = null
+                onOrderClick("") // Clear the order selection
             },
             onAddDishClick = {
                 showMenuPicker = true
@@ -139,14 +186,16 @@ fun ChefOrdersScreen(modifier: Modifier = Modifier) {
             itemsToAdd = pendingItemsToAdd,
             onItemsAdded = {
                 pendingItemsToAdd = null
-            }
+            },
+            onSendOfferClick = onSendOfferClick
         )
     } else {
         nl.tue.hci.feature.chef.pages.ChefOrdersListScreen(
             modifier = modifier,
             onOrderClick = { orderId ->
                 selectedOrderId = orderId
-                showComposeOffer = true
+                showEditOrder = true
+                onOrderClick(orderId)
             }
         )
     }

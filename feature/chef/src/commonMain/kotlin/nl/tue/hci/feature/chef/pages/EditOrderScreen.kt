@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.core.ui.AppColors
 import nl.tue.hci.core.ui.components.QuantitySelector
-import nl.tue.hci.feature.chef.model.BookingDetails
+import nl.tue.hci.feature.chef.model.OrderDetails
 import nl.tue.hci.feature.chef.model.OfferMenuItem
 import nl.tue.hci.feature.chef.model.PriceSummary
 import nl.tue.hci.feature.chef.model.SelectedMenuItem
@@ -33,11 +33,12 @@ fun EditOrderScreen(
     onBackClick: () -> Unit = {},
     onAddDishClick: () -> Unit = {},
     itemsToAdd: List<SelectedMenuItem>? = null,
-    onItemsAdded: () -> Unit = {}
+    onItemsAdded: () -> Unit = {},
+    onSendOfferClick: (OrderDetails, List<OfferMenuItem>) -> Unit = { _, _ -> }
 ) {
     // Hardcoded booking details
-    val bookingDetails = remember {
-        BookingDetails(
+    val orderDetails = remember {
+        OrderDetails(
             date = "Dec 12, 2025",
             time = "7:00 PM",
             guests = 6,
@@ -175,7 +176,7 @@ fun EditOrderScreen(
             // Booking section
             item {
                 BookingSection(
-                    bookingDetails = bookingDetails,
+                    orderDetails = orderDetails,
                     onEditClick = {}
                 )
             }
@@ -234,7 +235,7 @@ fun EditOrderScreen(
         // Send Offer button
         Button(
             onClick = {
-                // TODO: Implement send offer functionality
+                onSendOfferClick(orderDetails, menuItems.toList())
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -275,7 +276,7 @@ fun EditOrderScreen(
 
 @Composable
 private fun BookingSection(
-    bookingDetails: BookingDetails,
+    orderDetails: OrderDetails,
     onEditClick: () -> Unit
 ) {
     Surface(
@@ -311,13 +312,13 @@ private fun BookingSection(
             }
             
             Text(
-                text = "${bookingDetails.date} • ${bookingDetails.time} • ${bookingDetails.guests} guests",
+                text = "${orderDetails.date} • ${orderDetails.time} • ${orderDetails.guests} guests",
                 style = MaterialTheme.typography.bodyMedium,
                 color = AppColors.TextPrimary
             )
             
             Text(
-                text = "Venue: ${bookingDetails.venue}",
+                text = "Venue: ${orderDetails.venue}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = AppColors.TextPrimary
             )

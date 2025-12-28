@@ -76,7 +76,7 @@ data class SelectedMenuItem(
     val quantity: Int = 1
 )
 
-data class BookingDetails(
+data class OrderDetails(
     val date: String,
     val time: String,
     val guests: Int,

@@ -34,7 +34,8 @@ import nl.tue.hci.core.model.ChatMessage
 fun ChefChatScreen(
     customerName: String,
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onEditOrderClick: () -> Unit = {}
 ) {
     // Hardcoded initial messages (same as diner chat for now)
     val initialMessages = remember {
@@ -146,9 +147,7 @@ fun ChefChatScreen(
             
             // Floating Edit offer button - positioned above chat area
             Button(
-                onClick = {
-                    // TODO: Implement edit offer functionality
-                },
+                onClick = onEditOrderClick,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp)
