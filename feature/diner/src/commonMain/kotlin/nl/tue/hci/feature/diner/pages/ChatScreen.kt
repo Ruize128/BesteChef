@@ -38,23 +38,36 @@ fun ChatScreen(
     onBackClick: () -> Unit = {}
 ) {
     // Hardcoded initial messages
+    // For diner chat: isFromMe=false = chef, isFromMe=true = diner
     val initialMessages = remember {
         listOf(
             ChatMessage(
                 text = "Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo.",
                 timestamp = "10:12",
-                isFromMe = true
+                isFromMe = false, // From chef
+                avatarText = "DH",
+                avatarImageName = "ichiraku", // Chef's avatar
+                avatarColor = AppColors.ChefSecondary,
+                bubbleColor = AppColors.ChefPrimary, // Chef's bubble color
             ),
             ChatMessage(
                 text = "",
                 timestamp = "10:13",
-                isFromMe = true,
-                imagePreview = "Yuzu mousse (preview)"
+                isFromMe = false, // From chef
+                imagePreview = "Yuzu mousse (preview)",
+                avatarText = "DH",
+                avatarImageName = "ichiraku", // Chef's avatar
+                avatarColor = AppColors.ChefSecondary,
+                bubbleColor = AppColors.ChefPrimary, // Chef's bubble color
             ),
             ChatMessage(
                 text = "Thanks — yes please, that would help.",
                 timestamp = "10:16",
-                isFromMe = false
+                isFromMe = true, // From diner
+                avatarText = "ME",
+                avatarImageName = "sophie", // Diner's avatar
+                avatarColor = AppColors.DinerSecondary,
+                bubbleColor = AppColors.DinerPrimary, // Diner's bubble color
             )
         )
     }
@@ -197,7 +210,11 @@ fun ChatScreen(
                             val newMessage = ChatMessage(
                                 text = messageText,
                                 timestamp = "Now",
-                                isFromMe = false
+                                isFromMe = true, // From diner
+                                avatarText = "ME",
+                                avatarImageName = "sophie", // Diner's avatar
+                                avatarColor = AppColors.DinerSecondary,
+                                bubbleColor = AppColors.DinerPrimary, // Diner's bubble color
                             )
                             messages.add(newMessage)
                             messageText = ""

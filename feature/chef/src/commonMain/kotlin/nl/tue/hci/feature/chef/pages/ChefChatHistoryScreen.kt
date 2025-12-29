@@ -30,7 +30,7 @@ fun ChefChatHistoryScreen(
             customerName = "Sophie",
             lastMessage = "Thanks — yes please, that would help.",
             timestamp = "10:16",
-            unreadCount = 0
+            unreadCount = 1
         ),
         ChatHistoryItem(
             id = "2",

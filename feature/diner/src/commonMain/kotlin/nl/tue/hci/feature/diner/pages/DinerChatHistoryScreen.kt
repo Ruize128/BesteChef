@@ -26,18 +26,11 @@ fun DinerChatHistoryScreen(
     // Hardcoded chat history data (chefs the diner has chatted with)
     val chatHistory = listOf(
         DinerChatHistoryItem(
-            id = "1",
-            chefName = "Sophie",
-            lastMessage = "Yes! I can replace the original dessert with a nut-free yuzu mousse.",
-            timestamp = "10:12",
-            unreadCount = 0
-        ),
-        DinerChatHistoryItem(
             id = "2",
-            chefName = "Chef Marco",
-            lastMessage = "Looking forward to cooking for your event!",
+            chefName = "Chef Ichiraku",
+            lastMessage = "[Image]",
             timestamp = "Yesterday",
-            unreadCount = 1
+            unreadCount = 2
         ),
         DinerChatHistoryItem(
             id = "3",

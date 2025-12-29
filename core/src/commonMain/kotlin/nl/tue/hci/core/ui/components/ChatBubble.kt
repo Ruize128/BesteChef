@@ -8,7 +8,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,39 +17,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.core.model.ChatMessage
 import nl.tue.hci.core.ui.AppColors
-import nl.tue.hci.core.ui.getAvatarImageName
 import nl.tue.hci.core.ui.rememberImagePainter
 
 @Composable
 fun ChatBubble(
     message: ChatMessage,
-    meAvatarText: String = "ME",
-    partnerAvatarText: String = "DH",
-    meBubbleColor: Color = AppColors.ChefPrimary,
-    partnerBubbleColor: Color = AppColors.DinerPrimary,
-    meAvatarColor: Color = AppColors.ChefSecondary,
-    partnerAvatarColor: Color = AppColors.DinerSecondary,
-    isChefContext: Boolean = false,
 ) {
-    // Determine image names based on context
-    val meImageName = remember(meAvatarText, isChefContext) { 
-        getAvatarImageName(meAvatarText, isChefContext) 
-    }
-    val partnerImageName = remember(partnerAvatarText, isChefContext) { 
-        getAvatarImageName(partnerAvatarText, isChefContext) 
-    }
-    
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (message.isFromMe) Arrangement.End else Arrangement.Start
     ) {
         if (!message.isFromMe) {
             Avatar(
-                text = partnerAvatarText,
+                text = message.avatarText,
                 size = 32,
-                backgroundColor = partnerAvatarColor,
+                backgroundColor = message.avatarColor,
                 modifier = Modifier,
-                imageName = partnerImageName,
+                imageName = message.avatarImageName,
             )
             Spacer(modifier = Modifier.width(8.dp))
         }
@@ -85,11 +68,7 @@ fun ChatBubble(
                 // Text message
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = if (message.isFromMe) {
-                        meBubbleColor
-                    } else {
-                        partnerBubbleColor
-                    },
+                    color = message.bubbleColor,
                     modifier = Modifier.padding(horizontal = 0.dp)
                 ) {
                     Text(
@@ -115,11 +94,11 @@ fun ChatBubble(
             Spacer(modifier = Modifier.width(8.dp))
             // User avatar - using Avatar component since it has dark background with white text
             Avatar(
-                text = meAvatarText,
+                text = message.avatarText,
                 size = 32,
-                backgroundColor = meAvatarColor,
+                backgroundColor = message.avatarColor,
                 modifier = Modifier,
-                imageName = meImageName,
+                imageName = message.avatarImageName,
             )
         }
     }

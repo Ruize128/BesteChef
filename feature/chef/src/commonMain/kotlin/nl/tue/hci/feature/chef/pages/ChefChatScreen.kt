@@ -37,24 +37,37 @@ fun ChefChatScreen(
     onBackClick: () -> Unit = {},
     onEditOrderClick: () -> Unit = {}
 ) {
-    // Hardcoded initial messages (same as diner chat for now)
+    // Hardcoded initial messages
+    // For chef chat: isFromMe=true = chef, isFromMe=false = customer
     val initialMessages = remember {
         listOf(
             ChatMessage(
                 text = "Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo.",
                 timestamp = "10:12",
-                isFromMe = true
+                isFromMe = true, // From chef
+                avatarText = "ME",
+                avatarImageName = "ichiraku", // Chef's avatar
+                avatarColor = AppColors.ChefSecondary,
+                bubbleColor = AppColors.ChefPrimary, // Chef's bubble color
             ),
             ChatMessage(
                 text = "",
                 timestamp = "10:13",
-                isFromMe = true,
-                imagePreview = "Yuzu mousse (preview)"
+                isFromMe = true, // From chef
+                imagePreview = "Yuzu mousse (preview)",
+                avatarText = "ME",
+                avatarImageName = "ichiraku", // Chef's avatar
+                avatarColor = AppColors.ChefSecondary,
+                bubbleColor = AppColors.ChefPrimary, // Chef's bubble color
             ),
             ChatMessage(
                 text = "Thanks — yes please, that would help.",
                 timestamp = "10:16",
-                isFromMe = false
+                isFromMe = false, // From customer
+                avatarText = "DH",
+                avatarImageName = "sophie", // Customer's avatar
+                avatarColor = AppColors.DinerSecondary,
+                bubbleColor = AppColors.DinerPrimary, // Customer's bubble color
             )
         )
     }
@@ -141,11 +154,7 @@ fun ChefChatScreen(
                 }
                 
                 items(messages) { message ->
-                    // For chef chat: ME = chef (ichiraku), DH = customer (sophie)
-                    ChatBubble(
-                        message = message,
-                        isChefContext = true // Indicates this is chef chat, so ME = chef, DH = customer
-                    )
+                    ChatBubble(message = message)
                 }
             }
             
@@ -230,7 +239,11 @@ fun ChefChatScreen(
                             val newMessage = ChatMessage(
                                 text = messageText,
                                 timestamp = "Now",
-                                isFromMe = true // Chef sends messages
+                                isFromMe = true, // From chef
+                                avatarText = "ME",
+                                avatarImageName = "ichiraku", // Chef's avatar
+                                avatarColor = AppColors.ChefSecondary,
+                                bubbleColor = AppColors.ChefPrimary, // Chef's bubble color
                             )
                             messages.add(newMessage)
                             messageText = ""
