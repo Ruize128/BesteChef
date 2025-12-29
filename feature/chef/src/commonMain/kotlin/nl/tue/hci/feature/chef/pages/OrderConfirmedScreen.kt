@@ -66,7 +66,7 @@ fun OrderConfirmedScreen(
                 modifier = Modifier
                     .size(120.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF4DB6AC)), // Teal-green
+                    .background(Color(0xFFE6FFF5)), // Teal-green
                 contentAlignment = Alignment.Center
             ) {
                 // Outer lighter green circle
@@ -74,7 +74,7 @@ fun OrderConfirmedScreen(
                     modifier = Modifier
                         .size(100.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF80CBC4)), // Lighter teal-green
+                        .background(Color(0xFF19A886)), // Lighter teal-green
                 )
                 
                 // Checkmark icon
