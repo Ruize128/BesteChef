@@ -20,8 +20,8 @@ fun DinerScreen(
 ) {
     BesteChefTheme {
         var currentDestination by rememberSaveable { mutableStateOf(DinerDestinations.HOME) }
-        var showChatScreen by rememberSaveable { mutableStateOf(false) }
         var showPaymentSuccessfulScreen by rememberSaveable { mutableStateOf(false) }
+        var showChatScreen by rememberSaveable { mutableStateOf(false) }
         var chatChefName by rememberSaveable { mutableStateOf("") }
 
         if (showPaymentSuccessfulScreen) {
@@ -35,11 +35,14 @@ fun DinerScreen(
                 }
             )
         } else if (showChatScreen) {
-            ChatScreen(
+            // Chat screen is full-screen
+            DinerChatScreen(
                 chefName = chatChefName,
                 modifier = modifier,
                 onBackClick = {
                     showChatScreen = false
+                    // Ensure we're in the chat section when returning
+                    currentDestination = DinerDestinations.CHAT
                 }
             )
         } else {
@@ -50,7 +53,13 @@ fun DinerScreen(
             ) { innerPadding ->
                 when (currentDestination) {
                     DinerDestinations.HOME -> DinerHomeScreen(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        onChatClick = { chefName ->
+                            // Navigate to chat section and open chat
+                            chatChefName = chefName
+                            currentDestination = DinerDestinations.CHAT
+                            showChatScreen = true
+                        }
                     )
                     DinerDestinations.CHAT -> DinerChatHistoryScreen(
                         modifier = Modifier.padding(innerPadding),

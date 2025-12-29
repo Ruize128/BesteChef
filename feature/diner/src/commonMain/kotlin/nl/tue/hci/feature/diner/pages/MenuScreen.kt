@@ -44,29 +44,17 @@ import nl.tue.hci.feature.diner.MenuItem
 fun MenuScreen(
     chefName: String,
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
 ) {
-    // Navigation state
-    var showChatScreen by rememberSaveable { mutableStateOf(false) }
-    
-    if (showChatScreen) {
-        ChatScreen(
-            chefName = chefName,
-            modifier = modifier,
-            onBackClick = {
-                showChatScreen = false
-            }
-        )
-    } else {
-        MenuContent(
-            chefName = chefName,
-            modifier = modifier,
-            onBackClick = onBackClick,
-            onChatClick = {
-                showChatScreen = true
-            }
-        )
-    }
+    MenuContent(
+        chefName = chefName,
+        modifier = modifier,
+        onBackClick = onBackClick,
+        onChatClick = {
+            onChatClick(chefName) // Pass chef name to navigate to chat
+        }
+    )
 }
 
 @Composable

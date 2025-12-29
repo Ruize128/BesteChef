@@ -9,13 +9,17 @@ import androidx.compose.ui.Modifier
 // Preview removed for multiplatform
 
 @Composable
-fun DinerHomeScreen(modifier: Modifier = Modifier) {
+fun DinerHomeScreen(
+    modifier: Modifier = Modifier,
+    onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
+) {
     var showSearchResults by rememberSaveable { mutableStateOf(false) }
     
     if (showSearchResults) {
         SearchResultsScreen(
             modifier = modifier,
-            onBackClick = { showSearchResults = false }
+            onBackClick = { showSearchResults = false },
+            onChatClick = onChatClick
         )
     } else {
         SearchScreen(

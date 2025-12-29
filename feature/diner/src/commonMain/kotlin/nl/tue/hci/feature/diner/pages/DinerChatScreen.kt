@@ -32,7 +32,7 @@ import nl.tue.hci.core.model.ChatMessage
 
 
 @Composable
-fun ChatScreen(
+fun DinerChatScreen(
     chefName: String,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {}
@@ -88,7 +88,7 @@ fun ChatScreen(
             .fillMaxSize()
             .background(Color(0xFFF5F5F5))
     ) {
-        // Header with status bar padding
+        // Header with status bar padding (full-screen)
         Surface(
             modifier = Modifier
                 .fillMaxWidth()

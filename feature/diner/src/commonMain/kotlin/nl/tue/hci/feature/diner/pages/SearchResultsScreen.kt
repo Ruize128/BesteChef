@@ -50,7 +50,8 @@ private val LocalDateSaver = Saver<LocalDate?, String>(
 @Composable
 fun SearchResultsScreen(
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
 ) {
     // Navigation state
     var showMenuScreen by rememberSaveable { mutableStateOf(false) }
@@ -113,6 +114,12 @@ fun SearchResultsScreen(
             onBackClick = {
                 showMenuScreen = false
                 selectedChefName = null
+            },
+            onChatClick = { chefName ->
+                // Navigate to chat section
+                showMenuScreen = false
+                selectedChefName = null
+                onChatClick(chefName)
             }
         )
     } else {
