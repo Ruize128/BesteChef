@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.getCarouselImageNames
 import nl.tue.hci.core.ui.rememberImagePainter
+import nl.tue.hci.core.ui.icons.rememberIconPainter
 import nl.tue.hci.feature.diner.MenuItem
 
 
@@ -147,8 +148,9 @@ private fun MenuContent(
                 onClick = onChatClick,
                 modifier = Modifier.size(40.dp)
             ) {
+                val chatIconPainter = rememberIconPainter("chat_icon")
                 Icon(
-                    imageVector = Icons.Default.Home,
+                    painter = chatIconPainter,
                     contentDescription = "Chat",
                     tint = MaterialTheme.colorScheme.onBackground
                 )
@@ -265,8 +267,9 @@ fun MenuItemCard(
                         onClick = { },
                         modifier = Modifier.size(24.dp)
                     ) {
+                        val chatIconPainter = rememberIconPainter("chat_icon")
                         Icon(
-                            imageVector = Icons.Default.Home,
+                            painter = chatIconPainter,
                             contentDescription = "Favorite",
                             tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(20.dp)
@@ -305,8 +308,9 @@ fun MenuItemCard(
                             contentColor = MaterialTheme.colorScheme.onSurface
                         )
                     ) {
+                        val chatIconPainter = rememberIconPainter("chat_icon")
                         Icon(
-                            imageVector = Icons.Default.Home,
+                            painter = chatIconPainter,
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )

@@ -34,6 +34,9 @@ actual fun rememberImagePainter(imageName: String): Painter {
         "ichiraku" -> "ichiraku"
         "middle_eastern_cuisine" -> "middle_eastern_cuisine"
         "sophie" -> "sophie"
+        "chat_icon" -> "chat_icon"
+        "filter_icon" -> "filter_icon"
+        "sort_icon" -> "sort_icon"
         else -> throw IllegalArgumentException(
             "Image resource '$imageName' not found. " +
             "Make sure to:\n" +

@@ -36,6 +36,7 @@ import nl.tue.hci.feature.diner.components.ChefResultCard
 import nl.tue.hci.feature.diner.components.DateDropdownMenu
 import nl.tue.hci.feature.diner.components.LocationDropdownMenu
 import nl.tue.hci.feature.diner.components.formatDate
+import nl.tue.hci.core.ui.icons.rememberIconPainter
 
 // Saver for LocalDate to make it work with rememberSaveable
 private val LocalDateSaver = Saver<LocalDate?, String>(
@@ -322,8 +323,9 @@ fun SearchResultsScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val filterIconPainter = rememberIconPainter("filter_icon")
                     Icon(
-                        imageVector = Icons.Default.Home,
+                        painter = filterIconPainter,
                         contentDescription = "Filter",
                         modifier = Modifier.size(18.dp),
                         tint = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
@@ -347,7 +349,7 @@ fun SearchResultsScreen(
 
             ActionButton(
                 text = "Sort",
-                icon = Icons.Default.Home,
+                iconPainter = rememberIconPainter("sort_icon"),
                 modifier = Modifier.weight(1f)
             )
             ActionButton(

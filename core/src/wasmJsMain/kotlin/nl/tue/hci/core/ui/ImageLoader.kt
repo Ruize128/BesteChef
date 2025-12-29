@@ -37,6 +37,9 @@ actual fun rememberImagePainter(imageName: String): Painter {
             "ichiraku" -> "images/ichiraku.png"
             "middle_eastern_cuisine" -> "images/middle_eastern_cuisine.png"
             "sophie" -> "images/sophie.png"
+            "chat_icon" -> "icons/chat_icon.svg"
+            "filter_icon" -> "icons/filter_icon.svg"
+            "sort_icon" -> "icons/sort_icon.svg"
             else -> {
                 // Try to find the image by attempting common extensions
                 val extensions = listOf("png", "jpg", "jpeg", "webp")
