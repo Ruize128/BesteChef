@@ -61,12 +61,12 @@ fun DinerOrdersScreen(
     val orders = listOf(
         DinerOrder(
             id = "1",
-            chefName = "Sophie",
+            chefName = "Chef Ichiraku",
             orderDate = "Dec 12, 2025",
             status = DinerOrderStatus.PENDING,
             totalPrice = "€102",
             itemCount = 3,
-            timeAgo = "2h ago"
+            timeAgo = "1h ago"
         ),
         DinerOrder(
             id = "2",
@@ -164,7 +164,8 @@ private fun OrderCard(
                     "Sophie" -> Color(0xFFFFB3BA) // Light pink
                     "Chef Marco" -> Color(0xFFB3FFBA) // Light green
                     else -> Color(0xFFB3BAFF) // Light blue
-                }
+                },
+                imageName = if (order.chefName == "Chef Ichiraku") "ichiraku" else null
             )
             
             // Content

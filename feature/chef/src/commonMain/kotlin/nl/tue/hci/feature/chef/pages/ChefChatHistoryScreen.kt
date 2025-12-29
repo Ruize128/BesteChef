@@ -128,7 +128,8 @@ private fun ChatHistoryItemCard(
                     "Liam" -> Color(0xFFB3FFBA) // Light green
                     "Emma" -> Color(0xFFB3BAFF) // Light blue
                     else -> Color(0xFFFFD4B2) // Light orange
-                }
+                },
+                imageName = if (chatItem.customerName == "Sophie") "sophie" else null
             )
             
             // Content

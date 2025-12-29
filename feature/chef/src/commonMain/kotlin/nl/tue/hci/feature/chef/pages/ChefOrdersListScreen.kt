@@ -127,7 +127,8 @@ private fun OrderCard(
                     "Sophie" -> Color(0xFFFFB3BA) // Light pink
                     "Liam" -> Color(0xFFB3FFBA) // Light green
                     else -> Color(0xFFB3BAFF) // Light blue
-                }
+                },
+                imageName = if (order.customerName == "Sophie") "sophie" else null
             )
             
             // Content

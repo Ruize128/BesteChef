@@ -114,7 +114,8 @@ private fun ChatHistoryItemCard(
                     "Chef Marco" -> Color(0xFFB3FFBA) // Light green
                     "Chef Elena" -> Color(0xFFB3BAFF) // Light blue
                     else -> Color(0xFFFFD4B2) // Light orange
-                }
+                },
+                imageName = if (chatItem.chefName == "Chef Ichiraku") "ichiraku" else null
             )
             
             // Content

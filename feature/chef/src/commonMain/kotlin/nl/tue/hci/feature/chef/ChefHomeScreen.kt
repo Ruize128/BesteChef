@@ -86,6 +86,7 @@ fun ChefHomeScreen(
                     text = "MC",
                     size = 40,
                     backgroundColor = AppColors.ChefPrimary,
+                    imageName = "ichiraku", // Chef's avatar image
                     modifier = Modifier
                         .padding(start = 0.dp)
                         .align(alignment = Alignment.CenterStart)
@@ -223,7 +224,8 @@ private fun BookingInquiryCard(
                 backgroundColor = when (booking.customerName) {
                     "Sophie" -> Color(0xFFFFB3BA) // Light pink
                     else -> Color(0xFFB3FFBA) // Light green
-                }
+                },
+                imageName = if (booking.customerName == "Sophie") "sophie" else null
             )
             
             // Content
