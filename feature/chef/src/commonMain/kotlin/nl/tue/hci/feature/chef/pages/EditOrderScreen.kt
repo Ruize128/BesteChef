@@ -19,8 +19,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
 import nl.tue.hci.core.ui.AppColors
 import nl.tue.hci.core.ui.components.QuantitySelector
+import nl.tue.hci.core.ui.getImageNameFromTitle
+import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.feature.chef.model.OrderDetails
 import nl.tue.hci.feature.chef.model.OfferMenuItem
 import nl.tue.hci.feature.chef.model.PriceSummary
@@ -345,13 +349,29 @@ private fun OfferMenuItemCard(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Image placeholder
+            // Image - use real image if available, otherwise use color placeholder
+            val imageName = remember(item.title) { getImageNameFromTitle(item.title) }
             Box(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(item.imageColor)
-            )
+            ) {
+                if (imageName != null) {
+                    Image(
+                        painter = rememberImagePainter(imageName),
+                        contentDescription = item.title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    // No image available, use color placeholder
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(item.imageColor)
+                    )
+                }
+            }
             
             // Content
             Column(

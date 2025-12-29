@@ -11,9 +11,13 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,6 +28,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
+import nl.tue.hci.core.ui.getImageNameFromTitle
+import nl.tue.hci.core.ui.getCarouselImageNames
+import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.feature.diner.MenuItem
 
 
@@ -175,14 +187,41 @@ fun MenuItemCard(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Image placeholder
+            // Image - use real image if available, otherwise use color placeholder
+            val imageName = remember(menuItem.title) { getImageNameFromTitle(menuItem.title) }
+            val carouselImages = remember(menuItem.title) { getCarouselImageNames(menuItem.title) }
+            var currentImageIndex by remember(menuItem.title) { mutableStateOf(0) }
+            
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .background(menuItem.imageColor)
             ) {
-                // Image carousel indicators
+                if (carouselImages != null && carouselImages.isNotEmpty()) {
+                    // Use HorizontalPager for smooth carousel
+                    ImageCarouselWithPager(
+                        images = carouselImages,
+                        currentIndex = currentImageIndex,
+                        onIndexChange = { currentImageIndex = it },
+                        contentDescription = menuItem.title,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else if (imageName != null) {
+                    // Single image
+                    Image(
+                        painter = rememberImagePainter(imageName),
+                        contentDescription = menuItem.title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    // No image available, use color placeholder
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(menuItem.imageColor)
+                    ) {
+                        // Image carousel indicators (only show if using color placeholder)
                 Row(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -196,6 +235,8 @@ fun MenuItemCard(
                                 .clip(RoundedCornerShape(50))
                                 .background(Color.DarkGray.copy(alpha = 0.6f))
                         )
+                            }
+                        }
                     }
                 }
             }

@@ -18,7 +18,12 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.runtime.remember
 import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.getImageNameFromTitle
+import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.feature.diner.BookingSummaryDetails
 import nl.tue.hci.feature.diner.BookingSummaryMenuItem
 import nl.tue.hci.feature.diner.BookingPriceSummary
@@ -359,13 +364,29 @@ private fun MenuItemCard(item: BookingSummaryMenuItem) {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Image placeholder
+            // Image - use real image if available, otherwise use color placeholder
+            val imageName = remember(item.title) { getImageNameFromTitle(item.title) }
             Box(
                 modifier = Modifier
                     .size(60.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(item.imageColor)
-            )
+            ) {
+                if (imageName != null) {
+                    Image(
+                        painter = rememberImagePainter(imageName),
+                        contentDescription = item.title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    // No image available, use color placeholder
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(item.imageColor)
+                    )
+                }
+            }
             
             // Content
             Column(

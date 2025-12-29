@@ -141,7 +141,11 @@ fun ChefChatScreen(
                 }
                 
                 items(messages) { message ->
-                    ChatBubble(message = message)
+                    // For chef chat: ME = chef (ichiraku), DH = customer (sophie)
+                    ChatBubble(
+                        message = message,
+                        isChefContext = true // Indicates this is chef chat, so ME = chef, DH = customer
+                    )
                 }
             }
             

@@ -1,5 +1,6 @@
 package nl.tue.hci.core.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -9,11 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.rememberImagePainter
 
 @Composable
 fun Avatar(
@@ -22,21 +25,33 @@ fun Avatar(
     size: Int = 48,
     backgroundColor: Color = AppColors.DinerSecondary,
     textColor: Color = AppColors.TextPrimary,
+    imageName: String? = null,
 ) {
     Box(
         modifier = modifier
             .size(size.dp)
             .clip(CircleShape)
-            .background(backgroundColor),
+            .background(if (imageName == null) backgroundColor else Color.Transparent),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = text,
-            fontSize = (size * 0.4).sp,
-            fontWeight = FontWeight.SemiBold,
-            color = textColor,
-            textAlign = TextAlign.Center
-        )
+        if (imageName != null) {
+            // Use image if provided
+            Image(
+                painter = rememberImagePainter(imageName),
+                contentDescription = text,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            // Fall back to text/color
+            Text(
+                text = text,
+                fontSize = (size * 0.4).sp,
+                fontWeight = FontWeight.SemiBold,
+                color = textColor,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 

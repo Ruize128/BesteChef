@@ -44,6 +44,10 @@ kotlin {
                 val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
                 implementation(composeBom)
                 implementation("androidx.compose.material3:material3-adaptive-navigation-suite")
+                // HorizontalPager is part of foundation-pager, but it might not be in BOM
+                // Try using androidx.compose.foundation:foundation which might include it
+                // Or use the pager library directly if available
+                implementation("androidx.compose.foundation:foundation")
                 // For @Preview support
                 implementation(libs.androidx.compose.ui.tooling)
             }
