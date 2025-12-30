@@ -21,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import nl.tue.hci.core.ui.AppColors
 import nl.tue.hci.core.ui.components.QuantitySelector
 import nl.tue.hci.core.ui.getImageNameFromTitle
@@ -146,15 +148,20 @@ fun EditOrderScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = onBackClick) {
-                    Text(
-                        text = "Back",
-                        color = AppColors.TextPrimary
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = AppColors.TextPrimary
                     )
                 }
+                
+                Spacer(modifier = Modifier.width(8.dp))
                 
                 Text(
                     text = "Compose Offer",
@@ -163,9 +170,6 @@ fun EditOrderScreen(
                     fontStyle = FontStyle.Italic,
                     color = AppColors.TextPrimary
                 )
-                
-                // Spacer for centering
-                Spacer(modifier = Modifier.width(60.dp))
             }
         }
         

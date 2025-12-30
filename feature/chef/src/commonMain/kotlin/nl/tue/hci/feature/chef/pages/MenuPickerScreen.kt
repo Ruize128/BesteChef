@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -38,7 +38,7 @@ import nl.tue.hci.feature.chef.model.SelectedMenuItem
 @Composable
 fun MenuPickerScreen(
     modifier: Modifier = Modifier,
-    onClose: () -> Unit = {},
+    onBackClick: () -> Unit = {},
     onItemSelected: (List<SelectedMenuItem>) -> Unit = {}
 ) {
     // Hardcoded menu items
@@ -133,22 +133,27 @@ fun MenuPickerScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = AppColors.TextPrimary
+                    )
+                }
+                
+                Spacer(modifier = Modifier.width(8.dp))
+                
                 Text(
                     text = "Menu picker",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = AppColors.TextPrimary
                 )
-                
-                TextButton(onClick = onClose) {
-                    Text(
-                        text = "Close",
-                        color = AppColors.TextPrimary
-                    )
-                }
             }
         }
         
@@ -256,7 +261,7 @@ fun MenuPickerScreen(
                 enabled = selectedItems.isNotEmpty(),
                 onClick = {
                     onItemSelected(selectedItems.toList())
-                    onClose()
+                    onBackClick()
                 },
             ) {
                 Row(

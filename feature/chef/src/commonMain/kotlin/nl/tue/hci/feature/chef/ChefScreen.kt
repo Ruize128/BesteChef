@@ -162,7 +162,7 @@ fun ChefOrdersScreen(
     if (showMenuPicker) {
         nl.tue.hci.feature.chef.pages.MenuPickerScreen(
             modifier = modifier,
-            onClose = {
+            onBackClick = {
                 showMenuPicker = false
             },
             onItemSelected = { selectedItems ->

@@ -11,6 +11,6 @@ import nl.tue.hci.feature.chef.pages.MenuPickerScreen
 fun MenuPickerScreenPreview() {
     MenuPickerScreen(
         modifier = Modifier,
-        onClose = { },
+        onBackClick = { },
     )
 }
