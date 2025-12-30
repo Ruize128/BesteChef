@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.Avatar
 import nl.tue.hci.core.ui.components.StatusBadge
 import nl.tue.hci.feature.diner.DinerOrder
@@ -58,6 +59,7 @@ fun DinerOrdersScreen(
         )
     } else {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     // Hardcoded orders for diner
     val orders = listOf(
@@ -110,8 +112,7 @@ fun DinerOrdersScreen(
             ) {
                 Text(
                     text = "Orders",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
+                    style = typography.sectionTitle,
                     color = colors.textPrimary
                 )
             }
@@ -144,6 +145,7 @@ private fun OrderCard(
     onClick: () -> Unit
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Surface(
         modifier = Modifier
@@ -179,13 +181,12 @@ private fun OrderCard(
             ) {
                 Text(
                     text = order.chefName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    style = typography.cardTitle,
                     color = colors.textPrimary
                 )
                 Text(
                     text = "${order.itemCount} items • ${order.orderDate}",
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = typography.bodyMedium,
                     color = colors.textSecondary
                 )
             }
@@ -212,13 +213,12 @@ private fun OrderCard(
                 )
                 Text(
                     text = order.totalPrice,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    style = typography.cardTitle,
                     color = colors.textPrimary
                 )
                 Text(
                     text = order.timeAgo,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = typography.bodySmall,
                     color = colors.textSecondary
                 )
             }

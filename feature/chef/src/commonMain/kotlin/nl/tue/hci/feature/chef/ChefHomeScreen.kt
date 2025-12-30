@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.Avatar
 import nl.tue.hci.core.ui.components.FilterButton
 import nl.tue.hci.core.ui.components.StatusBadge
@@ -64,6 +65,7 @@ fun ChefHomeScreen(
     
     var selectedFilter by remember { mutableStateOf("All") }
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Column(
         modifier = modifier
@@ -94,9 +96,7 @@ fun ChefHomeScreen(
                 )
                 Text(
                     text = "Chef Dashboard",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontStyle = FontStyle.Italic,
+                    style = typography.sectionTitle,
                     color = colors.textPrimary,
                     modifier = Modifier.align(alignment = Alignment.Center)
                 )
@@ -119,8 +119,7 @@ fun ChefHomeScreen(
                 ) {
                     Text(
                         text = "Today",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Normal,
+                        style = typography.labelMedium,
                         color = colors.textSecondary,
                     )
                     
@@ -131,15 +130,13 @@ fun ChefHomeScreen(
                     ) {
                         Text(
                             text = "$bookings bookings • $inquiries inquiries",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            fontStyle = FontStyle.Italic,
+                            style = typography.cardTitle,
                             color = colors.textPrimary
                         )
                         
                         Text(
                             text = "View calendar",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = typography.bodySmall,
                             color = colors.chefPrimary,
                             modifier = Modifier
                                 .width(64.dp)
@@ -204,6 +201,7 @@ private fun BookingInquiryCard(
     onClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Surface(
         modifier = Modifier
@@ -238,15 +236,13 @@ private fun BookingInquiryCard(
             ) {
                 Text(
                     text = booking.customerName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Italic,
+                    style = typography.cardTitle,
                     color = colors.textPrimary
                 )
                 
                 Text(
                     text = booking.message,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = typography.bodyMedium,
                     color = colors.textSecondary
                 )
                 

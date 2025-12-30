@@ -1,5 +1,6 @@
 package nl.tue.hci.feature.diner.pages
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -54,6 +55,7 @@ fun SearchResultsScreen(
     onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     // Navigation state
     var showMenuScreen by rememberSaveable { mutableStateOf(false) }
@@ -150,8 +152,7 @@ fun SearchResultsScreen(
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Search Result",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                style = typography.sectionTitle
             )
         }
         
@@ -180,8 +181,7 @@ fun SearchResultsScreen(
                     ) {
                         Text(
                             text = selectedLocation ?: "Location",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
+                            style = typography.labelMedium,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -225,7 +225,7 @@ fun SearchResultsScreen(
                             } else {
                                 "Date"
                             },
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = typography.bodyMedium,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -282,7 +282,7 @@ fun SearchResultsScreen(
 //                                        if (guestsNumber.isEmpty()) {
 //                                            Text(
 //                                                text = "Guests",
-//                                                style = MaterialTheme.typography.bodyMedium,
+//                                                style = typography.bodyMedium,
 //                                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
 //                                                maxLines = 1
 //                                            )
@@ -297,7 +297,7 @@ fun SearchResultsScreen(
 // //                               Spacer(modifier = Modifier.width(2.dp))
                                 Text(
                                     text = if (guestsNumber.isEmpty()) "Guests" else "guests",
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    style = typography.bodyMedium,
                                     maxLines = 1
                                 )
 //                            }
@@ -346,7 +346,7 @@ fun SearchResultsScreen(
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "Filter",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = typography.bodySmall,
                         color = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
                             colors.textOnPrimary
                         } else {
@@ -418,6 +418,7 @@ fun FilterModal(
     onCuisineSelected: (String?) -> Unit
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Dialog(
         onDismissRequest = onDismiss,
@@ -441,8 +442,7 @@ fun FilterModal(
                 // Title
                 Text(
                     text = "Filters",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    style = typography.sectionTitle
                 )
                 
                 // Allergens field
@@ -464,7 +464,7 @@ fun FilterModal(
                     ) {
                         Text(
                             text = selectedAllergens?.let { "Allergens: $it" } ?: "Allergens (optional) — e.g. nuts, dairy",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = typography.bodyMedium,
                             color = if (selectedAllergens != null) {
                                 MaterialTheme.colorScheme.onSurfaceVariant
                             } else {
@@ -499,7 +499,7 @@ fun FilterModal(
                     ) {
                         Text(
                             text = selectedCuisine?.let { "Cuisine: $it" } ?: "Cuisine (optional) — e.g. Japanese",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = typography.bodyMedium,
                             color = if (selectedCuisine != null) {
                                 MaterialTheme.colorScheme.onSurfaceVariant
                             } else {
@@ -530,8 +530,7 @@ fun FilterModal(
                 ) {
                     Text(
                         text = "Confirm",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium,
+                        style = typography.buttonText,
                         modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
                     )
                 }

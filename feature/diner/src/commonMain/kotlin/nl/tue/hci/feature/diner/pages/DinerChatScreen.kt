@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.ChatBubble
 import nl.tue.hci.core.model.ChatMessage
 
@@ -38,6 +39,7 @@ fun DinerChatScreen(
     onBackClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     // Hardcoded initial messages
     // For diner chat: isFromMe=false = chef, isFromMe=true = diner
@@ -122,13 +124,12 @@ fun DinerChatScreen(
                 ) {
                     Text(
                         text = "Chat with $chefName",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        style = typography.cardTitle,
                         color = colors.textPrimary
                     )
                     Text(
                         text = "Online",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = typography.bodySmall,
                         color = colors.onlineIndicator
                     )
                 }

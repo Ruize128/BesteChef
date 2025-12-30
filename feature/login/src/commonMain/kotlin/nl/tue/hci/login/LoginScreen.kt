@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nl.tue.hci.core.model.UserRole
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 
 
 // @androidx.compose.ui.tooling.preview.Preview - removed for multiplatform
@@ -98,6 +99,8 @@ fun LoginScreen(
         }
     }
 
+    val typography = BesteChefThemeTypography.current()
+    
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -113,14 +116,14 @@ fun LoginScreen(
         // Welcome Title
         Text(
             text = "BesteChef",
-            style = MaterialTheme.typography.headlineLarge,
+            style = typography.sectionTitle,
                 modifier = Modifier.padding(bottom = 8.dp),
                 color = colors.textPrimary,
         )
         
         Text(
             text = "Match your ... (TODO)",
-            style = MaterialTheme.typography.bodyLarge,
+            style = typography.bodyLarge,
                 modifier = Modifier.padding(bottom = 32.dp),
                 color = colors.textPrimary,
         )

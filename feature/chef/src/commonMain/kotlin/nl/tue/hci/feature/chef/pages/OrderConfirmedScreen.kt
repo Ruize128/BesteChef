@@ -20,9 +20,11 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.StatusBadge
 import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.rememberImagePainter
@@ -40,6 +42,7 @@ fun OrderConfirmedScreen(
     onDoneClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Box(
         modifier = modifier
@@ -93,8 +96,7 @@ fun OrderConfirmedScreen(
                 // Confirmation text
                 Text(
                     text = "Booking confirmed",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
+                    style = typography.sectionTitle,
                     color = colors.textPrimary
                 )
                 
@@ -103,7 +105,7 @@ fun OrderConfirmedScreen(
                 // Chef name and cuisine
                 Text(
                     text = "$chefName — $cuisineType",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = typography.bodyLarge,
                     color = colors.textSecondary
                 )
                 
@@ -124,14 +126,13 @@ fun OrderConfirmedScreen(
                     ) {
                         Text(
                             text = "${orderDetails.date} • ${orderDetails.time}",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
+                            style = typography.cardTitle,
                             color = colors.textPrimary
                         )
                         
                         Text(
                             text = "${orderDetails.guests} guests • Booking #$bookingNumber",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = typography.bodyMedium,
                             color = colors.textSecondary
                         )
                         
@@ -144,7 +145,7 @@ fun OrderConfirmedScreen(
                         
                         Text(
                             text = "Venue: ${orderDetails.venue}",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = typography.bodySmall,
                             color = colors.textSecondary
                         )
                     }
@@ -161,8 +162,7 @@ fun OrderConfirmedScreen(
                 ) {
                     Text(
                         text = "Final menu (summary)",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        style = typography.cardTitle,
                         color = colors.textPrimary,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
@@ -206,10 +206,8 @@ fun OrderConfirmedScreen(
                 text = "Done",
                 modifier = Modifier
                     .padding(horizontal = 24.dp),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Italic,
-                            color = colors.textPrimary,
+                style = typography.buttonText,
+                color = colors.textPrimary,
                 textAlign = TextAlign.Center,
             )
         }
@@ -219,6 +217,7 @@ fun OrderConfirmedScreen(
 @Composable
 private fun FinalMenuItemCard(item: OfferMenuItem) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -264,13 +263,12 @@ private fun FinalMenuItemCard(item: OfferMenuItem) {
             ) {
                 Text(
                     text = item.title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
+                    style = typography.cardTitle.copy(fontSize = 14.sp),
                     color = colors.textPrimary
                 )
                 Text(
                     text = item.description,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = typography.bodySmall,
                     color = colors.textSecondary
                 )
             }

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.FilterButton
 import nl.tue.hci.core.ui.components.Tag
 import nl.tue.hci.core.ui.getImageNameFromTitle
@@ -42,6 +43,7 @@ fun MenuPickerScreen(
     onItemSelected: (List<SelectedMenuItem>) -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     // Hardcoded menu items
     val allMenuItems = remember(colors) {
@@ -152,8 +154,7 @@ fun MenuPickerScreen(
                 
                 Text(
                     text = "Menu picker",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
+                    style = typography.sectionTitle,
                     color = colors.textPrimary
                 )
             }
@@ -275,9 +276,7 @@ fun MenuPickerScreen(
                 ) {
                     Text(
                         text = "Insert ${selectedItems.sumOf { it.quantity }} item${if (selectedItems.sumOf { it.quantity } > 1) "s" else ""}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Medium,
-                        fontStyle = FontStyle.Italic,
+                        style = typography.buttonText,
                         color = colors.textPrimary,
                     )
                     Text(
@@ -285,9 +284,7 @@ fun MenuPickerScreen(
                             val priceStr = it.menuItem.price.replace("€", "").replace(",", ".")
                             (priceStr.toDoubleOrNull()?.times(it.quantity) ?: 0.0).toInt()
                         }}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
+                        style = typography.cardTitle,
                         color = colors.textPrimary,
                     )
                 }
@@ -302,6 +299,7 @@ private fun MenuPickerItemCard(
     onAddClick: () -> Unit
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -353,7 +351,7 @@ private fun MenuPickerItemCard(
                 )
                 Text(
                     text = item.description,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = typography.bodySmall,
                     color = colors.textSecondary
                 )
                 
@@ -368,7 +366,7 @@ private fun MenuPickerItemCard(
                     } else {
                         Text(
                             text = item.dietaryTag,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = typography.bodySmall,
                             color = colors.textSecondary
                         )
                     }
@@ -397,7 +395,7 @@ private fun MenuPickerItemCard(
                 ) {
                     Text(
                         text = "Add",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = typography.bodySmall,
                         fontWeight = FontWeight.Medium,
                         color = colors.textPrimary,
                     )

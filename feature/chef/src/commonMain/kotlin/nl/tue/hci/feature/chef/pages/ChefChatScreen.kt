@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.ui.text.style.TextAlign
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.ChatBubble
 import nl.tue.hci.core.model.ChatMessage
 
@@ -38,6 +39,7 @@ fun ChefChatScreen(
     onEditOrderClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     // Hardcoded initial messages
     // For chef chat: isFromMe=true = chef, isFromMe=false = customer
@@ -122,13 +124,12 @@ fun ChefChatScreen(
                 ) {
                     Text(
                         text = "Chat with $customerName",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        style = typography.cardTitle,
                         color = colors.textPrimary
                     )
                     Text(
                         text = "Online",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = typography.bodySmall,
                         color = colors.onlineIndicator,
                     )
                 }
@@ -177,8 +178,7 @@ fun ChefChatScreen(
             ) {
                 Text(
                     text = "Edit offer",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
+                    style = typography.buttonText,
                     textAlign = TextAlign.Center,
                 )
             }

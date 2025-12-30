@@ -2,12 +2,18 @@ package nl.tue.hci.core.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 /**
  * Comprehensive color scheme for BesteChef application.
@@ -98,6 +104,110 @@ private val LightBesteChefColors = object : BesteChefColors {
 }
 
 /**
+ * Comprehensive typography scheme for BesteChef application.
+ * Defines consistent text styles for sections, cards, and content.
+ */
+interface BesteChefTypography {
+    // Section titles (e.g., "Orders", "Chat", "Chef Dashboard")
+    val sectionTitle: TextStyle // Large section headers, italic
+    
+    // Card titles
+    val cardTitle: TextStyle // Card item titles, italic
+    val cardSubtitle: TextStyle // Card item subtitles
+    
+    // Content text
+    val bodyLarge: TextStyle
+    val bodyMedium: TextStyle
+    val bodySmall: TextStyle
+    
+    // Labels and captions
+    val labelMedium: TextStyle
+    val labelSmall: TextStyle
+    
+    // Button text
+    val buttonText: TextStyle
+}
+
+/**
+ * Default BesteChef typography implementation
+ */
+private val DefaultBesteChefTypography = object : BesteChefTypography {
+    override val sectionTitle = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Bold,
+        fontStyle = FontStyle.Italic,
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.sp
+    )
+    
+    override val cardTitle = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Bold,
+        fontStyle = FontStyle.Italic,
+        fontSize = 18.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.sp
+    )
+    
+    override val cardSubtitle = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.25.sp
+    )
+    
+    override val bodyLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    )
+    
+    override val bodyMedium = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.25.sp
+    )
+    
+    override val bodySmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.4.sp
+    )
+    
+    override val labelMedium = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    )
+    
+    override val labelSmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    )
+    
+    override val buttonText = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    )
+}
+
+/**
  * Dark theme colors
  */
 private val DarkBesteChefColors = object : BesteChefColors {
@@ -145,6 +255,13 @@ val LocalBesteChefColors = compositionLocalOf<BesteChefColors> {
 }
 
 /**
+ * CompositionLocal for providing theme typography to all composables
+ */
+val LocalBesteChefTypography = compositionLocalOf<BesteChefTypography> {
+    error("No BesteChefTypography provided! Wrap your app with BesteChefTheme.")
+}
+
+/**
  * Helper object for easy access to theme colors
  */
 object BesteChefThemeColors {
@@ -153,7 +270,15 @@ object BesteChefThemeColors {
 }
 
 /**
- * BesteChef theme composable that provides colors and MaterialTheme
+ * Helper object for easy access to theme typography
+ */
+object BesteChefThemeTypography {
+    @Composable
+    fun current(): BesteChefTypography = LocalBesteChefTypography.current
+}
+
+/**
+ * BesteChef theme composable that provides colors, typography, and MaterialTheme
  */
 @Composable
 fun BesteChefTheme(
@@ -161,8 +286,31 @@ fun BesteChefTheme(
     content: @Composable () -> Unit
 ) {
     val colors = if (darkTheme) DarkBesteChefColors else LightBesteChefColors
+    val typography = DefaultBesteChefTypography
     
-    CompositionLocalProvider(LocalBesteChefColors provides colors) {
+    // Create Material Typography from BesteChefTypography
+    val materialTypography = Typography(
+        displayLarge = typography.sectionTitle.copy(fontSize = 57.sp),
+        displayMedium = typography.sectionTitle.copy(fontSize = 45.sp),
+        displaySmall = typography.sectionTitle.copy(fontSize = 36.sp),
+        headlineLarge = typography.sectionTitle.copy(fontSize = 32.sp),
+        headlineMedium = typography.sectionTitle.copy(fontSize = 28.sp),
+        headlineSmall = typography.sectionTitle.copy(fontSize = 24.sp),
+        titleLarge = typography.cardTitle.copy(fontSize = 22.sp),
+        titleMedium = typography.cardTitle,
+        titleSmall = typography.cardTitle.copy(fontSize = 14.sp),
+        bodyLarge = typography.bodyLarge,
+        bodyMedium = typography.bodyMedium,
+        bodySmall = typography.bodySmall,
+        labelLarge = typography.labelMedium.copy(fontSize = 14.sp),
+        labelMedium = typography.labelMedium,
+        labelSmall = typography.labelSmall,
+    )
+    
+    CompositionLocalProvider(
+        LocalBesteChefColors provides colors,
+        LocalBesteChefTypography provides typography
+    ) {
         MaterialTheme(
             colorScheme = if (darkTheme) {
                 darkColorScheme(
@@ -191,6 +339,7 @@ fun BesteChefTheme(
                     onError = colors.textOnPrimary,
                 )
             },
+            typography = materialTypography,
             content = content
         )
     }

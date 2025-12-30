@@ -1,5 +1,6 @@
 package nl.tue.hci.feature.diner.pages
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -65,6 +66,7 @@ private fun MenuContent(
     onChatClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     // Hardcoded menu items
     val menuItems = remember(colors) {
@@ -126,8 +128,7 @@ private fun MenuContent(
             
             Text(
                 text = chefName,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
+                style = typography.sectionTitle,
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 8.dp),
@@ -171,6 +172,7 @@ fun MenuItemCard(
     onAskClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -251,9 +253,7 @@ fun MenuItemCard(
                 ) {
                     Text(
                         text = menuItem.title,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
+                        style = typography.cardTitle,
                         modifier = Modifier.weight(1f)
                     )
                     
@@ -274,14 +274,14 @@ fun MenuItemCard(
                 // Description
                 Text(
                     text = menuItem.description,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 
                 // Serves and prep time
                 Text(
                     text = "Serves ${menuItem.serves} · ${menuItem.prepTime}",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 
@@ -311,7 +311,7 @@ fun MenuItemCard(
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "Ask",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = typography.bodyMedium,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -328,7 +328,7 @@ fun MenuItemCard(
                     ) {
                         Text(
                             text = "Book",
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = typography.bodyMedium,
                             fontWeight = FontWeight.Medium
                         )
                     }

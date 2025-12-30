@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.Avatar
 import nl.tue.hci.feature.diner.DinerChatHistoryItem
 
@@ -24,6 +25,7 @@ fun DinerChatHistoryScreen(
     onChatClick: (String) -> Unit = {} // chefName
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     // Hardcoded chat history data (chefs the diner has chatted with)
     val chatHistory = listOf(
@@ -61,8 +63,7 @@ fun DinerChatHistoryScreen(
             ) {
                 Text(
                     text = "Chats",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
+                    style = typography.sectionTitle,
                     color = colors.textPrimary,
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
@@ -93,6 +94,7 @@ private fun ChatHistoryItemCard(
     onClick: () -> Unit
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Surface(
         modifier = Modifier
@@ -134,14 +136,13 @@ private fun ChatHistoryItemCard(
                 ) {
                     Text(
                         text = chatItem.chefName,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        style = typography.cardTitle,
                         color = colors.textPrimary
                     )
                     
                     Text(
                         text = chatItem.timestamp,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = typography.bodySmall,
                         color = colors.textSecondary
                     )
                 }
@@ -153,7 +154,7 @@ private fun ChatHistoryItemCard(
                 ) {
                     Text(
                         text = chatItem.lastMessage,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = typography.bodyMedium,
                         color = colors.textSecondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -169,8 +170,7 @@ private fun ChatHistoryItemCard(
                             Text(
                                 text = chatItem.unreadCount.toString(),
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Bold,
+                                style = typography.labelMedium,
                                 color = colors.textOnPrimary
                             )
                         }

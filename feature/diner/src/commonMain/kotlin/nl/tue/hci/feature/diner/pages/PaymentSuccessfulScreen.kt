@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.ui.text.font.FontStyle
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 
 @Composable
 fun PaymentSuccessfulScreen(
@@ -24,6 +25,7 @@ fun PaymentSuccessfulScreen(
     onDoneClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Column(
         modifier = modifier
@@ -66,9 +68,7 @@ fun PaymentSuccessfulScreen(
         // Confirmation text
         Text(
             text = "Payment successful",
-            style = MaterialTheme.typography.headlineLarge,
-            fontStyle = FontStyle.Italic,
-            fontWeight = FontWeight.Bold,
+            style = typography.sectionTitle,
             color = colors.textPrimary
         )
         
@@ -90,9 +90,7 @@ fun PaymentSuccessfulScreen(
         ) {
             Text(
                 text = "Done",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Italic,
+                style = typography.buttonText,
                 color = colors.textPrimary,
             )
         }
