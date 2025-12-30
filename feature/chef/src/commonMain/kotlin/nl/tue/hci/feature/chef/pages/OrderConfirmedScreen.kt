@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.components.StatusBadge
 import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.rememberImagePainter
@@ -39,11 +39,13 @@ fun OrderConfirmedScreen(
     modifier: Modifier = Modifier,
     onDoneClick: () -> Unit = {}
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Box(
         modifier = modifier
             .fillMaxSize()
             .statusBarsPadding()
-            .background(Color.White)
+            .background(colors.background)
             .padding(top = 24.dp)
     ) {
         Column(
@@ -66,7 +68,7 @@ fun OrderConfirmedScreen(
                 modifier = Modifier
                     .size(120.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE6FFF5)), // Teal-green
+                    .background(colors.statusConfirmedBackground), // Teal-green
                 contentAlignment = Alignment.Center
             ) {
                 // Outer lighter green circle
@@ -74,7 +76,7 @@ fun OrderConfirmedScreen(
                     modifier = Modifier
                         .size(100.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF19A886)), // Lighter teal-green
+                        .background(colors.dinerPrimary), // Lighter teal-green
                 )
                 
                 // Checkmark icon
@@ -82,7 +84,7 @@ fun OrderConfirmedScreen(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Confirmed",
                     modifier = Modifier.size(60.dp),
-                    tint = Color.White
+                    tint = colors.textOnPrimary
                 )
                 }
                 
@@ -93,7 +95,7 @@ fun OrderConfirmedScreen(
                     text = "Booking confirmed",
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -102,7 +104,7 @@ fun OrderConfirmedScreen(
                 Text(
                     text = "$chefName — $cuisineType",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
                 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -111,7 +113,7 @@ fun OrderConfirmedScreen(
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFFF5F5F5), // Light grey
+                    color = colors.surfaceVariant, // Light grey
                     shadowElevation = 2.dp
                 ) {
                     Column(
@@ -124,26 +126,26 @@ fun OrderConfirmedScreen(
                             text = "${orderDetails.date} • ${orderDetails.time}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
-                            color = AppColors.TextPrimary
+                            color = colors.textPrimary
                         )
                         
                         Text(
                             text = "${orderDetails.guests} guests • Booking #$bookingNumber",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = AppColors.TextSecondary
+                            color = colors.textSecondary
                         )
                         
                         // Deposit received badge
                         StatusBadge(
                             text = "Deposit received",
-                            backgroundColor = AppColors.StatusConfirmedBackground, // Light green
-                            textColor = AppColors.StatusConfirmedText // Dark green
+                            backgroundColor = colors.statusConfirmedBackground, // Light green
+                            textColor = colors.statusConfirmedText // Dark green
                         )
                         
                         Text(
                             text = "Venue: ${orderDetails.venue}",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AppColors.TextSecondary
+                            color = colors.textSecondary
                         )
                     }
                 }
@@ -161,7 +163,7 @@ fun OrderConfirmedScreen(
                         text = "Final menu (summary)",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = AppColors.TextPrimary,
+                        color = colors.textPrimary,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
                     
@@ -195,8 +197,8 @@ fun OrderConfirmedScreen(
                 .height(40.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = AppColors.ChefPrimary,
-                contentColor = AppColors.TextPrimary
+                containerColor = colors.chefPrimary,
+                contentColor = colors.textPrimary
             ),
             contentPadding = PaddingValues(0.dp),
         ) {
@@ -207,7 +209,7 @@ fun OrderConfirmedScreen(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic,
-                color = AppColors.TextPrimary,
+                            color = colors.textPrimary,
                 textAlign = TextAlign.Center,
             )
         }
@@ -216,10 +218,12 @@ fun OrderConfirmedScreen(
 
 @Composable
 private fun FinalMenuItemCard(item: OfferMenuItem) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        color = Color(0xFFF5F5F5), // Light grey
+        color = colors.surfaceVariant, // Light grey
         shadowElevation = 1.dp
     ) {
         Row(
@@ -262,12 +266,12 @@ private fun FinalMenuItemCard(item: OfferMenuItem) {
                     text = item.title,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 Text(
                     text = item.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
             }
         }

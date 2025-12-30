@@ -11,32 +11,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 @Composable
 fun StatCard(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = AppColors.White
+    backgroundColor: Color? = null
 ) {
+    val colors = BesteChefThemeColors.current()
+    val finalBackgroundColor = backgroundColor ?: colors.surface
+    
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(backgroundColor)
+            .background(finalBackgroundColor)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
             text = label,
             fontSize = 12.sp,
-            color = AppColors.TextSecondary,
+            color = colors.textSecondary,
             fontWeight = FontWeight.Normal
         )
         Text(
             text = value,
             fontSize = 24.sp,
-            color = AppColors.TextPrimary,
+            color = colors.textPrimary,
             fontWeight = FontWeight.Bold
         )
     }

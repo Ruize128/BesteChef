@@ -23,7 +23,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.components.QuantitySelector
 import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.rememberImagePainter
@@ -42,6 +42,8 @@ fun EditOrderScreen(
     onItemsAdded: () -> Unit = {},
     onSendOfferClick: (OrderDetails, List<OfferMenuItem>) -> Unit = { _, _ -> }
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     // Hardcoded booking details
     val orderDetails = remember {
         OrderDetails(
@@ -53,14 +55,14 @@ fun EditOrderScreen(
     }
     
     // Default menu items - reset when screen is opened
-    val defaultMenuItems = remember {
+    val defaultMenuItems = remember(colors) {
         listOf(
             OfferMenuItem(
                 id = "1",
                 title = "Yuzu mousse",
                 description = "nut-free (substitute)",
                 price = "€8",
-                imageColor = Color(0xFFB2E5D4), // Light green
+                imageColor = colors.imagePlaceholder1, // Light green
                 quantity = 2
             ),
             OfferMenuItem(
@@ -68,7 +70,7 @@ fun EditOrderScreen(
                 title = "Seared seabass",
                 description = "miso glaze",
                 price = "€14",
-                imageColor = Color(0xFFFFD4B2), // Light orange-beige
+                imageColor = colors.imagePlaceholder2, // Light orange-beige
                 quantity = 1
             )
         )
@@ -136,12 +138,12 @@ fun EditOrderScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(colors.background)
     ) {
         // Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = Color.White,
+            color = colors.surface,
             shadowElevation = 2.dp
         ) {
             Row(
@@ -157,7 +159,7 @@ fun EditOrderScreen(
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = AppColors.TextPrimary
+                        tint = colors.textPrimary
                     )
                 }
                 
@@ -168,7 +170,7 @@ fun EditOrderScreen(
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
             }
         }
@@ -195,7 +197,7 @@ fun EditOrderScreen(
                     text = "Menu (editable)",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary,
+                    color = colors.textPrimary,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
@@ -228,7 +230,7 @@ fun EditOrderScreen(
                 ) {
                     Text(
                         text = "+ Add another dish",
-                        color = AppColors.StatusConfirmedText, // Green
+                        color = colors.statusConfirmedText, // Green
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -251,8 +253,8 @@ fun EditOrderScreen(
                 .height(40.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = AppColors.ChefPrimary,
-                contentColor = AppColors.TextPrimary,
+                containerColor = colors.chefPrimary,
+                contentColor = colors.textPrimary,
             ),
             contentPadding = PaddingValues(0.dp),
         ) {
@@ -268,14 +270,14 @@ fun EditOrderScreen(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
-                    color = AppColors.TextPrimary,
+                    color = colors.textPrimary,
                 )
                 Text(
                     text = priceSummary.total,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
-                    color = AppColors.TextPrimary,
+                    color = colors.textPrimary,
                 )
             }
         }
@@ -287,10 +289,12 @@ private fun BookingSection(
     orderDetails: OrderDetails,
     onEditClick: () -> Unit
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = AppColors.White,
+        color = colors.surface,
         shadowElevation = 2.dp
     ) {
         Column(
@@ -308,13 +312,13 @@ private fun BookingSection(
                     text = "Booking",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 
                 TextButton(onClick = onEditClick) {
                     Text(
                         text = "Edit",
-                        color = AppColors.ChefPrimary
+                        color = colors.chefPrimary
                     )
                 }
             }
@@ -322,13 +326,13 @@ private fun BookingSection(
             Text(
                 text = "${orderDetails.date} • ${orderDetails.time} • ${orderDetails.guests} guests",
                 style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.TextPrimary
+                color = colors.textPrimary
             )
             
             Text(
                 text = "Venue: ${orderDetails.venue}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.TextPrimary
+                color = colors.textPrimary
             )
         }
     }
@@ -340,10 +344,12 @@ private fun OfferMenuItemCard(
     onQuantityDecrease: () -> Unit,
     onQuantityIncrease: () -> Unit
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        color = AppColors.White,
+        color = colors.surface,
         shadowElevation = 1.dp
     ) {
         Row(
@@ -386,12 +392,12 @@ private fun OfferMenuItemCard(
                     text = item.title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 Text(
                     text = item.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
             }
             
@@ -404,7 +410,7 @@ private fun OfferMenuItemCard(
                     text = item.price,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 QuantitySelector(
                     quantity = item.quantity,
@@ -418,6 +424,8 @@ private fun OfferMenuItemCard(
 
 @Composable
 private fun PriceSummarySection(priceSummary: PriceSummary) {
+    val colors = BesteChefThemeColors.current()
+    
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -426,7 +434,7 @@ private fun PriceSummarySection(priceSummary: PriceSummary) {
             text = "Price summary",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = AppColors.TextPrimary
+            color = colors.textPrimary
         )
         
         // Subtotal
@@ -437,13 +445,13 @@ private fun PriceSummarySection(priceSummary: PriceSummary) {
             Text(
                 text = "Subtotal",
                 style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.TextPrimary
+                color = colors.textPrimary
             )
             Text(
                 text = priceSummary.subtotal,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = AppColors.TextPrimary
+                color = colors.textPrimary
             )
         }
         
@@ -455,13 +463,13 @@ private fun PriceSummarySection(priceSummary: PriceSummary) {
             Text(
                 text = "Service fee",
                 style = MaterialTheme.typography.bodyMedium,
-                color = AppColors.TextPrimary
+                color = colors.textPrimary
             )
             Text(
                 text = priceSummary.serviceFee,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = AppColors.TextPrimary
+                color = colors.textPrimary
             )
         }
         
@@ -469,7 +477,7 @@ private fun PriceSummarySection(priceSummary: PriceSummary) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
-            color = AppColors.StatusConfirmedBackground // Light green
+            color = colors.statusConfirmedBackground // Light green
         ) {
             Row(
                 modifier = Modifier
@@ -482,13 +490,13 @@ private fun PriceSummarySection(priceSummary: PriceSummary) {
                     text = "Deposit due now",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 Text(
                     text = "${priceSummary.depositAmount} (${priceSummary.depositPercentage}%)",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.ChefPrimary
+                    color = colors.chefPrimary
                 )
             }
         }

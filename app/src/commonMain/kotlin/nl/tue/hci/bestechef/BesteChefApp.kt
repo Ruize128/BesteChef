@@ -10,7 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.launch
-import nl.tue.hci.bestechef.ui.theme.BesteChefTheme
+import nl.tue.hci.core.ui.BesteChefTheme
 import nl.tue.hci.core.data.createUserSessionRepository
 import nl.tue.hci.core.model.UserRole
 import nl.tue.hci.feature.chef.ChefScreen

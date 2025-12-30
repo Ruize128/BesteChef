@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 @Composable
 fun QuantitySelector(
@@ -24,6 +24,8 @@ fun QuantitySelector(
     onIncrease: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -34,7 +36,7 @@ fun QuantitySelector(
             modifier = Modifier
                 .size(24.dp)
                 .clip(CircleShape)
-                .background(AppColors.ButtonGrey)
+                .background(colors.buttonBackground)
                 .clickable(onClick = onDecrease),
             contentAlignment = Alignment.Center
         ) {
@@ -42,7 +44,7 @@ fun QuantitySelector(
                 text = "-",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = AppColors.TextPrimary
+                color = colors.textPrimary
             )
         }
         
@@ -51,7 +53,7 @@ fun QuantitySelector(
             text = quantity.toString(),
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = AppColors.TextPrimary,
+            color = colors.textPrimary,
             modifier = Modifier.width(24.dp),
             textAlign = TextAlign.Center
         )
@@ -61,7 +63,7 @@ fun QuantitySelector(
             modifier = Modifier
                 .size(24.dp)
                 .clip(CircleShape)
-                .background(AppColors.ButtonGrey)
+                .background(colors.buttonBackground)
                 .clickable(onClick = onIncrease),
             contentAlignment = Alignment.Center
         ) {
@@ -69,7 +71,7 @@ fun QuantitySelector(
                 text = "+",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = AppColors.TextPrimary
+                color = colors.textPrimary
             )
         }
     }

@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.rememberImagePainter
 
 @Composable
@@ -23,15 +23,18 @@ fun Avatar(
     text: String,
     modifier: Modifier = Modifier,
     size: Int = 48,
-    backgroundColor: Color = AppColors.DinerSecondary,
-    textColor: Color = AppColors.TextPrimary,
+    backgroundColor: Color? = null,
+    textColor: Color? = null,
     imageName: String? = null,
 ) {
+    val colors = BesteChefThemeColors.current()
+    val finalBackgroundColor = backgroundColor ?: colors.dinerSecondary
+    val finalTextColor = textColor ?: colors.textPrimary
     Box(
         modifier = modifier
             .size(size.dp)
             .clip(CircleShape)
-            .background(if (imageName == null) backgroundColor else Color.Transparent),
+            .background(if (imageName == null) finalBackgroundColor else Color.Transparent),
         contentAlignment = Alignment.Center
     ) {
         if (imageName != null) {
@@ -48,7 +51,7 @@ fun Avatar(
                 text = text,
                 fontSize = (size * 0.4).sp,
                 fontWeight = FontWeight.SemiBold,
-                color = textColor,
+                color = finalTextColor,
                 textAlign = TextAlign.Center
             )
         }

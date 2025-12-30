@@ -11,7 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 // Preview removed for multiplatform
-import nl.tue.hci.feature.diner.ui.theme.BesteChefTheme
+import nl.tue.hci.core.ui.BesteChefTheme
 
 @Composable
 fun DinerScreen(

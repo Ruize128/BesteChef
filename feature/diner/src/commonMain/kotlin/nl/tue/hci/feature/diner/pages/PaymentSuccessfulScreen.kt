@@ -16,18 +16,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.ui.text.font.FontStyle
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 @Composable
 fun PaymentSuccessfulScreen(
     modifier: Modifier = Modifier,
     onDoneClick: () -> Unit = {}
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Column(
         modifier = modifier
             .fillMaxSize()
             .statusBarsPadding()
-            .background(Color.White)
+            .background(colors.background)
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -39,7 +41,7 @@ fun PaymentSuccessfulScreen(
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFE6FFF5)), // Green
+                .background(colors.statusConfirmedBackground), // Green
             contentAlignment = Alignment.Center
         ) {
             // Outer lighter green circle
@@ -47,7 +49,7 @@ fun PaymentSuccessfulScreen(
                 modifier = Modifier
                     .size(100.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF19A886)), // Lighter green
+                    .background(colors.dinerPrimary), // Lighter green
             )
             
             // Checkmark icon
@@ -55,7 +57,7 @@ fun PaymentSuccessfulScreen(
                 imageVector = Icons.Default.Check,
                 contentDescription = "Payment successful",
                 modifier = Modifier.size(60.dp),
-                tint = Color.White
+                tint = colors.textOnPrimary
             )
         }
         
@@ -67,7 +69,7 @@ fun PaymentSuccessfulScreen(
             style = MaterialTheme.typography.headlineLarge,
             fontStyle = FontStyle.Italic,
             fontWeight = FontWeight.Bold,
-            color = AppColors.TextPrimary
+            color = colors.textPrimary
         )
         
         Spacer(modifier = Modifier.weight(1f))
@@ -82,8 +84,8 @@ fun PaymentSuccessfulScreen(
                 .height(40.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = AppColors.DinerPrimary, // Green
-                contentColor = AppColors.TextPrimary,
+                containerColor = colors.dinerPrimary, // Green
+                contentColor = colors.textPrimary,
             )
         ) {
             Text(
@@ -91,7 +93,7 @@ fun PaymentSuccessfulScreen(
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic,
-                color = AppColors.TextPrimary,
+                color = colors.textPrimary,
             )
         }
     }

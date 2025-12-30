@@ -7,7 +7,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import nl.tue.hci.feature.chef.model.OfferMenuItem
 import nl.tue.hci.feature.chef.model.OrderDetails
 import nl.tue.hci.feature.chef.pages.OrderConfirmedScreen
-import nl.tue.hci.feature.chef.ui.theme.BesteChefTheme
+import nl.tue.hci.core.ui.BesteChefTheme
 
 @Preview(showBackground = true, name = "Order Confirmed Screen")
 @Composable

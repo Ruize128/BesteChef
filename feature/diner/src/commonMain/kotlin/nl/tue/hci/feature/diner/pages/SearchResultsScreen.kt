@@ -1,5 +1,5 @@
 package nl.tue.hci.feature.diner.pages
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -53,6 +53,8 @@ fun SearchResultsScreen(
     onBackClick: () -> Unit = {},
     onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     // Navigation state
     var showMenuScreen by rememberSaveable { mutableStateOf(false) }
     var selectedChefName by rememberSaveable { mutableStateOf<String?>(null) }
@@ -75,37 +77,37 @@ fun SearchResultsScreen(
     var selectedCuisine by rememberSaveable { mutableStateOf<String?>(null) }
     
     val chefs = listOf(
-        ChefResult(
-            name = "Chef Marius van Vlaanderen",
-            rating = 5.0f,
-            reviewCount = 2,
-            eventCount = 13,
-            canTravel = true,
-            availableOnDate = true,
-            quote = "Enhancing classic flavors with a touch of style",
-            imageColor = Color(0xFFB2E5D4) // Light mint green
-        ),
-        ChefResult(
-            name = "Chef Example Two",
-            rating = 4.8f,
-            reviewCount = 5,
-            eventCount = 20,
-            canTravel = true,
-            availableOnDate = true,
-            quote = "Creating memorable culinary experiences",
-            imageColor = Color(0xFFFFD4B2) // Light orange/peach
-        ),
-        ChefResult(
-            name = "Chef Example Three",
-            rating = 4.2f,
-            reviewCount = 12,
-            eventCount = 30,
-            canTravel = false,
-            availableOnDate = true,
-            quote = "Creating memorable culinary experiences",
-            imageColor = Color(0xFFB2E5D4),
+            ChefResult(
+                name = "Chef Marius van Vlaanderen",
+                rating = 5.0f,
+                reviewCount = 2,
+                eventCount = 13,
+                canTravel = true,
+                availableOnDate = true,
+                quote = "Enhancing classic flavors with a touch of style",
+                imageColor = colors.imagePlaceholder1 // Light mint green
+            ),
+            ChefResult(
+                name = "Chef Example Two",
+                rating = 4.8f,
+                reviewCount = 5,
+                eventCount = 20,
+                canTravel = true,
+                availableOnDate = true,
+                quote = "Creating memorable culinary experiences",
+                imageColor = colors.imagePlaceholder2 // Light orange/peach
+            ),
+            ChefResult(
+                name = "Chef Example Three",
+                rating = 4.2f,
+                reviewCount = 12,
+                eventCount = 30,
+                canTravel = false,
+                availableOnDate = true,
+                quote = "Creating memorable culinary experiences",
+                imageColor = colors.imagePlaceholder1,
+            )
         )
-    )
     
     if (showMenuScreen) {
         MenuScreen(
@@ -159,8 +161,8 @@ fun SearchResultsScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(20.dp),
-            color = Color(0xFFF6F6F6),
-            border = BorderStroke(width = 1.dp, color = Color.LightGray)
+            color = colors.surfaceVariant,
+            border = BorderStroke(width = 1.dp, color = colors.outline)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -204,7 +206,7 @@ fun SearchResultsScreen(
 
                 VerticalDivider(
                     modifier = Modifier.height(16.dp),
-                    color = Color.DarkGray
+                    color = colors.outline
                 )
 
                 // Date field
@@ -243,7 +245,7 @@ fun SearchResultsScreen(
 
                 VerticalDivider(
                     modifier = Modifier.height(16.dp),
-                    color = Color.DarkGray
+                    color = colors.outline
                 )
 
                 // Guests field
@@ -317,9 +319,9 @@ fun SearchResultsScreen(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(12.dp),
                 color = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
-                    AppColors.DinerPrimary
+                    colors.dinerPrimary
                 } else {
-                    MaterialTheme.colorScheme.surface
+                    colors.surface
                 },
                 onClick = { isFilterModalOpen = true }
             ) {
@@ -336,9 +338,9 @@ fun SearchResultsScreen(
                         contentDescription = "Filter",
                         modifier = Modifier.size(18.dp),
                         tint = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
-                            Color.White
+                            colors.textOnPrimary
                         } else {
-                            MaterialTheme.colorScheme.onSurface
+                            colors.textPrimary
                         }
                     )
                     Spacer(modifier = Modifier.width(6.dp))
@@ -346,7 +348,7 @@ fun SearchResultsScreen(
                         text = "Filter",
                         style = MaterialTheme.typography.bodySmall,
                         color = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
-                            Color.White
+                            colors.textOnPrimary
                         } else {
                             MaterialTheme.colorScheme.onSurface
                         }
@@ -415,6 +417,8 @@ fun FilterModal(
     selectedCuisine: String?,
     onCuisineSelected: (String?) -> Unit
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -521,7 +525,7 @@ fun FilterModal(
                         .align(Alignment.End),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = AppColors.DinerPrimary
+                        containerColor = colors.dinerPrimary
                     )
                 ) {
                     Text(

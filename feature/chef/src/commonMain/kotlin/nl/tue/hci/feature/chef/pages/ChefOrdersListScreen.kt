@@ -14,7 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.components.Avatar
 import nl.tue.hci.core.ui.components.StatusBadge
 import nl.tue.hci.feature.chef.model.Order
@@ -25,6 +25,8 @@ fun ChefOrdersListScreen(
     modifier: Modifier = Modifier,
     onOrderClick: (String) -> Unit = {} // orderId
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     // Hardcoded orders
     val orders = listOf(
         Order(
@@ -59,12 +61,12 @@ fun ChefOrdersListScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(colors.background)
     ) {
         // Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = Color.White,
+            color = colors.surface,
             shadowElevation = 2.dp
         ) {
             Row(
@@ -78,7 +80,7 @@ fun ChefOrdersListScreen(
                     text = "Orders",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
             }
         }
@@ -104,12 +106,14 @@ private fun OrderCard(
     order: Order,
     onClick: () -> Unit
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        color = AppColors.White,
+        color = colors.surface,
         shadowElevation = 2.dp
     ) {
         Row(
@@ -124,9 +128,9 @@ private fun OrderCard(
                 text = order.customerName.take(1).uppercase(),
                 size = 48,
                 backgroundColor = when (order.customerName) {
-                    "Sophie" -> Color(0xFFFFB3BA) // Light pink
-                    "Liam" -> Color(0xFFB3FFBA) // Light green
-                    else -> Color(0xFFB3BAFF) // Light blue
+                    "Sophie" -> colors.imagePlaceholder3 // Light pink
+                    "Liam" -> colors.imagePlaceholder1 // Light green
+                    else -> colors.dinerSecondary // Light blue/cyan
                 },
                 imageName = if (order.customerName == "Sophie") "sophie" else null
             )
@@ -140,12 +144,12 @@ private fun OrderCard(
                     text = order.customerName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 Text(
                     text = "${order.itemCount} items • ${order.orderDate}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
             }
             
@@ -157,27 +161,27 @@ private fun OrderCard(
                 StatusBadge(
                     text = order.status.name.replace("_", " "),
                     backgroundColor = when (order.status) {
-                        OrderStatus.PENDING -> AppColors.StatusNewBackground
-                        OrderStatus.CONFIRMED -> AppColors.StatusConfirmedBackground
-                        OrderStatus.IN_PROGRESS -> AppColors.ButtonGrey
-                        else -> AppColors.ButtonGrey
+                        OrderStatus.PENDING -> colors.statusNewBackground
+                        OrderStatus.CONFIRMED -> colors.statusConfirmedBackground
+                        OrderStatus.IN_PROGRESS -> colors.buttonBackground
+                        else -> colors.buttonBackground
                     },
                     textColor = when (order.status) {
-                        OrderStatus.PENDING -> AppColors.StatusNewText
-                        OrderStatus.CONFIRMED -> AppColors.StatusConfirmedText
-                        else -> AppColors.TextPrimary
+                        OrderStatus.PENDING -> colors.statusNewText
+                        OrderStatus.CONFIRMED -> colors.statusConfirmedText
+                        else -> colors.textPrimary
                     }
                 )
                 Text(
                     text = order.totalPrice,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 Text(
                     text = order.timeAgo,
                     style = MaterialTheme.typography.bodySmall,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
             }
         }

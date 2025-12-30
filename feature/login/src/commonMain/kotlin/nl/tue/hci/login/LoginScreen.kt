@@ -30,7 +30,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nl.tue.hci.core.model.UserRole
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 
 // @androidx.compose.ui.tooling.preview.Preview - removed for multiplatform
@@ -47,7 +47,7 @@ fun LoginScreenPreview() {
         
         LoginScreen(
             onLogin = {},
-            modifier = Modifier.background(color = Color.White),
+            modifier = Modifier,
             stateHolder = stateHolder
         )
     }
@@ -59,6 +59,7 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     stateHolder: LoginStateHolder? = null
 ) {
+    val colors = BesteChefThemeColors.current()
     val coroutineScope = rememberCoroutineScope()
     val loginStateHolder = stateHolder ?: remember { LoginStateHolder(coroutineScope) }
     val uiState by loginStateHolder.uiState.collectAsState()
@@ -114,14 +115,14 @@ fun LoginScreen(
             text = "BesteChef",
             style = MaterialTheme.typography.headlineLarge,
                 modifier = Modifier.padding(bottom = 8.dp),
-                color = AppColors.TextPrimary,
+                color = colors.textPrimary,
         )
         
         Text(
             text = "Match your ... (TODO)",
             style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(bottom = 32.dp),
-                color = AppColors.TextPrimary,
+                color = colors.textPrimary,
         )
         
         Spacer(modifier = Modifier.height(16.dp))
@@ -145,7 +146,7 @@ fun LoginScreen(
                 placeholder = { 
                     Text(
                         text = "email@domain.com",
-                        color = AppColors.TextSecondary
+                        color = colors.textSecondary
                     ) 
                 },
                 modifier = Modifier
@@ -153,10 +154,10 @@ fun LoginScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
-                    focusedBorderColor = AppColors.OutlineLight,
-                    unfocusedBorderColor = AppColors.OutlineLight,
+                    focusedContainerColor = colors.surface,
+                    unfocusedContainerColor = colors.surface,
+                    focusedBorderColor = colors.outline,
+                    unfocusedBorderColor = colors.outline,
                     errorBorderColor = MaterialTheme.colorScheme.error,
                 ),
                 singleLine = true,
@@ -192,7 +193,7 @@ fun LoginScreen(
                     placeholder = {
                         Text(
                             text = "password",
-                            color = AppColors.TextSecondary
+                            color = colors.textSecondary
                         )
                     },
                     modifier = Modifier
@@ -200,10 +201,10 @@ fun LoginScreen(
                         .height(56.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Color.White,
-                        unfocusedContainerColor = Color.White,
-                        focusedBorderColor = AppColors.OutlineLight,
-                        unfocusedBorderColor = AppColors.OutlineLight,
+                        focusedContainerColor = colors.surface,
+                        unfocusedContainerColor = colors.surface,
+                        focusedBorderColor = colors.outline,
+                        unfocusedBorderColor = colors.outline,
                         errorBorderColor = MaterialTheme.colorScheme.error,
                     ),
                     singleLine = true,
@@ -215,7 +216,7 @@ fun LoginScreen(
                             Icon(
                                 imageVector = if (uiState.passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                                 contentDescription = if (uiState.passwordVisible) "Hide password" else "Show password",
-                                tint = AppColors.TextSecondary
+                                tint = colors.textSecondary
                             )
                         }
                     }
@@ -232,20 +233,20 @@ fun LoginScreen(
                     .height(40.dp),
                 shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = AppColors.DinerPrimary
+                containerColor = colors.dinerPrimary
                 ),
                 enabled = !uiState.isLoading
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
-                        color = AppColors.TextPrimary,
+                        color = colors.textPrimary,
                         strokeWidth = 2.dp
                     )
                 } else {
                     Text(
                         text = "Continue",
-                        color = AppColors.TextPrimary,
+                        color = colors.textPrimary,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -261,17 +262,17 @@ fun LoginScreen(
             ) {
                 HorizontalDivider(
                     modifier = Modifier.weight(1f),
-                    color = AppColors.OutlineLight
+                    color = colors.outline
                 )
                 Text(
                     text = "or",
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.Gray,
+                    color = colors.textSecondary,
                     fontSize = 14.sp
                 )
                 HorizontalDivider(
                     modifier = Modifier.weight(1f),
-                    color = AppColors.OutlineLight,
+                    color = colors.outline,
                 )
             }
 
@@ -282,7 +283,7 @@ fun LoginScreen(
                 onClick = { loginStateHolder.onGoogleLoginClick() },
                 text = "Continue with Google",
                 icon = "G",
-                iconColor = Color(0xFF4285F4),
+                iconColor = colors.dinerPrimary, // Using theme color instead of hardcoded Google blue
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
@@ -294,7 +295,7 @@ fun LoginScreen(
                 onClick = { loginStateHolder.onAppleLoginClick() },
                 text = "Continue with Apple",
                 icon = "🍎",
-                iconColor = Color.Black,
+                iconColor = colors.textPrimary,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
@@ -318,13 +319,15 @@ fun SocialLoginButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     OutlinedButton(
         onClick = onClick,
         modifier = modifier.height(40.dp),
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = AppColors.ButtonGrey,
-            contentColor = AppColors.TextPrimary,
+            containerColor = colors.buttonBackground,
+            contentColor = colors.textPrimary,
         ),
         border = null,
         enabled = enabled
@@ -354,7 +357,7 @@ fun SocialLoginButton(
                 ) {
                     Text(
                         text = "G",
-                        color = Color.White,
+                        color = colors.textOnPrimary,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -371,7 +374,7 @@ fun SocialLoginButton(
                 text = text,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black
+                color = colors.textPrimary
             )
         }
     }
@@ -383,11 +386,13 @@ fun RoleSelector(
     onRoleSelected: (UserRole) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Row(
         modifier = modifier
             .height(40.dp)
             .background(
-                color = AppColors.ButtonGrey,
+                color = colors.buttonBackground,
                 shape = RoundedCornerShape(20.dp)
             ),
         horizontalArrangement = Arrangement.spacedBy(0.dp)
@@ -399,7 +404,7 @@ fun RoleSelector(
                 .fillMaxHeight()
                 .background(
                     color = if (selectedRole == UserRole.CHEF) {
-                        AppColors.ChefPrimary
+                        colors.chefPrimary
                     } else {
                         Color.Transparent
                     },
@@ -414,9 +419,9 @@ fun RoleSelector(
             Text(
                 text = "Chef",
                 color = if (selectedRole == UserRole.CHEF) {
-                    Color.White
+                    colors.textOnPrimary
                 } else {
-                    AppColors.TextSecondary
+                    colors.textSecondary
                 },
                 fontSize = 16.sp,
                 fontWeight = if (selectedRole == UserRole.CHEF) FontWeight.Medium else FontWeight.Normal
@@ -430,7 +435,7 @@ fun RoleSelector(
                 .fillMaxHeight()
                 .background(
                     color = if (selectedRole == UserRole.DINER) {
-                        AppColors.DinerPrimary
+                        colors.dinerPrimary
                     } else {
                         Color.Transparent
                     },
@@ -445,9 +450,9 @@ fun RoleSelector(
             Text(
                 text = "Diner",
                 color = if (selectedRole == UserRole.DINER) {
-                    Color.White
+                    colors.textOnPrimary
                 } else {
-                    AppColors.TextSecondary
+                    colors.textSecondary
                 },
                 fontSize = 16.sp,
                 fontWeight = if (selectedRole == UserRole.DINER) FontWeight.Medium else FontWeight.Normal
@@ -460,6 +465,8 @@ fun RoleSelector(
 fun LegalDisclaimer(
     modifier: Modifier = Modifier
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     val annotatedText = buildAnnotatedString {
         append("By clicking continue, you agree to our ")
         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
@@ -478,7 +485,7 @@ fun LegalDisclaimer(
 //            // You can add navigation logic here
 //        },
         style = MaterialTheme.typography.bodySmall.copy(
-            color = Color.Gray,
+            color = colors.textSecondary,
             textAlign = TextAlign.Center,
             fontSize = 12.sp
         ),
@@ -491,6 +498,7 @@ fun LegalDisclaimer(
 fun ConfirmPasswordInput(
     stateHolder: LoginStateHolder
 ) {
+    val colors = BesteChefThemeColors.current()
     val uiState by stateHolder.uiState.collectAsState()
 
     // Password field
@@ -500,7 +508,7 @@ fun ConfirmPasswordInput(
         placeholder = {
             Text(
                 text = "password",
-                color = AppColors.TextSecondary
+                color = colors.textSecondary
             )
         },
         modifier = Modifier
@@ -508,10 +516,10 @@ fun ConfirmPasswordInput(
             .height(56.dp),
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            focusedBorderColor = AppColors.OutlineLight,
-            unfocusedBorderColor = AppColors.OutlineLight,
+            focusedContainerColor = colors.surface,
+            unfocusedContainerColor = colors.surface,
+            focusedBorderColor = colors.outline,
+            unfocusedBorderColor = colors.outline,
             errorBorderColor = MaterialTheme.colorScheme.error,
         ),
         singleLine = true,
@@ -523,7 +531,7 @@ fun ConfirmPasswordInput(
                 Icon(
                     imageVector = if (uiState.passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                     contentDescription = if (uiState.passwordVisible) "Hide password" else "Show password",
-                    tint = AppColors.TextSecondary
+                    tint = colors.textSecondary
                 )
             }
         }
@@ -538,7 +546,7 @@ fun ConfirmPasswordInput(
         placeholder = {
             Text(
                 text = "confirm password...",
-                color = AppColors.TextSecondary
+                color = colors.textSecondary
             )
         },
         modifier = Modifier
@@ -546,10 +554,10 @@ fun ConfirmPasswordInput(
             .height(56.dp),
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            focusedBorderColor = AppColors.OutlineLight,
-            unfocusedBorderColor = AppColors.OutlineLight,
+            focusedContainerColor = colors.surface,
+            unfocusedContainerColor = colors.surface,
+            focusedBorderColor = colors.outline,
+            unfocusedBorderColor = colors.outline,
             errorBorderColor = MaterialTheme.colorScheme.error,
         ),
         singleLine = true,
@@ -561,7 +569,7 @@ fun ConfirmPasswordInput(
                 Icon(
                     imageVector = if (uiState.confirmPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                     contentDescription = if (uiState.confirmPasswordVisible) "Hide password" else "Show password",
-                    tint = AppColors.TextSecondary
+                    tint = colors.textSecondary
                 )
             }
         }

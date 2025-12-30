@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.feature.chef.pages.ChefChatHistoryScreen
-import nl.tue.hci.feature.chef.ui.theme.BesteChefTheme
+import nl.tue.hci.core.ui.BesteChefTheme
 
 
 @Composable

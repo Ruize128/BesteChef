@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 @Composable
 fun FilterButton(
@@ -23,11 +23,13 @@ fun FilterButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Box(
         modifier = modifier
             .height(24.dp)
             .background(
-                if (isSelected) AppColors.ChefPrimary else AppColors.ButtonGrey,
+                if (isSelected) colors.chefPrimary else colors.buttonBackground,
                 RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onClick)
@@ -38,7 +40,7 @@ fun FilterButton(
             fontSize = 12.sp,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             fontStyle = if (isSelected) FontStyle.Italic else FontStyle.Normal,
-            color = if (isSelected) Color.White else AppColors.TextPrimary,
+            color = if (isSelected) colors.textOnPrimary else colors.textPrimary,
             modifier = Modifier
                 .align(alignment = Alignment.Center)
         )

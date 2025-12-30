@@ -1,5 +1,5 @@
 package nl.tue.hci.feature.diner.pages
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -64,37 +64,41 @@ private fun MenuContent(
     onBackClick: () -> Unit = {},
     onChatClick: () -> Unit = {}
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     // Hardcoded menu items
-    val menuItems = listOf(
-        MenuItem(
-            title = "Grilled Mackerel with Miso",
-            description = "Sea salt, spring onion, yuzu dressing.",
-            serves = "2-3",
-            prepTime = "45 min prep",
-            imageColor = Color(0xFFB2E5D4) // Light green
-        ),
-        MenuItem(
-            title = "Yuzu Mousse (Dessert)",
-            description = "Light citrus mousse with candied peel.",
-            serves = "6",
-            prepTime = "30 min prep",
-            imageColor = Color(0xFFFFD4B2) // Light orange/peach
-        ),
-        MenuItem(
-            title = "Wagyu Beef Steak",
-            description = "Premium wagyu with truffle butter and seasonal vegetables.",
-            serves = "2",
-            prepTime = "60 min prep",
-            imageColor = Color(0xFFE8D5C4) // Light beige
-        ),
-        MenuItem(
-            title = "Sushi Platter",
-            description = "Assorted fresh sushi with wasabi and pickled ginger.",
-            serves = "4-5",
-            prepTime = "90 min prep",
-            imageColor = Color(0xFFB2E5D4) // Light green
+    val menuItems = remember(colors) {
+        listOf(
+            MenuItem(
+                title = "Grilled Mackerel with Miso",
+                description = "Sea salt, spring onion, yuzu dressing.",
+                serves = "2-3",
+                prepTime = "45 min prep",
+                imageColor = colors.imagePlaceholder1 // Light green
+            ),
+            MenuItem(
+                title = "Yuzu Mousse (Dessert)",
+                description = "Light citrus mousse with candied peel.",
+                serves = "6",
+                prepTime = "30 min prep",
+                imageColor = colors.imagePlaceholder2 // Light orange/peach
+            ),
+            MenuItem(
+                title = "Wagyu Beef Steak",
+                description = "Premium wagyu with truffle butter and seasonal vegetables.",
+                serves = "2",
+                prepTime = "60 min prep",
+                imageColor = colors.imagePlaceholder4 // Light beige
+            ),
+            MenuItem(
+                title = "Sushi Platter",
+                description = "Assorted fresh sushi with wasabi and pickled ginger.",
+                serves = "4-5",
+                prepTime = "90 min prep",
+                imageColor = colors.imagePlaceholder1 // Light green
+            )
         )
-    )
+    }
 
     Column(
         modifier = modifier
@@ -166,12 +170,14 @@ fun MenuItemCard(
     menuItem: MenuItem,
     onAskClick: () -> Unit = {}
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = colors.surface
         )
     ) {
         Column(
@@ -223,7 +229,7 @@ fun MenuItemCard(
                             modifier = Modifier
                                 .size(6.dp)
                                 .clip(RoundedCornerShape(50))
-                                .background(Color.DarkGray.copy(alpha = 0.6f))
+                                .background(colors.textPrimary.copy(alpha = 0.6f))
                         )
                             }
                         }
@@ -316,8 +322,8 @@ fun MenuItemCard(
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = AppColors.DinerPrimary,
-                            contentColor = AppColors.TextPrimary
+                            containerColor = colors.dinerPrimary,
+                            contentColor = colors.textPrimary
                         )
                     ) {
                         Text(

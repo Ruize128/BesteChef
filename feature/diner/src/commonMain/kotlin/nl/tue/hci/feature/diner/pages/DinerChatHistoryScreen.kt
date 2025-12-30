@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.components.Avatar
 import nl.tue.hci.feature.diner.DinerChatHistoryItem
 
@@ -23,6 +23,8 @@ fun DinerChatHistoryScreen(
     modifier: Modifier = Modifier,
     onChatClick: (String) -> Unit = {} // chefName
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     // Hardcoded chat history data (chefs the diner has chatted with)
     val chatHistory = listOf(
         DinerChatHistoryItem(
@@ -44,12 +46,12 @@ fun DinerChatHistoryScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(colors.background)
     ) {
         // Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = Color.White,
+            color = colors.surface,
             shadowElevation = 2.dp
         ) {
             Box(
@@ -61,7 +63,7 @@ fun DinerChatHistoryScreen(
                     text = "Chats",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary,
+                    color = colors.textPrimary,
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
             }
@@ -90,12 +92,14 @@ private fun ChatHistoryItemCard(
     chatItem: DinerChatHistoryItem,
     onClick: () -> Unit
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(20.dp),
-        color = Color.White,
+        color = colors.surface,
         shadowElevation = 1.dp
     ) {
         Row(
@@ -110,10 +114,10 @@ private fun ChatHistoryItemCard(
                 text = chatItem.chefName.take(1).uppercase(),
                 size = 56,
                 backgroundColor = when (chatItem.chefName) {
-                    "Sophie" -> Color(0xFFFFB3BA) // Light pink
-                    "Chef Marco" -> Color(0xFFB3FFBA) // Light green
-                    "Chef Elena" -> Color(0xFFB3BAFF) // Light blue
-                    else -> Color(0xFFFFD4B2) // Light orange
+                    "Sophie" -> colors.imagePlaceholder3 // Light pink
+                    "Chef Marco" -> colors.imagePlaceholder1 // Light green
+                    "Chef Elena" -> colors.dinerSecondary // Light blue/cyan
+                    else -> colors.imagePlaceholder2 // Light orange
                 },
                 imageName = if (chatItem.chefName == "Chef Ichiraku") "ichiraku" else null
             )
@@ -132,13 +136,13 @@ private fun ChatHistoryItemCard(
                         text = chatItem.chefName,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = AppColors.TextPrimary
+                        color = colors.textPrimary
                     )
                     
                     Text(
                         text = chatItem.timestamp,
                         style = MaterialTheme.typography.bodySmall,
-                        color = AppColors.TextSecondary
+                        color = colors.textSecondary
                     )
                 }
                 
@@ -150,7 +154,7 @@ private fun ChatHistoryItemCard(
                     Text(
                         text = chatItem.lastMessage,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = AppColors.TextSecondary,
+                        color = colors.textSecondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
@@ -159,7 +163,7 @@ private fun ChatHistoryItemCard(
                     if (chatItem.unreadCount > 0) {
                         Surface(
                             shape = RoundedCornerShape(20.dp),
-                            color = AppColors.DinerPrimary, // Use diner primary color
+                            color = colors.dinerPrimary, // Use diner primary color
                             modifier = Modifier.padding(start = 8.dp)
                         ) {
                             Text(
@@ -167,7 +171,7 @@ private fun ChatHistoryItemCard(
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = colors.textOnPrimary
                             )
                         }
                     }

@@ -16,13 +16,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.core.model.ChatMessage
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.rememberImagePainter
 
 @Composable
 fun ChatBubble(
     message: ChatMessage,
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (message.isFromMe) Arrangement.End else Arrangement.Start
@@ -46,7 +48,7 @@ fun ChatBubble(
                 // Image preview message - use yuzu_mousse.png
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFFE0E0E0),
+                    color = colors.outline,
                     modifier = Modifier
                         .width(200.dp)
                         .height(150.dp)
@@ -62,7 +64,7 @@ fun ChatBubble(
                     text = message.imagePreview,
                     modifier = Modifier.padding(top = 4.dp),
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = colors.textTertiary
                 )
             } else if (message.text.isNotEmpty()) {
                 // Text message
@@ -75,7 +77,7 @@ fun ChatBubble(
                         text = message.text,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = AppColors.TextPrimary,
+                        color = colors.textPrimary,
                     )
                 }
             }
@@ -85,7 +87,7 @@ fun ChatBubble(
                 text = message.timestamp,
                 modifier = Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp),
                 style = MaterialTheme.typography.bodySmall,
-                color = AppColors.TextSecondary,
+                color = colors.textSecondary,
                 textAlign = if (message.isFromMe) TextAlign.End else TextAlign.Start
             )
         }

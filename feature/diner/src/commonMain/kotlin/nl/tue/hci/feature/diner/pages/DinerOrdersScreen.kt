@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.components.Avatar
 import nl.tue.hci.core.ui.components.StatusBadge
 import nl.tue.hci.feature.diner.DinerOrder
@@ -57,6 +57,8 @@ fun DinerOrdersScreen(
             }
         )
     } else {
+    val colors = BesteChefThemeColors.current()
+    
     // Hardcoded orders for diner
     val orders = listOf(
         DinerOrder(
@@ -91,12 +93,12 @@ fun DinerOrdersScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(colors.background)
     ) {
         // Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = Color.White,
+            color = colors.surface,
             shadowElevation = 2.dp
         ) {
             Row(
@@ -110,7 +112,7 @@ fun DinerOrdersScreen(
                     text = "Orders",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
             }
         }
@@ -141,12 +143,14 @@ private fun OrderCard(
     order: DinerOrder,
     onClick: () -> Unit
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        color = AppColors.White,
+        color = colors.surface,
         shadowElevation = 2.dp
     ) {
         Row(
@@ -161,9 +165,9 @@ private fun OrderCard(
                 text = order.chefName.take(1).uppercase(),
                 size = 48,
                 backgroundColor = when (order.chefName) {
-                    "Sophie" -> Color(0xFFFFB3BA) // Light pink
-                    "Chef Marco" -> Color(0xFFB3FFBA) // Light green
-                    else -> Color(0xFFB3BAFF) // Light blue
+                    "Sophie" -> colors.imagePlaceholder3 // Light pink
+                    "Chef Marco" -> colors.imagePlaceholder1 // Light green
+                    else -> colors.dinerSecondary // Light blue/cyan
                 },
                 imageName = if (order.chefName == "Chef Ichiraku") "ichiraku" else null
             )
@@ -177,12 +181,12 @@ private fun OrderCard(
                     text = order.chefName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 Text(
                     text = "${order.itemCount} items • ${order.orderDate}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
             }
             
@@ -194,28 +198,28 @@ private fun OrderCard(
                 StatusBadge(
                     text = order.status.name.replace("_", " "),
                     backgroundColor = when (order.status) {
-                        DinerOrderStatus.CONFIRMED -> AppColors.StatusConfirmedBackground
-                        DinerOrderStatus.COMPLETED -> AppColors.StatusConfirmedBackground
-                        DinerOrderStatus.PENDING -> AppColors.StatusNewBackground
-                        else -> AppColors.ButtonGrey
+                        DinerOrderStatus.CONFIRMED -> colors.statusConfirmedBackground
+                        DinerOrderStatus.COMPLETED -> colors.statusConfirmedBackground
+                        DinerOrderStatus.PENDING -> colors.statusNewBackground
+                        else -> colors.buttonBackground
                     },
                     textColor = when (order.status) {
-                        DinerOrderStatus.CONFIRMED -> AppColors.StatusConfirmedText
-                        DinerOrderStatus.COMPLETED -> AppColors.StatusConfirmedText
-                        DinerOrderStatus.PENDING -> AppColors.StatusNewText
-                        else -> AppColors.TextPrimary
+                        DinerOrderStatus.CONFIRMED -> colors.statusConfirmedText
+                        DinerOrderStatus.COMPLETED -> colors.statusConfirmedText
+                        DinerOrderStatus.PENDING -> colors.statusNewText
+                        else -> colors.textPrimary
                     }
                 )
                 Text(
                     text = order.totalPrice,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 Text(
                     text = order.timeAgo,
                     style = MaterialTheme.typography.bodySmall,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
             }
         }

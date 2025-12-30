@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.runtime.remember
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.feature.diner.BookingSummaryDetails
@@ -46,21 +46,23 @@ fun BookingSummaryScreen(
         )
     }
     
-    val menuItems = remember {
+    val colors = BesteChefThemeColors.current()
+    
+    val menuItems = remember(colors) {
         listOf(
             BookingSummaryMenuItem(
                 id = "1",
                 title = "Grilled Mackerel",
                 description = "Serves 2-3 • Contains: Fish",
                 price = "€45",
-                imageColor = Color(0xFFB2E5D4) // Light green
+                imageColor = colors.imagePlaceholder1 // Light green
             ),
             BookingSummaryMenuItem(
                 id = "2",
                 title = "Yuzu Mousse",
                 description = "Serves 6 • Can be nut-free",
                 price = "€48",
-                imageColor = Color(0xFFFFD4B2) // Light orange
+                imageColor = colors.imagePlaceholder2 // Light orange
             )
         )
     }
@@ -82,12 +84,12 @@ fun BookingSummaryScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5)) // Light gray background
+            .background(colors.surfaceVariant) // Light gray background
     ) {
         // Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = Color.White,
+            color = colors.surface,
             shadowElevation = 0.dp
         ) {
             Row(
@@ -101,7 +103,7 @@ fun BookingSummaryScreen(
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.Black
+                        tint = colors.textPrimary
                     )
                 }
                 
@@ -109,7 +111,7 @@ fun BookingSummaryScreen(
                     text = "Booking summary",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary,
+                    color = colors.textPrimary,
                     modifier = Modifier.weight(1f)
                 )
                 
@@ -132,7 +134,7 @@ fun BookingSummaryScreen(
                         .fillMaxWidth()
                         .height(40.dp),
                     shape = RoundedCornerShape(20.dp),
-                    color = Color.White, // Light grey
+                    color = colors.surface, // Light grey
                     shadowElevation = 0.dp,
                 ) {
                     Box(
@@ -144,7 +146,7 @@ fun BookingSummaryScreen(
                         Text(
                             text = "${bookingDetails.location} • ${bookingDetails.date} • ${bookingDetails.guests} guests",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = AppColors.TextSecondary,
+                            color = colors.textSecondary,
                             textAlign = TextAlign.Start,
                         )
                     }
@@ -178,7 +180,7 @@ fun BookingSummaryScreen(
                     style = MaterialTheme.typography.titleMedium,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary,
+                    color = colors.textPrimary,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
             }
@@ -203,8 +205,8 @@ fun BookingSummaryScreen(
                 .height(40.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = AppColors.DinerPrimary,
-                contentColor = AppColors.TextPrimary
+                containerColor = colors.dinerPrimary,
+                contentColor = colors.textPrimary
             )
         ) {
             Text(
@@ -212,7 +214,7 @@ fun BookingSummaryScreen(
                 style = MaterialTheme.typography.titleMedium,
                 fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.Bold,
-                color = AppColors.TextPrimary
+                color = colors.textPrimary
             )
         }
     }
@@ -225,10 +227,12 @@ private fun DateAndGuestsCard(
     onDateEditClick: () -> Unit,
     onGuestsChangeClick: () -> Unit
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        color = Color.White, // Pure white card
+        color = colors.surface, // Pure white card
         shadowElevation = 0.dp
     ) {
         Column(
@@ -251,19 +255,19 @@ private fun DateAndGuestsCard(
                         text = "Date & time",
                         style = MaterialTheme.typography.titleMedium,
                         fontStyle = FontStyle.Italic,
-                        color = AppColors.TextPrimary,
+                        color = colors.textPrimary,
                     )
                     Text(
                         text = date,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = AppColors.TextSecondary,
+                        color = colors.textSecondary,
                     )
                 }
                 
                 TextButton(onClick = onDateEditClick) {
                     Text(
                         text = "Edit",
-                        color = AppColors.DinerPrimary
+                        color = colors.dinerPrimary
                     )
                 }
             }
@@ -282,19 +286,19 @@ private fun DateAndGuestsCard(
                         text = "Guests",
                         style = MaterialTheme.typography.titleMedium,
                         fontStyle = FontStyle.Italic,
-                        color = AppColors.TextPrimary,
+                        color = colors.textPrimary,
                     )
                     Text(
                         text = guests,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = AppColors.TextSecondary,
+                        color = colors.textSecondary,
                     )
                 }
                 
                 TextButton(onClick = onGuestsChangeClick) {
                     Text(
                         text = "Change",
-                        color = AppColors.DinerPrimary
+                        color = colors.dinerPrimary
                     )
                 }
             }
@@ -309,10 +313,12 @@ private fun BookingSection(
     onEditClick: () -> Unit,
     editButtonText: String = "Edit"
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        color = Color.White, // Pure white card
+        color = colors.surface, // Pure white card
         shadowElevation = 0.dp
     ) {
         Row(
@@ -330,19 +336,19 @@ private fun BookingSection(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     fontStyle = FontStyle.Italic,
-                    color = AppColors.TextPrimary,
+                    color = colors.textPrimary,
                 )
                 Text(
                     text = value,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextSecondary,
+                    color = colors.textSecondary,
                 )
             }
             
             TextButton(onClick = onEditClick) {
                 Text(
                     text = editButtonText,
-                    color = AppColors.DinerPrimary
+                    color = colors.dinerPrimary
                 )
             }
         }
@@ -351,10 +357,12 @@ private fun BookingSection(
 
 @Composable
 private fun MenuItemCard(item: BookingSummaryMenuItem) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        color = Color.White, // Pure white card
+        color = colors.surface, // Pure white card
         shadowElevation = 0.dp
     ) {
         Row(
@@ -397,12 +405,12 @@ private fun MenuItemCard(item: BookingSummaryMenuItem) {
                     text = item.title,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 Text(
                     text = item.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
             }
             
@@ -411,7 +419,7 @@ private fun MenuItemCard(item: BookingSummaryMenuItem) {
                 text = item.price,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = AppColors.TextPrimary
+                color = colors.textPrimary
             )
         }
     }
@@ -419,10 +427,12 @@ private fun MenuItemCard(item: BookingSummaryMenuItem) {
 
 @Composable
 private fun PriceSummarySection(priceSummary: BookingPriceSummary) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = Color.White,
+        color = colors.surface,
         shadowElevation = 0.dp
     ) {
         Column(
@@ -436,7 +446,7 @@ private fun PriceSummarySection(priceSummary: BookingPriceSummary) {
                 style = MaterialTheme.typography.titleMedium,
                 fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.Bold,
-                color = AppColors.TextPrimary,
+                color = colors.textPrimary,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             
@@ -447,13 +457,13 @@ private fun PriceSummarySection(priceSummary: BookingPriceSummary) {
                 Text(
                     text = "Subtotal",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
                 Text(
                     text = priceSummary.subtotal,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
             }
             
@@ -464,13 +474,13 @@ private fun PriceSummarySection(priceSummary: BookingPriceSummary) {
                 Text(
                     text = "Service fee",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
                 Text(
                     text = priceSummary.serviceFee,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
             }
 
@@ -479,7 +489,7 @@ private fun PriceSummarySection(priceSummary: BookingPriceSummary) {
                     .fillMaxWidth()
                     .height(1.dp)
                     .background(
-                        color = Color(0xFFF8F8F8),
+                        color = colors.surfaceVariant,
                     )
             )
             
@@ -493,13 +503,13 @@ private fun PriceSummarySection(priceSummary: BookingPriceSummary) {
                     style = MaterialTheme.typography.titleMedium,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 Text(
                     text = "${priceSummary.depositAmount} (${priceSummary.depositPercentage}%)",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.DinerPrimary
+                    color = colors.dinerPrimary
                 )
             }
         }

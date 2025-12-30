@@ -13,21 +13,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 @Composable
 fun Tag(
     text: String,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = AppColors.ButtonGrey,
-    textColor: Color = AppColors.TextPrimary
+    backgroundColor: Color? = null,
+    textColor: Color? = null
 ) {
+    val colors = BesteChefThemeColors.current()
+    val finalBackgroundColor = backgroundColor ?: colors.buttonBackground
+    val finalTextColor = textColor ?: colors.textPrimary
     Box(
         modifier = modifier
             .height(24.dp)
             .wrapContentWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(backgroundColor)
+            .background(finalBackgroundColor)
     ) {
         Text(
             text = text,
@@ -37,7 +40,7 @@ fun Tag(
             ,
             fontSize = 12.sp,
             fontWeight = FontWeight.Medium,
-            color = textColor,
+            color = finalTextColor,
             textAlign = TextAlign.Center,
         )
     }

@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.components.ChatBubble
 import nl.tue.hci.core.model.ChatMessage
 
@@ -37,9 +37,11 @@ fun DinerChatScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {}
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     // Hardcoded initial messages
     // For diner chat: isFromMe=false = chef, isFromMe=true = diner
-    val initialMessages = remember {
+    val initialMessages = remember(colors) {
         listOf(
             ChatMessage(
                 text = "Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo.",
@@ -47,8 +49,8 @@ fun DinerChatScreen(
                 isFromMe = false, // From chef
                 avatarText = "DH",
                 avatarImageName = "ichiraku", // Chef's avatar
-                avatarColor = AppColors.ChefSecondary,
-                bubbleColor = AppColors.ChefPrimary, // Chef's bubble color
+                avatarColor = colors.chefSecondary,
+                bubbleColor = colors.chefPrimary, // Chef's bubble color
             ),
             ChatMessage(
                 text = "",
@@ -57,8 +59,8 @@ fun DinerChatScreen(
                 imagePreview = "Yuzu mousse (preview)",
                 avatarText = "DH",
                 avatarImageName = "ichiraku", // Chef's avatar
-                avatarColor = AppColors.ChefSecondary,
-                bubbleColor = AppColors.ChefPrimary, // Chef's bubble color
+                avatarColor = colors.chefSecondary,
+                bubbleColor = colors.chefPrimary, // Chef's bubble color
             ),
             ChatMessage(
                 text = "Thanks — yes please, that would help.",
@@ -66,8 +68,8 @@ fun DinerChatScreen(
                 isFromMe = true, // From diner
                 avatarText = "ME",
                 avatarImageName = "sophie", // Diner's avatar
-                avatarColor = AppColors.DinerSecondary,
-                bubbleColor = AppColors.DinerPrimary, // Diner's bubble color
+                avatarColor = colors.dinerSecondary,
+                bubbleColor = colors.dinerPrimary, // Diner's bubble color
             )
         )
     }
@@ -86,14 +88,14 @@ fun DinerChatScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(colors.background)
     ) {
         // Header with status bar padding (full-screen)
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
                 .statusBarsPadding(),
-            color = Color.White,
+            color = colors.surface,
             shadowElevation = 2.dp
         ) {
             Row(
@@ -110,7 +112,7 @@ fun DinerChatScreen(
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.Black
+                        tint = colors.textPrimary
                     )
                 }
                 
@@ -122,12 +124,12 @@ fun DinerChatScreen(
                         text = "Chat with $chefName",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = colors.textPrimary
                     )
                     Text(
                         text = "Online",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF4CAF50)
+                        color = colors.onlineIndicator
                     )
                 }
                 
@@ -158,7 +160,7 @@ fun DinerChatScreen(
         // Message input area
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = Color.White,
+            color = colors.surface,
             shadowElevation = 4.dp
         ) {
             Row(
@@ -177,7 +179,7 @@ fun DinerChatScreen(
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Attach",
-                        tint = Color.Gray,
+                        tint = colors.textTertiary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -190,15 +192,15 @@ fun DinerChatScreen(
                     placeholder = {
                         Text(
                             text = "Write a message...",
-                            color = Color.Gray
+                            color = colors.textTertiary
                         )
                     },
                     shape = RoundedCornerShape(20.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = Color.Transparent,
                         unfocusedBorderColor = Color.Transparent,
-                        focusedContainerColor = Color(0xFFF5F5F5),
-                        unfocusedContainerColor = Color(0xFFF5F5F5)
+                        focusedContainerColor = colors.surfaceVariant,
+                        unfocusedContainerColor = colors.surfaceVariant
                     ),
                     singleLine = true
                 )
@@ -213,8 +215,8 @@ fun DinerChatScreen(
                                 isFromMe = true, // From diner
                                 avatarText = "ME",
                                 avatarImageName = "sophie", // Diner's avatar
-                                avatarColor = AppColors.DinerSecondary,
-                                bubbleColor = AppColors.DinerPrimary, // Diner's bubble color
+                                avatarColor = colors.dinerSecondary,
+                                bubbleColor = colors.dinerPrimary, // Diner's bubble color
                             )
                             messages.add(newMessage)
                             messageText = ""
@@ -223,13 +225,13 @@ fun DinerChatScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(AppColors.DinerPrimary),
+                        .background(colors.dinerPrimary),
                     enabled = messageText.isNotBlank()
                 ) {
                     Icon(
                         imageVector = Icons.Default.Send,
                         contentDescription = "Send",
-                        tint = Color.White,
+                        tint = colors.textOnPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -240,19 +242,21 @@ fun DinerChatScreen(
 
 @Composable
 fun DateSeparator(dateText: String) {
+    val colors = BesteChefThemeColors.current()
+    
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
         Surface(
             shape = RoundedCornerShape(12.dp),
-            color = Color(0xFFE0E0E0)
+            color = colors.outline
         ) {
             Text(
                 text = dateText,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
+                color = colors.textTertiary
             )
         }
     }

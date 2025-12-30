@@ -1,5 +1,5 @@
 package nl.tue.hci.feature.diner.components
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -108,12 +108,14 @@ fun ChefResultCard(
     chef: ChefResult,
     onButtonClick: () -> Unit = {}
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = colors.surface
         )
     ) {
         Column(
@@ -171,7 +173,7 @@ fun ChefResultCard(
                                         modifier = Modifier
                                             .size(6.dp)
                                             .clip(RoundedCornerShape(50))
-                                            .background(Color.White.copy(alpha = 0.6f))
+                                            .background(colors.surface.copy(alpha = 0.6f))
                                     )
                                 }
                             }
@@ -202,7 +204,7 @@ fun ChefResultCard(
                         imageVector = Icons.Default.Star,
                         contentDescription = "Rating",
                         modifier = Modifier.size(18.dp),
-                        tint = Color(0xFFFFD700)
+                        tint = colors.favoriteIcon
                     )
                     Text(
                         text = "${chef.rating}",
@@ -226,7 +228,7 @@ fun ChefResultCard(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = "Can travel",
                             modifier = Modifier.size(16.dp),
-                            tint = Color(0xFF4CAF50)
+                            tint = colors.onlineIndicator
                         )
                         Text(
                             text = "Can travel to your location",
@@ -260,8 +262,8 @@ fun ChefResultCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = AppColors.DinerPrimary,
-                        contentColor = AppColors.TextPrimary,
+                        containerColor = colors.dinerPrimary,
+                        contentColor = colors.textPrimary,
                     )
                 ) {
                     Text(

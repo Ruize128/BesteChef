@@ -21,13 +21,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.components.Avatar
 import nl.tue.hci.core.ui.components.FilterButton
 import nl.tue.hci.core.ui.components.StatusBadge
 import nl.tue.hci.feature.chef.model.BookingInquiry
 import nl.tue.hci.feature.chef.model.BookingStatus
-import nl.tue.hci.feature.chef.ui.theme.BesteChefTheme
+import nl.tue.hci.core.ui.BesteChefTheme
 
 
 @Composable
@@ -63,17 +63,18 @@ fun ChefHomeScreen(
     )
     
     var selectedFilter by remember { mutableStateOf("All") }
+    val colors = BesteChefThemeColors.current()
     
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(colors.background)
     ) {
         // Fixed header section
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(colors.surface)
         ) {
             // Header with avatar and title
             Box(
@@ -85,7 +86,7 @@ fun ChefHomeScreen(
                 Avatar(
                     text = "MC",
                     size = 40,
-                    backgroundColor = AppColors.ChefPrimary,
+                    backgroundColor = colors.chefPrimary,
                     imageName = "ichiraku", // Chef's avatar image
                     modifier = Modifier
                         .padding(start = 0.dp)
@@ -96,7 +97,7 @@ fun ChefHomeScreen(
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.ExtraBold,
                     fontStyle = FontStyle.Italic,
-                    color = AppColors.TextPrimary,
+                    color = colors.textPrimary,
                     modifier = Modifier.align(alignment = Alignment.Center)
                 )
             }
@@ -107,7 +108,7 @@ fun ChefHomeScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 shape = RoundedCornerShape(16.dp),
-                color = AppColors.White,
+                color = colors.surface,
                 shadowElevation = 1.dp
             ) {
                 Column(
@@ -120,7 +121,7 @@ fun ChefHomeScreen(
                         text = "Today",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Normal,
-                        color = AppColors.TextSecondary,
+                        color = colors.textSecondary,
                     )
                     
                     Row(
@@ -133,13 +134,13 @@ fun ChefHomeScreen(
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             fontStyle = FontStyle.Italic,
-                            color = AppColors.TextPrimary
+                            color = colors.textPrimary
                         )
                         
                         Text(
                             text = "View calendar",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AppColors.ChefPrimary,
+                            color = colors.chefPrimary,
                             modifier = Modifier
                                 .width(64.dp)
                                 .clickable(onClick = {}),
@@ -202,12 +203,14 @@ private fun BookingInquiryCard(
     booking: BookingInquiry,
     onClick: () -> Unit = {}
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        color = AppColors.White,
+        color = colors.surface,
         shadowElevation = 1.dp
     ) {
         Row(
@@ -222,8 +225,8 @@ private fun BookingInquiryCard(
                 text = booking.customerName.take(1).uppercase(),
                 size = 48,
                 backgroundColor = when (booking.customerName) {
-                    "Sophie" -> Color(0xFFFFB3BA) // Light pink
-                    else -> Color(0xFFB3FFBA) // Light green
+                    "Sophie" -> colors.imagePlaceholder3 // Light pink
+                    else -> colors.imagePlaceholder1 // Light green
                 },
                 imageName = if (booking.customerName == "Sophie") "sophie" else null
             )
@@ -238,13 +241,13 @@ private fun BookingInquiryCard(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 
                 Text(
                     text = booking.message,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
                 
                 // Show date/guests separately if message doesn't already include it
@@ -252,7 +255,7 @@ private fun BookingInquiryCard(
                     Text(
                         text = "(${booking.date} • ${booking.guests} guests)",
                         style = MaterialTheme.typography.bodySmall,
-                        color = AppColors.TextSecondary
+                        color = colors.textSecondary
                     )
                 }
             }
@@ -265,20 +268,20 @@ private fun BookingInquiryCard(
                 Text(
                     text = booking.timeAgo,
                     style = MaterialTheme.typography.bodySmall,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
                 
                 StatusBadge(
                     text = booking.statusLabel,
                     backgroundColor = when (booking.status) {
-                        BookingStatus.NEW -> AppColors.StatusNewBackground
-                        BookingStatus.CONFIRMED -> AppColors.StatusConfirmedBackground
-                        BookingStatus.UNANSWERED -> AppColors.ButtonGrey
+                        BookingStatus.NEW -> colors.statusNewBackground
+                        BookingStatus.CONFIRMED -> colors.statusConfirmedBackground
+                        BookingStatus.UNANSWERED -> colors.buttonBackground
                     },
                     textColor = when (booking.status) {
-                        BookingStatus.NEW -> AppColors.StatusNewText
-                        BookingStatus.CONFIRMED -> AppColors.StatusConfirmedText
-                        BookingStatus.UNANSWERED -> AppColors.TextPrimary
+                        BookingStatus.NEW -> colors.statusNewText
+                        BookingStatus.CONFIRMED -> colors.statusConfirmedText
+                        BookingStatus.UNANSWERED -> colors.textPrimary
                     }
                 )
             }

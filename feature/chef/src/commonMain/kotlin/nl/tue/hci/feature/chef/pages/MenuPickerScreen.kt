@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
-import nl.tue.hci.core.ui.AppColors
+import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.components.FilterButton
 import nl.tue.hci.core.ui.components.Tag
 import nl.tue.hci.core.ui.getImageNameFromTitle
@@ -41,17 +41,19 @@ fun MenuPickerScreen(
     onBackClick: () -> Unit = {},
     onItemSelected: (List<SelectedMenuItem>) -> Unit = {}
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     // Hardcoded menu items
-    val allMenuItems = remember {
+    val allMenuItems = remember(colors) {
         listOf(
             MenuPickerItem(
                 id = "1",
                 title = "Yuzu mousse",
                 description = "light citrus dessert.",
                 price = "€8",
-                imageColor = Color(0xFFB2E5D4), // Light green
+                imageColor = colors.imagePlaceholder1, // Light green
                 dietaryTag = "Nut-free",
-                dietaryTagColor = AppColors.ChefPrimary,
+                dietaryTagColor = colors.chefPrimary,
                 category = "Desserts"
             ),
             MenuPickerItem(
@@ -59,9 +61,9 @@ fun MenuPickerScreen(
                 title = "Seared seabass",
                 description = "miso glaze, seasonal veg.",
                 price = "€14",
-                imageColor = Color(0xFFFFD4B2), // Light orange-beige
+                imageColor = colors.imagePlaceholder2, // Light orange-beige
                 dietaryTag = "Fish",
-                dietaryTagColor = Color(0xFFB3E5FC), // Light blue
+                dietaryTagColor = colors.dinerPrimary, // Light blue/cyan
                 category = "Mains"
             ),
             MenuPickerItem(
@@ -69,7 +71,7 @@ fun MenuPickerScreen(
                 title = "5-course Omakase",
                 description = "chef's selection (per guest).",
                 price = "€65",
-                imageColor = Color(0xFFFFB3BA), // Light pink
+                imageColor = colors.imagePlaceholder3, // Light pink
                 dietaryTag = "Contains nuts",
                 dietaryTagColor = null, // Plain text, no tag
                 category = "Mains"
@@ -79,9 +81,9 @@ fun MenuPickerScreen(
                 title = "Grilled Mackerel with Miso",
                 description = "Sea salt, spring onion, yuzu dressing.",
                 price = "€12",
-                imageColor = Color(0xFFB2E5D4),
+                imageColor = colors.imagePlaceholder1,
                 dietaryTag = "Fish",
-                dietaryTagColor = Color(0xFFB3E5FC),
+                dietaryTagColor = colors.dinerPrimary,
                 category = "Mains"
             ),
             MenuPickerItem(
@@ -89,7 +91,7 @@ fun MenuPickerScreen(
                 title = "Wagyu Beef Steak",
                 description = "Premium wagyu with truffle butter.",
                 price = "€45",
-                imageColor = Color(0xFFE8D5C4),
+                imageColor = colors.imagePlaceholder4,
                 dietaryTag = null,
                 dietaryTagColor = null,
                 category = "Mains"
@@ -99,9 +101,9 @@ fun MenuPickerScreen(
                 title = "Caesar Salad",
                 description = "Fresh romaine, parmesan, croutons.",
                 price = "€9",
-                imageColor = Color(0xFFB2E5D4),
+                imageColor = colors.imagePlaceholder1,
                 dietaryTag = "Vegetarian",
-                dietaryTagColor = Color(0xFFC8E6C9), // Light green
+                dietaryTagColor = colors.statusConfirmedBackground, // Light green
                 category = "Starters"
             )
         )
@@ -121,12 +123,12 @@ fun MenuPickerScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(colors.background)
     ) {
         // Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            color = Color.White,
+            color = colors.surface,
             shadowElevation = 2.dp
         ) {
             Row(
@@ -142,7 +144,7 @@ fun MenuPickerScreen(
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = AppColors.TextPrimary
+                        tint = colors.textPrimary
                     )
                 }
                 
@@ -152,7 +154,7 @@ fun MenuPickerScreen(
                     text = "Menu picker",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
             }
         }
@@ -167,22 +169,22 @@ fun MenuPickerScreen(
             placeholder = {
                 Text(
                     text = "Search dishes or ingredients",
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
             },
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
-                    tint = AppColors.TextSecondary
+                    tint = colors.textSecondary
                 )
             },
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = AppColors.OutlineLight,
-                unfocusedBorderColor = AppColors.OutlineLight,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
+                focusedBorderColor = colors.outline,
+                unfocusedBorderColor = colors.outline,
+                focusedContainerColor = colors.surface,
+                unfocusedContainerColor = colors.surface
             ),
             singleLine = true
         )
@@ -252,10 +254,10 @@ fun MenuPickerScreen(
                     .height(40.dp),
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonColors(
-                    containerColor = AppColors.ChefPrimary,
-                    contentColor = AppColors.TextPrimary,
-                    disabledContainerColor = AppColors.ChefSecondary,
-                    disabledContentColor = AppColors.TextSecondary,
+                    containerColor = colors.chefPrimary,
+                    contentColor = colors.textPrimary,
+                    disabledContainerColor = colors.chefSecondary,
+                    disabledContentColor = colors.textSecondary,
                 ),
                 shape = RoundedCornerShape(20.dp),
                 enabled = selectedItems.isNotEmpty(),
@@ -276,7 +278,7 @@ fun MenuPickerScreen(
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
                         fontStyle = FontStyle.Italic,
-                        color = AppColors.TextPrimary,
+                        color = colors.textPrimary,
                     )
                     Text(
                         text = "€${selectedItems.sumOf { 
@@ -286,7 +288,7 @@ fun MenuPickerScreen(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
-                        color = AppColors.TextPrimary,
+                        color = colors.textPrimary,
                     )
                 }
             }
@@ -299,10 +301,12 @@ private fun MenuPickerItemCard(
     item: MenuPickerItem,
     onAddClick: () -> Unit
 ) {
+    val colors = BesteChefThemeColors.current()
+    
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        color = AppColors.White,
+        color = colors.surface,
         shadowElevation = 1.dp
     ) {
         Row(
@@ -345,12 +349,12 @@ private fun MenuPickerItemCard(
                     text = item.title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 Text(
                     text = item.description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = AppColors.TextSecondary
+                    color = colors.textSecondary
                 )
                 
                 // Dietary tag or text
@@ -359,13 +363,13 @@ private fun MenuPickerItemCard(
                         Tag(
                             text = item.dietaryTag,
                             backgroundColor = item.dietaryTagColor,
-                            textColor = AppColors.TextPrimary
+                            textColor = colors.textPrimary
                         )
                     } else {
                         Text(
                             text = item.dietaryTag,
                             style = MaterialTheme.typography.bodySmall,
-                            color = AppColors.TextSecondary
+                            color = colors.textSecondary
                         )
                     }
                 }
@@ -380,22 +384,22 @@ private fun MenuPickerItemCard(
                     text = item.price,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = AppColors.TextPrimary
+                    color = colors.textPrimary
                 )
                 Button(
                     onClick = onAddClick,
                     modifier = Modifier.height(32.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = AppColors.ChefSecondary,
-                        contentColor = AppColors.TextPrimary,
+                        containerColor = colors.chefSecondary,
+                        contentColor = colors.textPrimary,
                     )
                 ) {
                     Text(
                         text = "Add",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Medium,
-                        color = AppColors.TextPrimary,
+                        color = colors.textPrimary,
                     )
                 }
             }
