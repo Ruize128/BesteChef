@@ -33,6 +33,8 @@ actual fun rememberImagePainter(imageName: String): Painter {
         "ichiraku_menu_cover_3" -> "ichiraku_menu_cover_3"
         "ichiraku" -> "ichiraku"
         "middle_eastern_cuisine" -> "middle_eastern_cuisine"
+        "middle_eastern_cuisine_2" -> "middle_eastern_cuisine_2"
+        "middle_eastern_cuisine_3" -> "middle_eastern_cuisine_3"
         "sophie" -> "sophie"
         "chat_icon" -> "chat_icon"
         "filter_icon" -> "filter_icon"

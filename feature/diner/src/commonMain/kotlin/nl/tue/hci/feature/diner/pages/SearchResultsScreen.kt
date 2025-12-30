@@ -78,7 +78,7 @@ fun SearchResultsScreen(
     
     val chefs = listOf(
             ChefResult(
-                name = "Chef Marius van Vlaanderen",
+                name = "Chef Ichiraku",
                 rating = 5.0f,
                 reviewCount = 2,
                 eventCount = 13,
@@ -88,7 +88,7 @@ fun SearchResultsScreen(
                 imageColor = colors.imagePlaceholder1 // Light mint green
             ),
             ChefResult(
-                name = "Chef Example Two",
+                name = "Chef Verstappen",
                 rating = 4.8f,
                 reviewCount = 5,
                 eventCount = 20,

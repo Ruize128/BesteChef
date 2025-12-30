@@ -40,8 +40,8 @@ fun getCarouselImageNames(title: String): List<String>? {
 fun getChefImageName(chefName: String): String? {
     return when {
         chefName.contains("Marius", ignoreCase = true) || chefName.contains("ichiraku", ignoreCase = true) -> "ichiraku_menu_cover"
-        chefName.contains("Example Two", ignoreCase = true) || chefName.contains("middle eastern", ignoreCase = true) -> "middle_eastern_cuisine"
-        else -> null
+        chefName.contains("Verstappen", ignoreCase = true) || chefName.contains("middle eastern", ignoreCase = true) -> "middle_eastern_cuisine"
+        else -> "middle_eastern_cuisine_2"
     }
 }
 

@@ -36,6 +36,8 @@ actual fun rememberImagePainter(imageName: String): Painter {
             "ichiraku_menu_cover_3" -> "images/ichiraku_menu_cover_3.png"
             "ichiraku" -> "images/ichiraku.png"
             "middle_eastern_cuisine" -> "images/middle_eastern_cuisine.png"
+            "middle_eastern_cuisine_2" -> "middle_eastern_cuisine_2.jpg"
+            "middle_eastern_cuisine_3" -> "middle_eastern_cuisine_3.jpg"
             "sophie" -> "images/sophie.png"
             "chat_icon" -> "icons/chat_icon.svg"
             "filter_icon" -> "icons/filter_icon.svg"
