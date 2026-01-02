@@ -83,7 +83,11 @@ fun ChefChatScreen(
     // Scroll to bottom when new message is added
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(messages.size - 1)
+            // Use immediate scroll (non-suspending) to avoid entering suspend/animation code paths
+            // on wasm targets (these can cause the compiled wasm to require Wasm GC / Exception-Handling
+            // proposals which are not available in all browsers). Using scrollToItem keeps behavior
+            // compatible while providing a safe fallback.
+            listState.scrollToItem(messages.size - 1)
         }
     }
     
