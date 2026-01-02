@@ -273,7 +273,7 @@ fun SearchResultsScreen(
                                 modifier = Modifier
 //                                    .wrapContentWidth(),
                                     .width(24.dp),
-                                textStyle = MaterialTheme.typography.bodyMedium,
+                                textStyle = typography.bodyMedium.copy(color = colors.textPrimary),
                                 keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Number
                                 ),
