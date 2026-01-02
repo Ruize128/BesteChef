@@ -1,5 +1,6 @@
 package nl.tue.hci.feature.diner.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -56,10 +59,15 @@ fun DateDropdownMenu(
             offset = IntOffset(0, 100), // Offset from top center
             properties = PopupProperties(focusable = true)
         ) {
+            val colors = BesteChefThemeColors.current()
+            val typography = BesteChefThemeTypography.current()
+
             Card(
                 modifier = modifier.width(340.dp),
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                border = BorderStroke(1.dp, colors.outline)
             ) {
                 CustomCalendar(
                     selectedDate = selectedDate,
@@ -82,6 +90,8 @@ private fun CustomCalendar(
 ) {
     val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
     var currentMonth by remember { mutableStateOf(selectedDate ?: today) }
+    val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     val firstDayOfMonth = LocalDate(currentMonth.year, currentMonth.monthNumber, 1)
     val lastDayOfMonth = LocalDate(currentMonth.year, currentMonth.monthNumber, getDaysInMonth(currentMonth.year, currentMonth.monthNumber))
@@ -108,11 +118,11 @@ private fun CustomCalendar(
             
             Text(
                 text = "${getMonthName(currentMonth.monthNumber)} ${currentMonth.year}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-            
+                    style = typography.cardTitle,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = colors.textPrimary
+                )
             IconButton(
                 onClick = { currentMonth = currentMonth.plusMonths(1) },
                 modifier = Modifier.size(32.dp)
@@ -136,8 +146,8 @@ private fun CustomCalendar(
             dayAbbreviations.forEach { day ->
                 Text(
                     text = day,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                    style = typography.bodySmall,
+                    color = colors.textSecondary.copy(alpha = 0.6f),
                     modifier = Modifier.width(36.dp),
                     textAlign = TextAlign.Center
                 )
@@ -183,26 +193,26 @@ private fun CustomCalendar(
                                         modifier = Modifier
                                             .size(32.dp)
                                             .background(
-                                                color = MaterialTheme.colorScheme.primary,
+                                                color = colors.chefPrimary,
                                                 shape = RoundedCornerShape(16.dp)
                                             ),
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
                                             text = dayCounter.toString(),
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            style = typography.bodyMedium,
+                                            color = colors.textOnPrimary,
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
                                 } else {
                                     Text(
                                         text = dayCounter.toString(),
-                                        style = MaterialTheme.typography.bodyMedium,
+                                        style = typography.bodyMedium,
                                         color = if (isPast) {
-                                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                                            colors.textSecondary.copy(alpha = 0.4f)
                                         } else {
-                                            MaterialTheme.colorScheme.onSurface
+                                            colors.textPrimary
                                         },
                                         fontWeight = if (isPast) FontWeight.Normal else FontWeight.Bold
                                     )

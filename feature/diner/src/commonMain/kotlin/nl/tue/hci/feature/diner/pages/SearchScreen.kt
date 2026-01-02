@@ -26,6 +26,8 @@ import androidx.compose.ui.text.style.TextAlign
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
+import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.feature.diner.components.DateDropdownMenu
 import nl.tue.hci.feature.diner.components.LocationDropdownMenu
 import nl.tue.hci.feature.diner.components.formatDate
@@ -62,11 +64,14 @@ fun SearchScreen(
     
     // Guests state
     var guestsNumber by rememberSaveable { mutableStateOf("") }
+
+    val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(colors.surfaceVariant)
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -80,7 +85,7 @@ fun SearchScreen(
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Italic,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = colors.textPrimary,
             modifier = Modifier.padding(bottom = 40.dp)
         )
         
@@ -88,8 +93,9 @@ fun SearchScreen(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            shadowElevation = 2.dp
+            color = colors.surface,
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -107,16 +113,16 @@ fun SearchScreen(
                     ) {
                         Text(
                             text = "Location",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = typography.labelSmall,
+                            color = colors.textSecondary
                         )
                         Text(
                             text = selectedLocation ?: locationPlaceholder,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = typography.bodyMedium,
                             color = if (selectedLocation != null) {
-                                MaterialTheme.colorScheme.onSurfaceVariant
+                                colors.textPrimary
                             } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                colors.textSecondary.copy(alpha = 0.6f)
                             },
                             modifier = Modifier.padding(top = 4.dp)
                         )
@@ -156,8 +162,8 @@ fun SearchScreen(
                     ) {
                         Text(
                             text = "Date",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = typography.labelSmall,
+                            color = colors.textSecondary
                         )
                         Text(
                             text = if (selectedDate != null) {
@@ -165,11 +171,11 @@ fun SearchScreen(
                             } else {
                                 datePlaceholder
                             },
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = typography.bodyMedium,
                             color = if (selectedDate != null) {
-                                MaterialTheme.colorScheme.onSurfaceVariant
+                                colors.textPrimary
                             } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                colors.textSecondary.copy(alpha = 0.6f)
                             },
                             modifier = Modifier.padding(top = 4.dp)
                         )
@@ -200,8 +206,8 @@ fun SearchScreen(
                 ) {
                     Text(
                         text = "Guests",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = typography.labelSmall,
+                        color = colors.textSecondary
                     )
                     // Invisible TextField that looks like the other fields
                     BasicTextField(
@@ -215,11 +221,11 @@ fun SearchScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 4.dp),
-                        textStyle = MaterialTheme.typography.bodyMedium.copy(
+                        textStyle = typography.bodyMedium.copy(
                             color = if (guestsNumber.isNotEmpty()) {
-                                MaterialTheme.colorScheme.onSurfaceVariant
+                                colors.textPrimary
                             } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                colors.textSecondary.copy(alpha = 0.6f)
                             }
                         ),
                         keyboardOptions = KeyboardOptions(
@@ -230,8 +236,8 @@ fun SearchScreen(
                                 if (guestsNumber.isEmpty()) {
                                     Text(
                                         text = guestsPlaceholder,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                        style = typography.bodyMedium,
+                                        color = colors.textSecondary.copy(alpha = 0.6f)
                                     )
                                 }
                                 innerTextField()
@@ -249,13 +255,15 @@ fun SearchScreen(
                         .size(56.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFB2E5D4) // Light mint green
-                    )
+                        containerColor = colors.dinerPrimary,
+                        contentColor = colors.textOnPrimary
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search",
-                        tint = Color.Black,
+                        tint = colors.textOnPrimary,
                     )
                 }
             }
@@ -267,8 +275,9 @@ fun SearchScreen(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            shadowElevation = 1.dp
+            color = colors.surface,
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier
@@ -279,13 +288,13 @@ fun SearchScreen(
             ) {
                 Text(
                     text = allergensPlaceholder,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    style = typography.bodyMedium,
+                    color = colors.textSecondary.copy(alpha = 0.6f)
                 )
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowDown,
                     contentDescription = "Dropdown",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = colors.textSecondary,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -297,8 +306,9 @@ fun SearchScreen(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            shadowElevation = 1.dp
+            color = colors.surface,
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier
@@ -309,13 +319,13 @@ fun SearchScreen(
             ) {
                 Text(
                     text = cuisinePlaceholder,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    style = typography.bodyMedium,
+                    color = colors.textSecondary.copy(alpha = 0.6f)
                 )
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowDown,
                     contentDescription = "Dropdown",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = colors.textSecondary,
                     modifier = Modifier.size(20.dp)
                 )
             }

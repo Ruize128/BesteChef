@@ -48,13 +48,15 @@ fun DinerChatHistoryScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(colors.background)
+            .background(colors.surfaceVariant)
     ) {
         // Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
             color = colors.surface,
-            shadowElevation = 2.dp
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Box(
                 modifier = Modifier
@@ -75,8 +77,8 @@ fun DinerChatHistoryScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(chatHistory) { chatItem ->
                 ChatHistoryItemCard(
@@ -102,7 +104,8 @@ private fun ChatHistoryItemCard(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(20.dp),
         color = colors.surface,
-        shadowElevation = 1.dp
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp
     ) {
         Row(
             modifier = Modifier

@@ -95,13 +95,14 @@ fun DinerOrdersScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(colors.background)
+            .background(colors.surfaceVariant)
     ) {
         // Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = colors.surface,
-            shadowElevation = 2.dp
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier
@@ -153,7 +154,8 @@ private fun OrderCard(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         color = colors.surface,
-        shadowElevation = 2.dp
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp
     ) {
         Row(
             modifier = Modifier

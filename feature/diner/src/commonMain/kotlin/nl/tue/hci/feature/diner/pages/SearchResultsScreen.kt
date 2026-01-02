@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.datetime.LocalDate
@@ -130,31 +131,41 @@ fun SearchResultsScreen(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(colors.surfaceVariant)
         ) {
         // Title with back button
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = colors.surface,
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
-            IconButton(
-                onClick = onBackClick,
-                modifier = Modifier.size(40.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.onBackground
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = colors.textPrimary
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Search Result",
+                    style = typography.sectionTitle,
+                    color = colors.textPrimary
                 )
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Search Result",
-                style = typography.sectionTitle
-            )
         }
+        
+        Spacer(modifier = Modifier.height(16.dp))
         
         // Search parameters row
         Surface(
@@ -162,8 +173,10 @@ fun SearchResultsScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(20.dp),
-            color = colors.surfaceVariant,
-            border = BorderStroke(width = 1.dp, color = colors.outline)
+            color = colors.surface,
+            border = BorderStroke(width = 1.dp, color = colors.outline),
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -181,7 +194,8 @@ fun SearchResultsScreen(
                     ) {
                         Text(
                             text = selectedLocation ?: "Location",
-                            style = typography.labelMedium,
+                            style = typography.cardTitle,
+                            color = colors.textPrimary,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -226,6 +240,7 @@ fun SearchResultsScreen(
                                 "Date"
                             },
                             style = typography.bodyMedium,
+                            color = colors.textSecondary,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -298,6 +313,7 @@ fun SearchResultsScreen(
                                 Text(
                                     text = if (guestsNumber.isEmpty()) "Guests" else "guests",
                                     style = typography.bodyMedium,
+                                    color = colors.textSecondary,
                                     maxLines = 1
                                 )
 //                            }
@@ -312,23 +328,28 @@ fun SearchResultsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             // Filter button with active state
             Surface(
-                modifier = Modifier.weight(1f),
-                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(24.dp),
+                shape = RoundedCornerShape(16.dp),
                 color = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
                     colors.dinerPrimary
                 } else {
                     colors.surface
                 },
-                onClick = { isFilterModalOpen = true }
+                onClick = { isFilterModalOpen = true },
+                shadowElevation = 0.dp,
+                tonalElevation = 0.dp
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                        .padding(horizontal = 12.dp, vertical = 0.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -336,21 +357,21 @@ fun SearchResultsScreen(
                     Icon(
                         painter = filterIconPainter,
                         contentDescription = "Filter",
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(14.dp),
                         tint = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
                             colors.textOnPrimary
                         } else {
                             colors.textPrimary
                         }
                     )
-                    Spacer(modifier = Modifier.width(6.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "Filter",
-                        style = typography.bodySmall,
+                        style = typography.bodySmall.copy(fontSize = 12.sp),
                         color = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
                             colors.textOnPrimary
                         } else {
-                            MaterialTheme.colorScheme.onSurface
+                            colors.textPrimary
                         }
                     )
                 }
@@ -449,11 +470,13 @@ fun FilterModal(
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    color = colors.surface,
                     onClick = {
                         // Placeholder for allergens selection
                         onAllergensSelected("nuts")
-                    }
+                    },
+                    shadowElevation = 0.dp,
+                    tonalElevation = 0.dp
                 ) {
                     Row(
                         modifier = Modifier
@@ -466,15 +489,15 @@ fun FilterModal(
                             text = selectedAllergens?.let { "Allergens: $it" } ?: "Allergens (optional) — e.g. nuts, dairy",
                             style = typography.bodyMedium,
                             color = if (selectedAllergens != null) {
-                                MaterialTheme.colorScheme.onSurfaceVariant
+                                colors.textSecondary
                             } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                colors.textSecondary.copy(alpha = 0.6f)
                             }
                         )
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
                             contentDescription = "Dropdown",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            tint = colors.textSecondary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -484,11 +507,13 @@ fun FilterModal(
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    color = colors.surface,
                     onClick = {
                         // Placeholder for cuisine selection
                         onCuisineSelected("Japanese Fusion")
-                    }
+                    },
+                    shadowElevation = 0.dp,
+                    tonalElevation = 0.dp
                 ) {
                     Row(
                         modifier = Modifier
@@ -501,15 +526,15 @@ fun FilterModal(
                             text = selectedCuisine?.let { "Cuisine: $it" } ?: "Cuisine (optional) — e.g. Japanese",
                             style = typography.bodyMedium,
                             color = if (selectedCuisine != null) {
-                                MaterialTheme.colorScheme.onSurfaceVariant
+                                colors.textSecondary
                             } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                                colors.textSecondary.copy(alpha = 0.6f)
                             }
                         )
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
                             contentDescription = "Dropdown",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            tint = colors.textSecondary,
                             modifier = Modifier.size(20.dp)
                         )
                     }

@@ -94,7 +94,7 @@ fun DinerChatScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(colors.background)
+            .background(colors.surfaceVariant)
     ) {
         // Header with status bar padding (full-screen)
         Surface(
@@ -102,7 +102,8 @@ fun DinerChatScreen(
                 .fillMaxWidth()
                 .statusBarsPadding(),
             color = colors.surface,
-            shadowElevation = 2.dp
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier
@@ -166,7 +167,8 @@ fun DinerChatScreen(
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = colors.surface,
-            shadowElevation = 4.dp
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier

@@ -3,6 +3,7 @@ import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -105,55 +106,60 @@ private fun MenuContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(colors.surfaceVariant)
     ) {
         // Header with back button and chat icon
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = colors.surface,
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
-            IconButton(
-                onClick = onBackClick,
-                modifier = Modifier.size(40.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-            }
-            
-            Text(
-                text = chefName,
-                style = typography.sectionTitle,
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 8.dp),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
-            )
-            
-            IconButton(
-                onClick = onChatClick,
-                modifier = Modifier.size(40.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                val chatIconPainter = rememberIconPainter("chat_icon")
-                Icon(
-                    painter = chatIconPainter,
-                    contentDescription = "Chat",
-                    tint = MaterialTheme.colorScheme.onBackground
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = colors.textPrimary
+                    )
+                }
+                
+                Text(
+                    text = chefName,
+                    style = typography.sectionTitle,
+                    color = colors.textPrimary,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
                 )
+                
+                IconButton(
+                    onClick = onChatClick,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    val chatIconPainter = rememberIconPainter("chat_icon")
+                    Icon(
+                        painter = chatIconPainter,
+                        contentDescription = "Chat",
+                        tint = colors.textPrimary
+                    )
+                }
             }
         }
         
         // Menu items list
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(menuItems) { item ->
@@ -177,7 +183,7 @@ fun MenuItemCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
             containerColor = colors.surface
         )
@@ -254,6 +260,7 @@ fun MenuItemCard(
                     Text(
                         text = menuItem.title,
                         style = typography.cardTitle,
+                        color = colors.textPrimary,
                         modifier = Modifier.weight(1f)
                     )
                     
@@ -265,7 +272,7 @@ fun MenuItemCard(
                         Icon(
                             painter = chatIconPainter,
                             contentDescription = "Favorite",
-                            tint = MaterialTheme.colorScheme.onSurface,
+                            tint = colors.textSecondary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -275,14 +282,14 @@ fun MenuItemCard(
                 Text(
                     text = menuItem.description,
                     style = typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = colors.textSecondary
                 )
                 
                 // Serves and prep time
                 Text(
                     text = "Serves ${menuItem.serves} · ${menuItem.prepTime}",
                     style = typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = colors.textSecondary
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -293,26 +300,29 @@ fun MenuItemCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     // Ask button
-                    Button(
+                    OutlinedButton(
                         onClick = onAskClick,
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            contentColor = MaterialTheme.colorScheme.onSurface
+                        shape = RoundedCornerShape(20.dp),
+                        border = BorderStroke(1.dp, colors.outline),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = colors.surface,
+                            contentColor = colors.textPrimary
                         )
                     ) {
                         val chatIconPainter = rememberIconPainter("chat_icon")
                         Icon(
                             painter = chatIconPainter,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp)
+                            modifier = Modifier.size(18.dp),
+                            tint = colors.textPrimary
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "Ask",
                             style = typography.bodyMedium,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            color = colors.textPrimary
                         )
                     }
                     
@@ -320,11 +330,12 @@ fun MenuItemCard(
                     Button(
                         onClick = { },
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(20.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colors.dinerPrimary,
                             contentColor = colors.textPrimary
-                        )
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                     ) {
                         Text(
                             text = "Book",

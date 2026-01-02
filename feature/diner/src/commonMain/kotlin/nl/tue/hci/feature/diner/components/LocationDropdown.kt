@@ -1,16 +1,28 @@
 package nl.tue.hci.feature.diner.components
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
-// PopupProperties removed for multiplatform compatibility
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
+import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 
 
 /**
@@ -44,99 +56,141 @@ fun LocationDropdownMenu(
         cities.filter { it.contains(searchQuery, ignoreCase = true) }
     }
     
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismissRequest,
-        modifier = modifier
-            .fillMaxWidth(0.9f)
-            .heightIn(max = 400.dp)
-    ) {
-        // Search input bar
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.surface
+    if (expanded) {
+        Popup(
+            onDismissRequest = onDismissRequest,
+            alignment = Alignment.TopCenter,
+            offset = IntOffset(0, 100),
+            properties = PopupProperties(focusable = true)
         ) {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = onSearchQueryChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                placeholder = { Text("Search cities...") },
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                )
-            )
-        }
-        
-        Divider()
-        
-        // Current position option
-        DropdownMenuItem(
-            text = {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+            val colors = BesteChefThemeColors.current()
+            val typography = BesteChefThemeTypography.current()
+
+            Card(
+                modifier = modifier
+                    .width(340.dp)
+                    .heightIn(max = 400.dp)
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                border = BorderStroke(1.dp, colors.outline)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn,
-                        contentDescription = "Current position",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = currentPositionCity,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            },
-            onClick = {
-                onLocationSelected(currentPositionCity)
-            }
-        )
-        
-        Divider()
-        
-        // Filtered cities list
-        if (filteredCities.isEmpty()) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = "No cities found",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                    )
-                },
-                onClick = {}
-            )
-        } else {
-            filteredCities.forEach { city ->
-                DropdownMenuItem(
-                    text = {
+                    // Search input bar
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        color = colors.surfaceVariant,
+                        shadowElevation = 0.dp,
+                        tonalElevation = 0.dp
+                    ) {
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp, vertical = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Place,
-                                contentDescription = city,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                                modifier = Modifier.size(20.dp)
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = colors.textSecondary.copy(alpha = 0.6f),
+                                modifier = Modifier.size(18.dp)
                             )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                text = city,
-                                style = MaterialTheme.typography.bodyMedium
+                            Spacer(modifier = Modifier.width(8.dp))
+                            BasicTextField(
+                                value = searchQuery,
+                                onValueChange = onSearchQueryChange,
+                                modifier = Modifier.fillMaxWidth(),
+                                textStyle = typography.bodyMedium.copy(color = colors.textPrimary),
+                                singleLine = true,
+                                decorationBox = { innerTextField ->
+                                    if (searchQuery.isEmpty()) {
+                                        Text(
+                                            text = "Search cities...",
+                                            style = typography.bodyMedium,
+                                            color = colors.textSecondary.copy(alpha = 0.6f)
+                                        )
+                                    }
+                                    innerTextField()
+                                }
                             )
                         }
-                    },
-                    onClick = {
-                        onLocationSelected(city)
                     }
-                )
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    // Cities list
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        // Current position option
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { onLocationSelected(currentPositionCity) }
+                                    .padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.LocationOn,
+                                    contentDescription = "Current position",
+                                    tint = colors.chefPrimary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = currentPositionCity,
+                                    style = typography.bodyMedium,
+                                    color = colors.textPrimary
+                                )
+                            }
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                color = colors.outline.copy(alpha = 0.3f)
+                            )
+                        }
+                        
+                        // Filtered cities
+                        if (filteredCities.isEmpty()) {
+                            item {
+                                Text(
+                                    text = "No cities found",
+                                    style = typography.bodyMedium,
+                                    color = colors.textSecondary.copy(alpha = 0.6f),
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
+                        } else {
+                            items(filteredCities) { city ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onLocationSelected(city) }
+                                        .padding(vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Place,
+                                        contentDescription = city,
+                                        tint = colors.textSecondary.copy(alpha = 0.6f),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Text(
+                                        text = city,
+                                        style = typography.bodyMedium,
+                                        color = colors.textPrimary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

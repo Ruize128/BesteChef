@@ -23,7 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.getChefCarouselImageNames
 import nl.tue.hci.core.ui.getChefImageName
 import nl.tue.hci.core.ui.rememberImagePainter
@@ -36,13 +38,16 @@ fun SearchParameterChip(
     modifier: Modifier = Modifier,
     isSelected: Boolean = false
 ) {
+    val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
+
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(12.dp),
         color = if (isSelected) {
-            MaterialTheme.colorScheme.surfaceVariant
+            colors.surfaceVariant
         } else {
-            MaterialTheme.colorScheme.surface
+            colors.surface
         },
         onClick = { }
     ) {
@@ -51,12 +56,13 @@ fun SearchParameterChip(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 10.dp),
-            style = MaterialTheme.typography.bodyMedium,
+            style = typography.bodyMedium,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = colors.textPrimary
         )
     }
-}
+} 
 
 @Composable
 fun ActionButton(
@@ -65,16 +71,19 @@ fun ActionButton(
     iconPainter: androidx.compose.ui.graphics.painter.Painter? = null,
     modifier: Modifier = Modifier
 ) {
+    val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
+
     Surface(
-        modifier = modifier,
+        modifier = modifier.height(24.dp),
         shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surface,
+        color = colors.surface,
         onClick = { }
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
+                .fillMaxHeight()
+                .padding(horizontal = 8.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -82,26 +91,26 @@ fun ActionButton(
                 Icon(
                     painter = iconPainter,
                     contentDescription = text,
-                    modifier = Modifier.size(18.dp),
-                    tint = MaterialTheme.colorScheme.onSurface
+                    modifier = Modifier.size(16.dp),
+                    tint = colors.textPrimary
                 )
             } else if (icon != null) {
                 Icon(
                     imageVector = icon,
                     contentDescription = text,
-                    modifier = Modifier.size(18.dp),
-                    tint = MaterialTheme.colorScheme.onSurface
+                    modifier = Modifier.size(16.dp),
+                    tint = colors.textPrimary
                 )
             }
-            Spacer(modifier = Modifier.width(6.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface,
+                style = typography.bodySmall.copy(fontSize = 11.sp),
+                color = colors.textPrimary,
             )
         }
     }
-}
+} 
 
 @Composable
 fun ChefResultCard(
@@ -109,11 +118,12 @@ fun ChefResultCard(
     onButtonClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
-    
+    val typography = BesteChefThemeTypography.current()
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
             containerColor = colors.surface
         )
@@ -191,8 +201,9 @@ fun ChefResultCard(
                 // Chef name
                 Text(
                     text = chef.name,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
+                    style = typography.cardTitle,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary
                 )
                 
                 // Rating and reviews
@@ -208,13 +219,14 @@ fun ChefResultCard(
                     )
                     Text(
                         text = "${chef.rating}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium
+                        style = typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = colors.textPrimary
                     )
                     Text(
                         text = "• ${chef.reviewCount} reviews / ${chef.eventCount} events",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = typography.bodySmall,
+                        color = colors.textSecondary
                     )
                 }
                 
@@ -232,8 +244,8 @@ fun ChefResultCard(
                         )
                         Text(
                             text = "Can travel to your location",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = typography.bodySmall,
+                            color = colors.textSecondary
                         )
                     }
                 }
@@ -241,17 +253,17 @@ fun ChefResultCard(
                 if (chef.availableOnDate) {
                     Text(
                         text = "Available on your selected date",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = typography.bodySmall,
+                        color = colors.textSecondary
                     )
                 }
                 
                 // Quote
                 Text(
                     text = "\"${chef.quote}\"",
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = typography.bodyMedium,
                     fontStyle = FontStyle.Italic,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    color = colors.textSecondary.copy(alpha = 0.7f)
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -263,13 +275,15 @@ fun ChefResultCard(
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colors.dinerPrimary,
-                        contentColor = colors.textPrimary,
-                    )
+                        contentColor = colors.textOnPrimary,
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                 ) {
                     Text(
                         text = "Chat & Request quote",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
+                        color = colors.textPrimary,
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
