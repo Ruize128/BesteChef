@@ -53,14 +53,11 @@ private val LocalDateSaver = Saver<LocalDate?, String>(
 fun SearchResultsScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
+    onChefClick: (String) -> Unit = {}, // Callback when chef is selected to show menu
     onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
-    
-    // Navigation state
-    var showMenuScreen by rememberSaveable { mutableStateOf(false) }
-    var selectedChefName by rememberSaveable { mutableStateOf<String?>(null) }
     
     // Search parameters state
     var selectedLocation by rememberSaveable { mutableStateOf<String?>("Eindhoven") }
@@ -112,27 +109,11 @@ fun SearchResultsScreen(
             )
         )
     
-    if (showMenuScreen) {
-        MenuScreen(
-            chefName = selectedChefName ?: "Chef",
-            modifier = modifier,
-            onBackClick = {
-                showMenuScreen = false
-                selectedChefName = null
-            },
-            onChatClick = { chefName ->
-                // Navigate to chat section
-                showMenuScreen = false
-                selectedChefName = null
-                onChatClick(chefName)
-            }
-        )
-    } else {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(colors.surfaceVariant)
-        ) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(colors.surfaceVariant)
+    ) {
         // Title with back button
         Surface(
             modifier = Modifier.fillMaxWidth(),
@@ -414,16 +395,13 @@ fun SearchResultsScreen(
                 ChefResultCard(
                     chef = chef,
                     onButtonClick = {
-                        selectedChefName = chef.name
-                        showMenuScreen = true
+                        onChefClick(chef.name)
                     }
                 )
             }
         }
     }
-    }
 }
-
 
 
 /**

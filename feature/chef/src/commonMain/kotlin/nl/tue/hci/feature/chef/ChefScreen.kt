@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import nl.tue.hci.feature.chef.pages.ChefChatHistoryScreen
 import nl.tue.hci.core.ui.BesteChefTheme
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.PlatformBackHandler
+import nl.tue.hci.core.ui.rememberAppExitHandler
 
 
 @Composable
@@ -41,6 +43,35 @@ fun ChefScreen(
         var editOrderId by rememberSaveable { mutableStateOf("") }
         var orderDetailsForConfirmed by rememberSaveable { mutableStateOf<nl.tue.hci.feature.chef.model.OrderDetails?>(null) }
         var menuItemsForConfirmed by rememberSaveable { mutableStateOf<List<nl.tue.hci.feature.chef.model.OfferMenuItem>>(emptyList()) }
+        
+        val exitApp = rememberAppExitHandler()
+
+        // Handle back button
+        PlatformBackHandler(
+            enabled = true,
+            onBack = {
+                when {
+                    showBookingConfirmedScreen -> {
+                        // On booking confirmed screen, go back to orders
+                        showBookingConfirmedScreen = false
+                        orderDetailsForConfirmed = null
+                        menuItemsForConfirmed = emptyList()
+                    }
+                    showChatScreen -> {
+                        // On chat screen, go back to chat history
+                        showChatScreen = false
+                    }
+                    currentDestination == ChefDestinations.HOME -> {
+                        // On home page (base page), exit app
+                        exitApp()
+                    }
+                    else -> {
+                        // On any other section page, go back to home
+                        currentDestination = ChefDestinations.HOME
+                    }
+                }
+            }
+        )
 
         if (showBookingConfirmedScreen && orderDetailsForConfirmed != null) {
             // Only OrderConfirmedScreen is full-screen

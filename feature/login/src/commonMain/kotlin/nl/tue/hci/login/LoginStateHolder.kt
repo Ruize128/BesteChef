@@ -69,7 +69,25 @@ class LoginStateHolder(
             it.copy(isSigningUp = true, isSigningIn = false)
         }
     }
-
+    /**
+     * Reset to initial state (go back to sign in mode)
+     */
+    fun resetToSignIn() {
+        _uiState.update {
+            it.copy(
+                isSigningIn = false,
+                isSigningUp = false,
+                email = "",
+                password = "",
+                confirmPassword = "",
+                selectedRole = null,
+                errorMessage = null,
+                passwordVisible = false,
+                confirmPasswordVisible = false,
+                isLoading = false
+            )
+        }
+    }
     fun enableSignIn() {
         _uiState.update {
             it.copy(isSigningIn = true, isSigningUp = false)

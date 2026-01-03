@@ -8,24 +8,57 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 // Preview removed for multiplatform
 
+/**
+ * Navigation state for the home section
+ */
+enum class HomeScreenState {
+    SEARCH,
+    SEARCH_RESULTS,
+    MENU
+}
+
 @Composable
 fun DinerHomeScreen(
     modifier: Modifier = Modifier,
+    currentState: HomeScreenState = HomeScreenState.SEARCH,
+    selectedChefName: String? = null,
+    onStateChange: (HomeScreenState) -> Unit = {},
+    onChefSelect: (String) -> Unit = {},
     onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
 ) {
-    var showSearchResults by rememberSaveable { mutableStateOf(false) }
-    
-    if (showSearchResults) {
-        SearchResultsScreen(
-            modifier = modifier,
-            onBackClick = { showSearchResults = false },
-            onChatClick = onChatClick
-        )
-    } else {
-        SearchScreen(
-            modifier = modifier,
-            onSearchClick = { showSearchResults = true }
-        )
+    when (currentState) {
+        HomeScreenState.MENU -> {
+            MenuScreen(
+                chefName = selectedChefName ?: "Chef",
+                modifier = modifier,
+                onBackClick = {
+                    onStateChange(HomeScreenState.SEARCH_RESULTS)
+                },
+                onChatClick = onChatClick
+            )
+        }
+        HomeScreenState.SEARCH_RESULTS -> {
+            SearchResultsScreen(
+                modifier = modifier,
+                onBackClick = {
+                    onStateChange(HomeScreenState.SEARCH)
+                },
+                onChefClick = { chefName ->
+                    onChefSelect(chefName)
+                    onStateChange(HomeScreenState.MENU)
+                },
+                onChatClick = onChatClick
+            )
+        }
+        HomeScreenState.SEARCH -> {
+            SearchScreen(
+                modifier = modifier,
+                onSearchClick = {
+                    onStateChange(HomeScreenState.SEARCH_RESULTS)
+                }
+            )
+        }
     }
 }
+
 

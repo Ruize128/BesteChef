@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import nl.tue.hci.core.model.UserRole
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
+import nl.tue.hci.core.ui.PlatformBackHandler
 
 
 // @androidx.compose.ui.tooling.preview.Preview - removed for multiplatform
@@ -64,6 +65,14 @@ fun LoginScreen(
     val coroutineScope = rememberCoroutineScope()
     val loginStateHolder = stateHolder ?: remember { LoginStateHolder(coroutineScope) }
     val uiState by loginStateHolder.uiState.collectAsState()
+
+    // Handle back button - go back to sign in mode when in register mode
+    PlatformBackHandler(
+        enabled = uiState.isSigningUp,
+        onBack = {
+            loginStateHolder.resetToSignIn()
+        }
+    )
 
     // Handle navigation events
     LaunchedEffect(uiState.navigationEvent) {
