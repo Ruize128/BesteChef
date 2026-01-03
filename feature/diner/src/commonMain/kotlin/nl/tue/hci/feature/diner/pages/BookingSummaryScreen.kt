@@ -10,6 +10,11 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +44,17 @@ fun BookingSummaryScreen(
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
+    
+    var isProcessing by rememberSaveable { mutableStateOf(false) }
+    
+    // Handle processing delay
+    LaunchedEffect(isProcessing) {
+        if (isProcessing) {
+            kotlinx.coroutines.delay(1000) // 1 second delay
+            onBookAndPayClick()
+            isProcessing = false
+        }
+    }
     
     // Hardcoded booking summary data
     val bookingDetails = remember {
@@ -197,7 +213,7 @@ fun BookingSummaryScreen(
         
         // Book & Pay button
         Button(
-            onClick = onBookAndPayClick,
+            onClick = { isProcessing = true },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
@@ -207,15 +223,32 @@ fun BookingSummaryScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = colors.dinerPrimary,
                 contentColor = colors.textPrimary
-            )
+            ),
+            enabled = !isProcessing
         ) {
-            Text(
-                text = "Book & Pay ${priceSummary.depositAmount} deposit (${priceSummary.depositPercentage}%)",
-                style = typography.cardTitle,
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.Bold,
-                color = colors.textPrimary
-            )
+            if (isProcessing) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = colors.textPrimary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Processing...",
+                    style = typography.cardTitle,
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary
+                )
+            } else {
+                Text(
+                    text = "Book & Pay ${priceSummary.depositAmount} deposit (${priceSummary.depositPercentage}%)",
+                    style = typography.cardTitle,
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.textPrimary
+                )
+            }
         }
     }
 }
