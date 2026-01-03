@@ -16,6 +16,7 @@ import nl.tue.hci.core.data.PlatformContext
 class MainActivity : ComponentActivity() {
     private var navigateToOrders = false
     private var navigateToChat = false
+    private var navigateToBookingSummary = false
     private var chatCustomerName: String? = null
     
     // Request permission launcher
@@ -40,13 +41,15 @@ class MainActivity : ComponentActivity() {
         val navigateTo = intent?.getStringExtra("navigate_to")
         navigateToOrders = navigateTo == "orders"
         navigateToChat = navigateTo == "chat"
+        navigateToBookingSummary = navigateTo == "booking_summary"
         chatCustomerName = intent?.getStringExtra("customer_name")
 
         setContent {
             BesteChefApp(
                 initialNavigateToOrders = navigateToOrders,
                 initialNavigateToChat = navigateToChat,
-                initialChatCustomerName = chatCustomerName
+                initialChatCustomerName = chatCustomerName,
+                initialNavigateToBookingSummary = navigateToBookingSummary
             )
         }
     }

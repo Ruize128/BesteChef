@@ -22,7 +22,8 @@ import nl.tue.hci.login.LoginStateHolder
 fun BesteChefApp(
     initialNavigateToOrders: Boolean = false,
     initialNavigateToChat: Boolean = false,
-    initialChatCustomerName: String? = null
+    initialChatCustomerName: String? = null,
+    initialNavigateToBookingSummary: Boolean = false
 ) {
     val userSessionRepository = remember { createUserSessionRepository() }
     val userRole by userSessionRepository.userRole.collectAsState(initial = null)
@@ -61,6 +62,7 @@ fun BesteChefApp(
                 }
                 UserRole.DINER -> {
                     DinerScreen(
+                        initialNavigateToBookingSummary = initialNavigateToBookingSummary,
                         onLogout = {
                             coroutineScope.launch {
                                 userSessionRepository.clearSession()

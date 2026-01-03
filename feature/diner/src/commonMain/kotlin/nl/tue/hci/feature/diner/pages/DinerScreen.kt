@@ -21,15 +21,19 @@ import nl.tue.hci.core.ui.rememberAppExitHandler
 @Composable
 fun DinerScreen(
     modifier: Modifier = Modifier,
+    initialNavigateToBookingSummary: Boolean = false,
     onLogout: () -> Unit = {}
 ) {
     BesteChefTheme {
-        var currentDestination by rememberSaveable { mutableStateOf(DinerDestinations.HOME) }
+        var currentDestination by rememberSaveable { mutableStateOf(
+            if (initialNavigateToBookingSummary) DinerDestinations.ORDERS else DinerDestinations.HOME
+        ) }
         var showPaymentSuccessfulScreen by rememberSaveable { mutableStateOf(false) }
         var showChatScreen by rememberSaveable { mutableStateOf(false) }
         var chatChefName by rememberSaveable { mutableStateOf("") }
         var homeScreenState by rememberSaveable { mutableStateOf(HomeScreenState.SEARCH) }
         var selectedChefName by rememberSaveable { mutableStateOf<String?>(null) }
+        var selectedOrderId by rememberSaveable { mutableStateOf(if (initialNavigateToBookingSummary) "ichiraku_offer" else "") }
         
         val exitApp = rememberAppExitHandler()
 
@@ -151,7 +155,7 @@ fun DinerScreen(
                     )
                     DinerDestinations.ORDERS -> DinerOrdersScreen(
                         modifier = Modifier.padding(innerPadding),
-                        initialOrderId = "",
+                        initialOrderId = selectedOrderId,
                         onOrderClick = { orderId ->
                             // Order selection handled internally
                         },
