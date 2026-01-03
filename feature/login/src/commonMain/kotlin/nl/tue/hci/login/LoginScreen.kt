@@ -333,7 +333,7 @@ fun SocialLoginButton(
         modifier = modifier.height(40.dp),
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = colors.filterTabBackground,
+            containerColor = colors.surfaceContainer,
             contentColor = colors.textPrimary,
         ),
         border = null,
@@ -399,7 +399,7 @@ fun RoleSelector(
         modifier = modifier
             .height(40.dp)
             .background(
-                color = colors.filterTabBackground,
+                color = colors.surfaceContainer,
                 shape = RoundedCornerShape(20.dp)
             ),
         horizontalArrangement = Arrangement.spacedBy(0.dp)

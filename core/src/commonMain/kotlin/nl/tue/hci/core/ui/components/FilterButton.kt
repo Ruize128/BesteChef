@@ -31,7 +31,7 @@ fun FilterButton(
         modifier = modifier
             .height(24.dp)
             .background(
-                if (isSelected) colors.chefPrimary else colors.filterTabBackground,
+                if (isSelected) colors.chefPrimary else colors.surfaceContainer,
                 RoundedCornerShape(12.dp)
             )
             .clickable(indication = null,

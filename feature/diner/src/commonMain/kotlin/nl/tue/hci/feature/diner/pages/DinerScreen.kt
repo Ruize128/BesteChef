@@ -3,6 +3,7 @@ package nl.tue.hci.feature.diner.pages
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 // Preview removed for multiplatform
 import nl.tue.hci.core.ui.BesteChefTheme
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 @Composable
 fun DinerScreen(
@@ -46,10 +48,36 @@ fun DinerScreen(
                 }
             )
         } else {
-            DinerNavigationScaffold(
-                currentDestination = currentDestination,
-                onDestinationChange = { currentDestination = it },
-                modifier = modifier
+            val colors = BesteChefThemeColors.current()
+            
+            Scaffold(
+                bottomBar = {
+                    NavigationBar(
+                        containerColor = colors.surfaceContainer
+                    ) {
+                        DinerDestinations.entries.forEach { destination ->
+                            NavigationBarItem(
+                                icon = {
+                                    Icon(
+                                        destination.icon,
+                                        contentDescription = destination.label
+                                    )
+                                },
+                                label = { Text(destination.label) },
+                                selected = destination == currentDestination,
+                                onClick = { currentDestination = destination },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = colors.dinerPrimary,
+                                    selectedTextColor = colors.dinerPrimary,
+                                    indicatorColor = colors.surface,
+                                    unselectedIconColor = colors.textSecondary,
+                                    unselectedTextColor = colors.textSecondary
+                                )
+                            )
+                        }
+                    }
+                },
+                modifier = modifier.fillMaxSize()
             ) { innerPadding ->
                 when (currentDestination) {
                     DinerDestinations.HOME -> DinerHomeScreen(
@@ -87,14 +115,6 @@ fun DinerScreen(
         }
     }
 }
-
-@Composable
-expect fun DinerNavigationScaffold(
-    currentDestination: DinerDestinations,
-    onDestinationChange: (DinerDestinations) -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable (PaddingValues) -> Unit
-)
 
 enum class DinerDestinations(
     val label: String,

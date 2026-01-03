@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.feature.chef.pages.ChefChatHistoryScreen
 import nl.tue.hci.core.ui.BesteChefTheme
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 
 @Composable
@@ -70,9 +71,13 @@ fun ChefScreen(
                 }
             )
         } else {
+            val colors = BesteChefThemeColors.current()
+            
             Scaffold(
                 bottomBar = {
-                    NavigationBar {
+                    NavigationBar(
+                        containerColor = colors.surfaceContainer
+                    ) {
                         ChefDestinations.entries.forEach { destination ->
                             NavigationBarItem(
                                 icon = {
@@ -83,7 +88,14 @@ fun ChefScreen(
                                 },
                                 label = { Text(destination.label) },
                                 selected = destination == currentDestination,
-                                onClick = { currentDestination = destination }
+                                onClick = { currentDestination = destination },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = colors.chefPrimary,
+                                    selectedTextColor = colors.chefPrimary,
+                                    indicatorColor = colors.surface,
+                                    unselectedIconColor = colors.textSecondary,
+                                    unselectedTextColor = colors.textSecondary
+                                )
                             )
                         }
                     }

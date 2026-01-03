@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
+import nl.tue.hci.core.ui.BesteChefThemeColors
 
 
 @Composable
@@ -13,6 +14,8 @@ fun DinerProfileScreen(
     modifier: Modifier = Modifier,
     onLogout: () -> Unit = {}
 ) {
+    val colors = BesteChefThemeColors.current()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -33,7 +36,11 @@ fun DinerProfileScreen(
         // Logout button
         Button(
             onClick = onLogout,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colors.dinerPrimary,
+                contentColor = colors.textOnPrimary,
+            ),
         ) {
             Text("Logout")
         }

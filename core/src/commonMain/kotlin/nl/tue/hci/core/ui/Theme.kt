@@ -30,7 +30,7 @@ interface BesteChefColors {
     val background: Color
     val surface: Color
     val surfaceVariant: Color // For cards, elevated surfaces
-    val filterTabBackground: Color // Background for filter tabs
+    val surfaceContainer: Color // Background for navigation/tabs
     
     // Text colors
     val textPrimary: Color
@@ -75,7 +75,7 @@ private val LightBesteChefColors = object : BesteChefColors {
     override val background = Color(0xFFFFFFFF) // White
     override val surface = Color(0xFFFFFFFF) // White
     override val surfaceVariant = Color(0xFFF5F5F5) // Light gray for cards
-    override val filterTabBackground = Color(0xFFEEEEEE) // Medium light gray for filter tabs
+    override val surfaceContainer = Color(0xFFEEEEEE) // Medium light gray for navigation/tabs
     
     override val textPrimary = Color(0xFF212121) // Almost black
     override val textSecondary = Color(0xFF757575) // Medium gray
@@ -220,7 +220,7 @@ private val DarkBesteChefColors = object : BesteChefColors {
     override val background = Color(0xFF121212) // Dark background
     override val surface = Color(0xFF1E1E1E) // Dark surface
     override val surfaceVariant = Color(0xFF2C2C2C) // Darker for cards
-    override val filterTabBackground = Color(0xFF3A3A3A) // Medium dark gray for filter tabs
+    override val surfaceContainer = Color(0xFF3A3A3A) // Medium dark gray for navigation/tabs
     
     override val textPrimary = Color(0xFFECECEC) // Light text
     override val textSecondary = Color(0xFFB0B0B0) // Medium light gray
