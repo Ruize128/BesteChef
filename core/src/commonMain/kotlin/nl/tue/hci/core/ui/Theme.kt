@@ -30,6 +30,7 @@ interface BesteChefColors {
     val background: Color
     val surface: Color
     val surfaceVariant: Color // For cards, elevated surfaces
+    val filterTabBackground: Color // Background for filter tabs
     
     // Text colors
     val textPrimary: Color
@@ -43,7 +44,6 @@ interface BesteChefColors {
     val outlineVariant: Color // Lighter borders
     val buttonBackground: Color // Default button background
     val buttonBackgroundDisabled: Color
-    
     // Status colors
     val statusNewBackground: Color
     val statusNewText: Color
@@ -75,6 +75,7 @@ private val LightBesteChefColors = object : BesteChefColors {
     override val background = Color(0xFFFFFFFF) // White
     override val surface = Color(0xFFFFFFFF) // White
     override val surfaceVariant = Color(0xFFF5F5F5) // Light gray for cards
+    override val filterTabBackground = Color(0xFFEEEEEE) // Medium light gray for filter tabs
     
     override val textPrimary = Color(0xFF212121) // Almost black
     override val textSecondary = Color(0xFF757575) // Medium gray
@@ -86,7 +87,7 @@ private val LightBesteChefColors = object : BesteChefColors {
     override val outlineVariant = Color(0xFFF5F5F5) // Very light gray
     override val buttonBackground = Color(0xFFF2F4F7) // Button grey
     override val buttonBackgroundDisabled = Color(0xFFE0E0E0)
-    
+
     override val statusNewBackground = Color(0xFFFFEBEE) // Light red
     override val statusNewText = Color(0xFFD32F2F) // Red
     override val statusConfirmedBackground = Color(0xFFE8F5E9) // Light green
@@ -219,6 +220,7 @@ private val DarkBesteChefColors = object : BesteChefColors {
     override val background = Color(0xFF121212) // Dark background
     override val surface = Color(0xFF1E1E1E) // Dark surface
     override val surfaceVariant = Color(0xFF2C2C2C) // Darker for cards
+    override val filterTabBackground = Color(0xFF3A3A3A) // Medium dark gray for filter tabs
     
     override val textPrimary = Color(0xFFECECEC) // Light text
     override val textSecondary = Color(0xFFB0B0B0) // Medium light gray
@@ -230,7 +232,7 @@ private val DarkBesteChefColors = object : BesteChefColors {
     override val outlineVariant = Color(0xFF2C2C2C) // Darker outline
     override val buttonBackground = Color(0xFF2C2C2C) // Dark button
     override val buttonBackgroundDisabled = Color(0xFF1E1E1E)
-    
+
     override val statusNewBackground = Color(0xFF4A1F1F) // Dark red background
     override val statusNewText = Color(0xFFFF5252) // Brighter red
     override val statusConfirmedBackground = Color(0xFF1F4A1F) // Dark green background

@@ -70,15 +70,14 @@ fun ChefHomeScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(colors.background)
+            .background(colors.surfaceVariant)
     ) {
-        // Fixed header section
+        // Fixed header section with just avatar and title
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(colors.surface)
         ) {
-            // Header with avatar and title
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -101,80 +100,80 @@ fun ChefHomeScreen(
                     modifier = Modifier.align(alignment = Alignment.Center)
                 )
             }
-            
-            // Today stats card
-            Surface(
+        }
+        
+        // Today stats card - white container with 20dp corners on light gray background
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            shape = RoundedCornerShape(20.dp),
+            color = colors.surface,
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                shape = RoundedCornerShape(16.dp),
-                color = colors.surface,
-                shadowElevation = 1.dp
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                Text(
+                    text = "Today",
+                    style = typography.labelMedium,
+                    color = colors.textSecondary,
+                )
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Today",
-                        style = typography.labelMedium,
-                        color = colors.textSecondary,
+                        text = "$bookings bookings • $inquiries inquiries",
+                        style = typography.cardTitle,
+                        color = colors.textPrimary
                     )
                     
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "$bookings bookings • $inquiries inquiries",
-                            style = typography.cardTitle,
-                            color = colors.textPrimary
-                        )
-                        
-                        Text(
-                            text = "View calendar",
-                            style = typography.bodySmall,
-                            color = colors.chefPrimary,
-                            modifier = Modifier
-                                .width(64.dp)
-                                .clickable(onClick = {}),
-                            textAlign = TextAlign.Center,
-                        )
-                    }
+                    Text(
+                        text = "View calendar",
+                        style = typography.bodySmall,
+                        color = colors.chefPrimary,
+                        modifier = Modifier
+                            .width(64.dp)
+                            .clickable(onClick = {}),
+                        textAlign = TextAlign.Center,
+                    )
                 }
             }
+        }
 
-
-            // Filter buttons
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(horizontal = 32.dp, vertical = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                FilterButton(
-                    text = "All",
-                    isSelected = selectedFilter == "All",
-                    onClick = { selectedFilter = "All" },
-                    modifier = Modifier.weight(1f)
-                )
-                FilterButton(
-                    text = "Unanswered",
-                    isSelected = selectedFilter == "Unanswered",
-                    onClick = { selectedFilter = "Unanswered" },
-                    modifier = Modifier.weight(1f)
-                )
-                FilterButton(
-                    text = "Today",
-                    isSelected = selectedFilter == "Today",
-                    onClick = { selectedFilter = "Today" },
-                    modifier = Modifier.weight(1f)
-                )
-            }
+        // Filter buttons with gray background
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(horizontal = 48.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            FilterButton(
+                text = "All",
+                isSelected = selectedFilter == "All",
+                onClick = { selectedFilter = "All" },
+                modifier = Modifier.weight(1f)
+            )
+            FilterButton(
+                text = "Unanswered",
+                isSelected = selectedFilter == "Unanswered",
+                onClick = { selectedFilter = "Unanswered" },
+                modifier = Modifier.weight(1f)
+            )
+            FilterButton(
+                text = "Today",
+                isSelected = selectedFilter == "Today",
+                onClick = { selectedFilter = "Today" },
+                modifier = Modifier.weight(1f)
+            )
         }
         
         // Scrollable list
@@ -209,7 +208,8 @@ private fun BookingInquiryCard(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         color = colors.surface,
-        shadowElevation = 1.dp
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp
     ) {
         Row(
             modifier = Modifier
@@ -250,7 +250,7 @@ private fun BookingInquiryCard(
                 if (!booking.message.contains("(")) {
                     Text(
                         text = "(${booking.date} • ${booking.guests} guests)",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = typography.bodySmall,
                         color = colors.textSecondary
                     )
                 }
@@ -263,7 +263,7 @@ private fun BookingInquiryCard(
             ) {
                 Text(
                     text = booking.timeAgo,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = typography.bodySmall,
                     color = colors.textSecondary
                 )
                 

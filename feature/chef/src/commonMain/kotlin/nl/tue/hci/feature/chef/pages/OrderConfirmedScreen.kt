@@ -48,7 +48,7 @@ fun OrderConfirmedScreen(
         modifier = modifier
             .fillMaxSize()
             .statusBarsPadding()
-            .background(colors.background)
+            .background(colors.surfaceVariant)
             .padding(top = 24.dp)
     ) {
         Column(
@@ -116,7 +116,8 @@ fun OrderConfirmedScreen(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     color = colors.surfaceVariant, // Light grey
-                    shadowElevation = 2.dp
+                    shadowElevation = 0.dp,
+                    tonalElevation = 0.dp
                 ) {
                     Column(
                         modifier = Modifier
@@ -223,7 +224,8 @@ private fun FinalMenuItemCard(item: OfferMenuItem) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         color = colors.surfaceVariant, // Light grey
-        shadowElevation = 1.dp
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp
     ) {
         Row(
             modifier = Modifier

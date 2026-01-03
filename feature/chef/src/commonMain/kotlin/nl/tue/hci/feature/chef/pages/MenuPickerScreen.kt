@@ -125,13 +125,14 @@ fun MenuPickerScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(colors.background)
+            .background(colors.surfaceVariant)
     ) {
         // Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = colors.surface,
-            shadowElevation = 2.dp
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier
@@ -305,7 +306,8 @@ private fun MenuPickerItemCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         color = colors.surface,
-        shadowElevation = 1.dp
+        shadowElevation = 0.dp,
+        tonalElevation = 0.dp
     ) {
         Row(
             modifier = Modifier
@@ -345,7 +347,7 @@ private fun MenuPickerItemCard(
             ) {
                 Text(
                     text = item.title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = typography.cardTitle,
                     fontWeight = FontWeight.Bold,
                     color = colors.textPrimary
                 )
@@ -380,7 +382,7 @@ private fun MenuPickerItemCard(
             ) {
                 Text(
                     text = item.price,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = typography.cardTitle,
                     fontWeight = FontWeight.Bold,
                     color = colors.textPrimary
                 )

@@ -157,7 +157,7 @@ class LoginStateHolder(
                         it.copy(
                             isLoading = false,
                             isSigningUp = true,
-                            selectedRole = UserRole.CHEF
+                            selectedRole = UserRole.DINER
                         )
                     }
                     return@launch

@@ -104,7 +104,7 @@ fun LoginScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-//            .background(Color.Black)
+            .background(colors.surfaceVariant)
     ) {
         Column(
             modifier = Modifier
@@ -134,8 +134,8 @@ fun LoginScreen(
             uiState.errorMessage?.let { error ->
                 Text(
                     text = error,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.error,
+                    style = typography.bodySmall,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 8.dp)
@@ -161,7 +161,7 @@ fun LoginScreen(
                     unfocusedContainerColor = colors.surface,
                     focusedBorderColor = colors.outline,
                     unfocusedBorderColor = colors.outline,
-                    errorBorderColor = MaterialTheme.colorScheme.error,
+                    errorBorderColor = colors.error,
                 ),
                 singleLine = true,
                 enabled = !uiState.isLoading,
@@ -208,7 +208,7 @@ fun LoginScreen(
                         unfocusedContainerColor = colors.surface,
                         focusedBorderColor = colors.outline,
                         unfocusedBorderColor = colors.outline,
-                        errorBorderColor = MaterialTheme.colorScheme.error,
+                        errorBorderColor = colors.error,
                     ),
                     singleLine = true,
                     enabled = !uiState.isLoading,
@@ -228,7 +228,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-            // Continue button (mint green)
+            // Continue button - changes color based on selected role
         Button(
                 onClick = { loginStateHolder.onContinueClick() },
             modifier = Modifier
@@ -236,7 +236,11 @@ fun LoginScreen(
                     .height(40.dp),
                 shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = colors.dinerPrimary
+                containerColor = when (uiState.selectedRole) {
+                    UserRole.CHEF -> colors.chefPrimary
+                    UserRole.DINER -> colors.dinerPrimary
+                    else -> colors.dinerPrimary // Default to diner if no role selected
+                }
                 ),
                 enabled = !uiState.isLoading
             ) {
@@ -329,7 +333,7 @@ fun SocialLoginButton(
         modifier = modifier.height(40.dp),
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = colors.buttonBackground,
+            containerColor = colors.filterTabBackground,
             contentColor = colors.textPrimary,
         ),
         border = null,
@@ -395,7 +399,7 @@ fun RoleSelector(
         modifier = modifier
             .height(40.dp)
             .background(
-                color = colors.buttonBackground,
+                color = colors.filterTabBackground,
                 shape = RoundedCornerShape(20.dp)
             ),
         horizontalArrangement = Arrangement.spacedBy(0.dp)
@@ -523,7 +527,7 @@ fun ConfirmPasswordInput(
             unfocusedContainerColor = colors.surface,
             focusedBorderColor = colors.outline,
             unfocusedBorderColor = colors.outline,
-            errorBorderColor = MaterialTheme.colorScheme.error,
+            errorBorderColor = colors.error,
         ),
         singleLine = true,
         enabled = !uiState.isLoading,
@@ -561,7 +565,7 @@ fun ConfirmPasswordInput(
             unfocusedContainerColor = colors.surface,
             focusedBorderColor = colors.outline,
             unfocusedBorderColor = colors.outline,
-            errorBorderColor = MaterialTheme.colorScheme.error,
+            errorBorderColor = colors.error,
         ),
         singleLine = true,
         enabled = !uiState.isLoading,

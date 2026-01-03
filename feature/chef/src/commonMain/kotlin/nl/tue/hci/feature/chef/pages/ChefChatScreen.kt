@@ -94,7 +94,7 @@ fun ChefChatScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(colors.background)
+            .background(colors.surfaceVariant)
     ) {
         // Header with status bar padding
         Surface(
@@ -102,7 +102,8 @@ fun ChefChatScreen(
                 .fillMaxWidth()
                 .statusBarsPadding(),
             color = colors.surface,
-            shadowElevation = 2.dp
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier
@@ -194,7 +195,8 @@ fun ChefChatScreen(
                 .fillMaxWidth()
                 .wrapContentHeight(),
             color = colors.surface,
-            shadowElevation = 4.dp
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
             Row(
                 modifier = Modifier
@@ -276,6 +278,7 @@ fun ChefChatScreen(
 @Composable
 fun DateSeparator(dateText: String) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Box(
         modifier = Modifier.fillMaxWidth(),
@@ -288,7 +291,7 @@ fun DateSeparator(dateText: String) {
             Text(
                 text = dateText,
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                style = MaterialTheme.typography.bodySmall,
+                style = typography.bodySmall,
                 color = colors.textTertiary
             )
         }
