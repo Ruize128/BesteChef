@@ -200,7 +200,7 @@ android {
         debug {
             // Enable R8 optimizations for better debug performance
             // This improves performance while keeping the build debuggable
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             isShrinkResources = false
             // Use optimization rules but keep names readable for debugging
             proguardFiles(
