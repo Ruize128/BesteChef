@@ -176,7 +176,7 @@ fun DinerChatScreen(
                     .padding(horizontal = 12.dp, vertical = 12.dp)
                     .padding(bottom = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Attachment icon
                 IconButton(
