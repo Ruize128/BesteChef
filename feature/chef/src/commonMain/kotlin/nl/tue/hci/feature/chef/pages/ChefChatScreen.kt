@@ -1,5 +1,6 @@
 package nl.tue.hci.feature.chef.pages
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -144,48 +146,96 @@ fun ChefChatScreen(
             }
         }
         
-        // Chat messages area with floating Edit offer button
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
+        // Dish description bar
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = colors.surface,
+            shadowElevation = 0.dp,
+            tonalElevation = 0.dp
         ) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // Date separator
-                item {
-                    DateSeparator(dateText = "Today • Dec 12, 2025")
-                }
+            Column {
+                // Top border
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = (0.5).dp,
+                    color = colors.outline
+                )
                 
-                items(messages) { message ->
-                    ChatBubble(message = message)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Dish image
+                    Image(
+                        painter = nl.tue.hci.core.ui.rememberImagePainter("omakase_5_course"),
+                        contentDescription = "5-course Omakase",
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                    
+                    // Dish name and price
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "5-course Omakase",
+                            style = typography.cardTitle,
+                            color = colors.textPrimary
+                        )
+                        Text(
+                            text = "€120",
+                            style = typography.bodyMedium,
+                            color = colors.textSecondary
+                        )
+                    }
+                    
+                    // Edit Offer button
+                    Button(
+                        onClick = onEditOrderClick,
+                        modifier = Modifier
+                            .height(32.dp)
+                            .widthIn(min = 60.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.chefPrimary,
+                            contentColor = colors.textOnPrimary
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 0.dp
+                        )
+                    ) {
+                        Text(
+                            text = "Edit Offer",
+                            style = typography.buttonText,
+                        )
+                    }
                 }
             }
+        }
+        
+        // Chat messages area
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Date separator
+            item {
+                DateSeparator(dateText = "Today • Dec 12, 2025")
+            }
             
-            // Floating Edit offer button - positioned above chat area
-            Button(
-                onClick = onEditOrderClick,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-                    .width(64.dp)
-                    .wrapContentHeight(),
-                shape = RoundedCornerShape(20.dp),
-                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colors.chefPrimary,
-                    contentColor = colors.textOnPrimary
-                )
-            ) {
-                Text(
-                    text = "Edit offer",
-                    style = typography.buttonText,
-                    textAlign = TextAlign.Center,
-                )
+            items(messages) { message ->
+                ChatBubble(message = message)
             }
         }
         
@@ -204,7 +254,7 @@ fun ChefChatScreen(
                     .padding(horizontal = 12.dp, vertical = 12.dp)
                     .padding(bottom = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Attachment icon
                 IconButton(
