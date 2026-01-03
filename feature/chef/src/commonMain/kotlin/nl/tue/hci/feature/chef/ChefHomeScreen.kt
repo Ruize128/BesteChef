@@ -8,9 +8,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +31,7 @@ import nl.tue.hci.core.ui.components.StatusBadge
 import nl.tue.hci.feature.chef.model.BookingInquiry
 import nl.tue.hci.feature.chef.model.BookingStatus
 import nl.tue.hci.core.ui.BesteChefTheme
+import nl.tue.hci.feature.chef.notification.sendChatNotification
 
 
 @Composable
@@ -36,6 +39,16 @@ fun ChefHomeScreen(
     modifier: Modifier = Modifier,
     onChatClick: (String) -> Unit = {} // customerName
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    
+    // Send notification when screen appears
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(1000) // Delay 1 second to ensure heads-up appears
+        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+            sendChatNotification("Sophie", "Question about dessert...")
+        }
+    }
+    
     // Hardcoded data
     val bookings = 1
     val inquiries = 1

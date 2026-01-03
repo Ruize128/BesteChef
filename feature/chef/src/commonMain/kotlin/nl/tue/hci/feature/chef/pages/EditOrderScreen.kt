@@ -32,6 +32,7 @@ import nl.tue.hci.feature.chef.model.OrderDetails
 import nl.tue.hci.feature.chef.model.OfferMenuItem
 import nl.tue.hci.feature.chef.model.PriceSummary
 import nl.tue.hci.feature.chef.model.SelectedMenuItem
+import nl.tue.hci.feature.chef.notification.sendBookingConfirmedNotification
 
 @Composable
 fun EditOrderScreen(
@@ -245,6 +246,7 @@ fun EditOrderScreen(
         // Send Offer button
         Button(
             onClick = {
+                sendBookingConfirmedNotification()
                 onSendOfferClick(orderDetails, menuItems.toList())
             },
             modifier = Modifier

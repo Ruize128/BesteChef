@@ -19,7 +19,11 @@ import nl.tue.hci.login.LoginScreen
 import nl.tue.hci.login.LoginStateHolder
 
 @Composable
-fun BesteChefApp() {
+fun BesteChefApp(
+    initialNavigateToOrders: Boolean = false,
+    initialNavigateToChat: Boolean = false,
+    initialChatCustomerName: String? = null
+) {
     val userSessionRepository = remember { createUserSessionRepository() }
     val userRole by userSessionRepository.userRole.collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
@@ -45,6 +49,9 @@ fun BesteChefApp() {
                 }
                 UserRole.CHEF -> {
                     ChefScreen(
+                        initialNavigateToOrders = initialNavigateToOrders,
+                        initialNavigateToChat = initialNavigateToChat,
+                        initialChatCustomerName = initialChatCustomerName,
                         onLogout = {
                             coroutineScope.launch {
                                 userSessionRepository.clearSession()

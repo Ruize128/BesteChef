@@ -33,13 +33,22 @@ fun ChefScreenPreview() {
 @Composable
 fun ChefScreen(
     modifier: Modifier = Modifier,
+    initialNavigateToOrders: Boolean = false,
+    initialNavigateToChat: Boolean = false,
+    initialChatCustomerName: String? = null,
     onLogout: () -> Unit = {}
 ) {
     BesteChefTheme {
-        var currentDestination by rememberSaveable { mutableStateOf(ChefDestinations.HOME) }
-        var showChatScreen by rememberSaveable { mutableStateOf(false) }
+        var currentDestination by rememberSaveable { mutableStateOf(
+            when {
+                initialNavigateToChat -> ChefDestinations.CHAT
+                initialNavigateToOrders -> ChefDestinations.ORDERS
+                else -> ChefDestinations.HOME
+            }
+        ) }
+        var showChatScreen by rememberSaveable { mutableStateOf(initialNavigateToChat) }
         var showBookingConfirmedScreen by rememberSaveable { mutableStateOf(false) }
-        var chatCustomerName by rememberSaveable { mutableStateOf("") }
+        var chatCustomerName by rememberSaveable { mutableStateOf(initialChatCustomerName ?: "") }
         var editOrderId by rememberSaveable { mutableStateOf("") }
         var orderDetailsForConfirmed by rememberSaveable { mutableStateOf<nl.tue.hci.feature.chef.model.OrderDetails?>(null) }
         var menuItemsForConfirmed by rememberSaveable { mutableStateOf<List<nl.tue.hci.feature.chef.model.OfferMenuItem>>(emptyList()) }
