@@ -12,6 +12,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -138,6 +140,18 @@ fun EditOrderScreen(
         )
     }
     
+    var isProcessing by rememberSaveable { mutableStateOf(false) }
+    
+    // Handle processing delay
+    LaunchedEffect(isProcessing) {
+        if (isProcessing) {
+            kotlinx.coroutines.delay(1000) // 1 second delay
+            sendBookingConfirmedNotification()
+            onSendOfferClick(orderDetails, menuItems.toList())
+            isProcessing = false
+        }
+    }
+    
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -245,10 +259,7 @@ fun EditOrderScreen(
         
         // Send Offer button
         Button(
-            onClick = {
-                sendBookingConfirmedNotification()
-                onSendOfferClick(orderDetails, menuItems.toList())
-            },
+            onClick = { isProcessing = true },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 16.dp)
@@ -259,6 +270,7 @@ fun EditOrderScreen(
                 contentColor = colors.textPrimary,
             ),
             contentPadding = PaddingValues(0.dp),
+            enabled = !isProcessing
         ) {
             Row(
                 modifier = Modifier
@@ -267,16 +279,30 @@ fun EditOrderScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Send Offer",
-                    style = typography.cardTitle,
-                    color = colors.textPrimary,
-                )
-                Text(
-                    text = priceSummary.total,
-                    style = typography.cardTitle,
-                    color = colors.textPrimary,
-                )
+                if (isProcessing) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp,
+                        color = colors.textPrimary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Sending...",
+                        style = typography.cardTitle,
+                        color = colors.textPrimary,
+                    )
+                } else {
+                    Text(
+                        text = "Send Offer",
+                        style = typography.cardTitle,
+                        color = colors.textPrimary,
+                    )
+                    Text(
+                        text = priceSummary.total,
+                        style = typography.cardTitle,
+                        color = colors.textPrimary,
+                    )
+                }
             }
         }
     }
