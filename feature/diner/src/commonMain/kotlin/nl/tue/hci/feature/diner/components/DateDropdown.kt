@@ -193,7 +193,7 @@ private fun CustomCalendar(
                                         modifier = Modifier
                                             .size(32.dp)
                                             .background(
-                                                color = colors.chefPrimary,
+                                                color = colors.dinerPrimary,
                                                 shape = RoundedCornerShape(16.dp)
                                             ),
                                         contentAlignment = Alignment.Center

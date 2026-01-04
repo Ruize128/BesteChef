@@ -139,7 +139,7 @@ fun LocationDropdownMenu(
                                 Icon(
                                     imageVector = Icons.Default.LocationOn,
                                     contentDescription = "Current position",
-                                    tint = colors.chefPrimary,
+                                    tint = colors.dinerPrimary,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
