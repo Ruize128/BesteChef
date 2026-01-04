@@ -27,7 +27,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.painter.Painter
 // Preview removed for multiplatform compatibility
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,7 +35,6 @@ import nl.tue.hci.core.model.UserRole
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.PlatformBackHandler
-import nl.tue.hci.core.R
 
 
 // @androidx.compose.ui.tooling.preview.Preview - removed for multiplatform
@@ -301,7 +300,7 @@ fun LoginScreen(
             SocialLoginButton(
                 onClick = { loginStateHolder.onGoogleLoginClick() },
                 text = "Continue with Google",
-                iconRes = R.drawable.ic_google_logo,
+                iconPainter = null,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
@@ -312,7 +311,7 @@ fun LoginScreen(
             SocialLoginButton(
                 onClick = { loginStateHolder.onAppleLoginClick() },
                 text = "Continue with Apple",
-                iconRes = R.drawable.ic_apple_logo,
+                iconPainter = null,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
@@ -331,7 +330,7 @@ fun LoginScreen(
 fun SocialLoginButton(
     onClick: () -> Unit,
     text: String,
-    iconRes: Int,
+    iconPainter: Painter?,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
@@ -353,12 +352,14 @@ fun SocialLoginButton(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(iconRes),
-                contentDescription = null,
-                modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
+            if (iconPainter != null) {
+                Image(
+                    painter = iconPainter,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+            }
             Text(
                 text = text,
                 fontSize = 16.sp,
