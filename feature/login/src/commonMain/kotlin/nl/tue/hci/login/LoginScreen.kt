@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.res.painterResource
 // Preview removed for multiplatform compatibility
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,6 +35,7 @@ import nl.tue.hci.core.model.UserRole
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.PlatformBackHandler
+import nl.tue.hci.core.R
 
 
 // @androidx.compose.ui.tooling.preview.Preview - removed for multiplatform
@@ -298,8 +301,7 @@ fun LoginScreen(
             SocialLoginButton(
                 onClick = { loginStateHolder.onGoogleLoginClick() },
                 text = "Continue with Google",
-                icon = "G",
-                iconColor = colors.dinerPrimary, // Using theme color instead of hardcoded Google blue
+                iconRes = R.drawable.ic_google_logo,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
@@ -310,8 +312,7 @@ fun LoginScreen(
             SocialLoginButton(
                 onClick = { loginStateHolder.onAppleLoginClick() },
                 text = "Continue with Apple",
-                icon = "🍎",
-                iconColor = colors.textPrimary,
+                iconRes = R.drawable.ic_apple_logo,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
@@ -330,8 +331,7 @@ fun LoginScreen(
 fun SocialLoginButton(
     onClick: () -> Unit,
     text: String,
-    icon: String,
-    iconColor: Color,
+    iconRes: Int,
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
@@ -353,38 +353,11 @@ fun SocialLoginButton(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (icon == "G") {
-                // Google logo - colorful "G"
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color(0xFF4285F4), // Blue
-                                    Color(0xFF34A853), // Green
-                                    Color(0xFFFBBC05), // Yellow
-                                    Color(0xFFEA4335)  // Red
-                                )
-                            ),
-                            shape = RoundedCornerShape(4.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "G",
-                        color = colors.textOnPrimary,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            } else {
-                // Apple logo
-                Text(
-                    text = icon,
-                    fontSize = 20.sp
-                )
-            }
+            Image(
+                painter = painterResource(iconRes),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = text,
