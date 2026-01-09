@@ -24,9 +24,13 @@ fun DinerHomeScreen(
     currentState: HomeScreenState = HomeScreenState.SEARCH,
     selectedChefName: String? = null,
     selectedMenuName: String? = null,
+    selectedSearchLocation: String? = null,
+    selectedSearchDate: kotlinx.datetime.LocalDate? = null,
+    selectedSearchGuests: String? = null,
     onStateChange: (HomeScreenState) -> Unit = {},
     onChefSelect: (String) -> Unit = {},
     onMenuSelect: (String) -> Unit = {},
+    onSearch: (location: String?, date: kotlinx.datetime.LocalDate?, guests: String) -> Unit = { _, _, _ -> },
     onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
 ) {
     when (currentState) {
@@ -58,6 +62,9 @@ fun DinerHomeScreen(
         HomeScreenState.SEARCH_RESULTS -> {
             SearchResultsScreen(
                 modifier = modifier,
+                initialLocation = selectedSearchLocation,
+                initialDate = selectedSearchDate,
+                initialGuests = selectedSearchGuests,
                 onBackClick = {
                     onStateChange(HomeScreenState.SEARCH)
                 },
@@ -71,7 +78,8 @@ fun DinerHomeScreen(
         HomeScreenState.SEARCH -> {
             SearchScreen(
                 modifier = modifier,
-                onSearchClick = {
+                onSearchClick = { location, date, guests ->
+                    onSearch(location, date, guests)
                     onStateChange(HomeScreenState.SEARCH_RESULTS)
                 }
             )

@@ -26,6 +26,9 @@ import androidx.compose.ui.text.style.TextAlign
 // Preview removed for multiplatform
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.feature.diner.components.DateDropdownMenu
@@ -42,7 +45,7 @@ private val LocalDateSaver = Saver<LocalDate?, String>(
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    onSearchClick: () -> Unit = {}
+    onSearchClick: (selectedLocation: String?, selectedDate: LocalDate?, guests: String) -> Unit = { _, _, _ -> }
 ) {
     // Static data for form fields
     val locationPlaceholder = "Where?"
@@ -52,18 +55,18 @@ fun SearchScreen(
     val cuisinePlaceholder = "Cuisine (optional) — e.g. Japanese"
     
     // Location state
-    var selectedLocation by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedLocation by rememberSaveable { mutableStateOf<String?>("Eindhoven") }
     var isLocationDropdownOpen by rememberSaveable { mutableStateOf(false) }
     var locationSearchQuery by rememberSaveable { mutableStateOf("") }
     
-    // Date state
+    // Date state (default to today)
     var selectedDate by rememberSaveable(stateSaver = LocalDateSaver) { 
-        mutableStateOf<LocalDate?>(null) 
+        mutableStateOf<LocalDate?>(Clock.System.todayIn(TimeZone.currentSystemDefault())) 
     }
     var isDateDropdownOpen by rememberSaveable { mutableStateOf(false) }
     
-    // Guests state
-    var guestsNumber by rememberSaveable { mutableStateOf("") }
+    // Guests state (default 6)
+    var guestsNumber by rememberSaveable { mutableStateOf("6") }
 
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
@@ -152,7 +155,7 @@ fun SearchScreen(
                 
                 // Date field
                 Box(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1.2f)
                 ) {
                     Column(
                         modifier = Modifier
@@ -201,7 +204,7 @@ fun SearchScreen(
                 // Guests field
                 Column(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(0.8f)
                         .padding(16.dp)
                 ) {
                     Text(
@@ -249,7 +252,9 @@ fun SearchScreen(
                 
                 // Search button
                 Button(
-                    onClick = onSearchClick,
+                    onClick = {
+                        onSearchClick(selectedLocation, selectedDate, guestsNumber)
+                    },
                     modifier = Modifier
                         .padding(8.dp)
                         .size(56.dp),
@@ -258,12 +263,14 @@ fun SearchScreen(
                         containerColor = colors.dinerPrimary,
                         contentColor = colors.textOnPrimary
                     ),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+                    contentPadding = PaddingValues(0.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search",
                         tint = colors.textOnPrimary,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }

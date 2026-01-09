@@ -29,6 +29,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import nl.tue.hci.feature.diner.components.ActionButton
 import nl.tue.hci.feature.diner.ChefResult
 import nl.tue.hci.feature.diner.components.ChefResultCard
@@ -49,6 +52,9 @@ private val LocalDateSaver = Saver<LocalDate?, String>(
 @Composable
 fun SearchResultsScreen(
     modifier: Modifier = Modifier,
+    initialLocation: String? = null,
+    initialDate: kotlinx.datetime.LocalDate? = null,
+    initialGuests: String? = null,
     onBackClick: () -> Unit = {},
     onChefClick: (String) -> Unit = {}, // Callback when chef is selected to show menu
     onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
@@ -56,6 +62,9 @@ fun SearchResultsScreen(
     // Delegate navigation handling to parent; show only search results content here
     SearchResultsContent(
         modifier = modifier,
+        initialLocation = initialLocation,
+        initialDate = initialDate,
+        initialGuests = initialGuests,
         onBackClick = onBackClick,
         onChefClick = onChefClick,
         onChatClick = onChatClick
@@ -65,6 +74,9 @@ fun SearchResultsScreen(
 @Composable
 private fun SearchResultsContent(
     modifier: Modifier = Modifier,
+    initialLocation: String? = null,
+    initialDate: kotlinx.datetime.LocalDate? = null,
+    initialGuests: String? = null,
     onBackClick: () -> Unit = {},
     onChefClick: (String) -> Unit = {},
     onChatClick: (String) -> Unit = {}
@@ -73,16 +85,16 @@ private fun SearchResultsContent(
     val typography = BesteChefThemeTypography.current()
     
     // Search parameters state
-    var selectedLocation by rememberSaveable { mutableStateOf<String?>("Eindhoven") }
+    var selectedLocation by rememberSaveable { mutableStateOf<String?>(initialLocation ?: "Eindhoven") }
     var isLocationDropdownOpen by rememberSaveable { mutableStateOf(false) }
     var locationSearchQuery by rememberSaveable { mutableStateOf("") }
     
     var selectedDate by rememberSaveable(stateSaver = LocalDateSaver) { 
-        mutableStateOf<LocalDate?>(LocalDate(2025, 12, 12)) 
+        mutableStateOf<LocalDate?>(initialDate ?: Clock.System.todayIn(TimeZone.currentSystemDefault())) 
     }
     var isDateDropdownOpen by rememberSaveable { mutableStateOf(false) }
     
-    var guestsNumber by rememberSaveable { mutableStateOf("6") }
+    var guestsNumber by rememberSaveable { mutableStateOf(initialGuests ?: "6") }
     
     // Filter modal state
     var isFilterModalOpen by rememberSaveable { mutableStateOf(false) }

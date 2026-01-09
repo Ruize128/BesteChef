@@ -34,6 +34,9 @@ fun DinerScreen(
         var homeScreenState by rememberSaveable { mutableStateOf(HomeScreenState.SEARCH) }
         var selectedChefName by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedMenuName by rememberSaveable { mutableStateOf<String?>(null) }
+        var selectedSearchLocation by rememberSaveable { mutableStateOf<String?>(null) }
+        var selectedSearchDate by rememberSaveable { mutableStateOf<kotlinx.datetime.LocalDate?>(null) }
+        var selectedSearchGuests by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedOrderId by rememberSaveable { mutableStateOf(if (initialNavigateToBookingSummary) "ichiraku_offer" else "") }
         
         val exitApp = rememberAppExitHandler()
@@ -139,6 +142,9 @@ fun DinerScreen(
                         currentState = homeScreenState,
                         selectedChefName = selectedChefName,
                         selectedMenuName = selectedMenuName,
+                        selectedSearchLocation = selectedSearchLocation,
+                        selectedSearchDate = selectedSearchDate,
+                        selectedSearchGuests = selectedSearchGuests,
                         onStateChange = { newState ->
                             homeScreenState = newState
                         },
@@ -147,6 +153,11 @@ fun DinerScreen(
                         },
                         onMenuSelect = { menuName ->
                             selectedMenuName = menuName
+                        },
+                        onSearch = { location, date, guests ->
+                            selectedSearchLocation = location
+                            selectedSearchDate = date
+                            selectedSearchGuests = guests
                         },
                         onChatClick = { chefName ->
                             // Navigate to chat section and open chat
