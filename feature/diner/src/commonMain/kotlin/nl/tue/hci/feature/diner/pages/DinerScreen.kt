@@ -33,6 +33,7 @@ fun DinerScreen(
         var chatChefName by rememberSaveable { mutableStateOf("") }
         var homeScreenState by rememberSaveable { mutableStateOf(HomeScreenState.SEARCH) }
         var selectedChefName by rememberSaveable { mutableStateOf<String?>(null) }
+        var selectedMenuName by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedOrderId by rememberSaveable { mutableStateOf(if (initialNavigateToBookingSummary) "ichiraku_offer" else "") }
         
         val exitApp = rememberAppExitHandler()
@@ -61,9 +62,13 @@ fun DinerScreen(
                                 // Go back to search
                                 homeScreenState = HomeScreenState.SEARCH
                             }
-                            HomeScreenState.MENU -> {
+                            HomeScreenState.MENU_LIST -> {
                                 // Go back to search results
                                 homeScreenState = HomeScreenState.SEARCH_RESULTS
+                            }
+                            HomeScreenState.MENU -> {
+                                // Go back to menu list
+                                homeScreenState = HomeScreenState.MENU_LIST
                             }
                         }
                     }
@@ -133,11 +138,15 @@ fun DinerScreen(
                         modifier = Modifier.padding(innerPadding),
                         currentState = homeScreenState,
                         selectedChefName = selectedChefName,
+                        selectedMenuName = selectedMenuName,
                         onStateChange = { newState ->
                             homeScreenState = newState
                         },
                         onChefSelect = { chefName ->
                             selectedChefName = chefName
+                        },
+                        onMenuSelect = { menuName ->
+                            selectedMenuName = menuName
                         },
                         onChatClick = { chefName ->
                             // Navigate to chat section and open chat

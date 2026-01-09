@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 enum class HomeScreenState {
     SEARCH,
     SEARCH_RESULTS,
+    MENU_LIST,
     MENU
 }
 
@@ -22,19 +23,36 @@ fun DinerHomeScreen(
     modifier: Modifier = Modifier,
     currentState: HomeScreenState = HomeScreenState.SEARCH,
     selectedChefName: String? = null,
+    selectedMenuName: String? = null,
     onStateChange: (HomeScreenState) -> Unit = {},
     onChefSelect: (String) -> Unit = {},
+    onMenuSelect: (String) -> Unit = {},
     onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
 ) {
     when (currentState) {
         HomeScreenState.MENU -> {
             MenuScreen(
                 chefName = selectedChefName ?: "Chef",
+                menuName = selectedMenuName ?: "",
+                modifier = modifier,
+                onBackClick = {
+                    onStateChange(HomeScreenState.MENU_LIST)
+                },
+                onChatClick = onChatClick
+            )
+        }
+        HomeScreenState.MENU_LIST -> {
+            MenuListScreen(
+                chefName = selectedChefName ?: "Chef",
                 modifier = modifier,
                 onBackClick = {
                     onStateChange(HomeScreenState.SEARCH_RESULTS)
                 },
-                onChatClick = onChatClick
+                onMenuClick = { menuName ->
+                    // When a menu is selected, notify parent and navigate to the Menu screen
+                    onMenuSelect(menuName)
+                    onStateChange(HomeScreenState.MENU)
+                }
             )
         }
         HomeScreenState.SEARCH_RESULTS -> {
@@ -45,7 +63,7 @@ fun DinerHomeScreen(
                 },
                 onChefClick = { chefName ->
                     onChefSelect(chefName)
-                    onStateChange(HomeScreenState.MENU)
+                    onStateChange(HomeScreenState.MENU_LIST)
                 },
                 onChatClick = onChatClick
             )

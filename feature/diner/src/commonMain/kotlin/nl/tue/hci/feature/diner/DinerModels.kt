@@ -15,6 +15,15 @@ data class ChefResult(
     val imageColor: Color
 )
 
+data class ChefMenu(
+    val id: String,
+    val name: String,
+    val description: String,
+    val dishCount: Int,
+    val priceRange: String,
+    val imageColor: Color
+)
+
 data class MenuItem(
     val title: String,
     val description: String,
