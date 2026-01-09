@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.getCarouselImageNames
 import nl.tue.hci.core.ui.rememberImagePainter
+import nl.tue.hci.core.ui.components.QuantitySelector
 import nl.tue.hci.core.ui.icons.rememberIconPainter
 import nl.tue.hci.feature.diner.MenuItem
 
@@ -38,7 +40,8 @@ fun MenuScreen(
     menuName: String = "",
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
+    onChatClick: (String) -> Unit = {}, // Callback to navigate to chat section
+    onBookClick: () -> Unit = {}
 ) {
     MenuContent(
         chefName = chefName,
@@ -47,17 +50,20 @@ fun MenuScreen(
         onBackClick = onBackClick,
         onChatClick = {
             onChatClick(chefName) // Pass chef name to navigate to chat
-        }
+        },
+        onBookClick = onBookClick
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MenuContent(
     chefName: String,
     menuName: String = "",
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onChatClick: () -> Unit = {}
+    onChatClick: () -> Unit = {},
+    onBookClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
@@ -96,71 +102,288 @@ private fun MenuContent(
         )
     }
 
-    Column(
+    var showCartSheet by rememberSaveable { mutableStateOf(false) }
+    var showBookConfirmDialog by rememberSaveable { mutableStateOf(false) }
+    var cartItems by remember { mutableStateOf(menuItems.associate { it.title to 1 }.toMutableMap()) }
+
+    Box(
         modifier = modifier
             .fillMaxSize()
             .background(colors.surfaceVariant)
     ) {
-        // Header with back button and chat icon
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = colors.surface,
-            shadowElevation = 0.dp,
-            tonalElevation = 0.dp
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+            // Header with back button and chat icon
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = colors.surface,
+                shadowElevation = 0.dp,
+                tonalElevation = 0.dp
             ) {
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier.size(40.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = colors.textPrimary
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = colors.textPrimary
+                        )
+                    }
+                    
+                    Text(
+                        text = chefName,
+                        style = typography.sectionTitle,
+                        color = colors.textPrimary,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center,
                     )
+                    
+                    IconButton(
+                        onClick = onChatClick,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        val chatIconPainter = rememberIconPainter("chat_icon")
+                        Icon(
+                            painter = chatIconPainter,
+                            contentDescription = "Chat",
+                            tint = colors.textPrimary
+                        )
+                    }
                 }
-                
-                Text(
-                    text = chefName,
-                    style = typography.sectionTitle,
-                    color = colors.textPrimary,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                )
-                
-                IconButton(
-                    onClick = onChatClick,
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    val chatIconPainter = rememberIconPainter("chat_icon")
-                    Icon(
-                        painter = chatIconPainter,
-                        contentDescription = "Chat",
-                        tint = colors.textPrimary
+            }
+            
+            // Menu items list
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(menuItems) { item ->
+                    MenuItemCard(
+                        menuItem = item,
+                        onAskClick = onChatClick
                     )
                 }
             }
         }
-        
-        // Menu items list
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+
+        // Floating cart button
+        FloatingActionButton(
+            onClick = { showCartSheet = true },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+            containerColor = colors.dinerPrimary,
+            contentColor = colors.textPrimary
         ) {
-            items(menuItems) { item ->
-                MenuItemCard(
-                    menuItem = item,
-                    onAskClick = onChatClick
-                )
+            Icon(
+                imageVector = Icons.Default.ShoppingCart,
+                contentDescription = "Cart"
+            )
+        }
+
+        // Cart bottom sheet
+        if (showCartSheet) {
+            val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            ModalBottomSheet(
+                onDismissRequest = { showCartSheet = false },
+                sheetState = sheetState,
+                containerColor = colors.surface,
+                tonalElevation = 4.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = "Menu items",
+                        style = typography.cardTitle,
+                        color = colors.textPrimary
+                    )
+
+                    cartItems.entries.forEach { (title, qty) ->
+                        val menuItem = menuItems.find { it.title == title }
+                        val imageName = remember(title) { getImageNameFromTitle(title) }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                            ) {
+                                when {
+                                    imageName != null -> {
+                                        Image(
+                                            painter = rememberImagePainter(imageName),
+                                            contentDescription = title,
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
+                                    menuItem != null -> {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(menuItem.imageColor)
+                                        )
+                                    }
+                                }
+                            }
+
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text(
+                                    text = title,
+                                    style = typography.bodyMedium,
+                                    color = colors.textPrimary
+                                )
+                                menuItem?.let {
+                                    Text(
+                                        text = it.description,
+                                        style = typography.bodySmall,
+                                        color = colors.textSecondary
+                                    )
+                                }
+                            }
+
+                            QuantitySelector(
+                                quantity = qty,
+                                onDecrease = {
+                                    val current = cartItems[title] ?: 1
+                                    if (current > 1) {
+                                        cartItems = cartItems.toMutableMap().apply { this[title] = current - 1 }
+                                    }
+                                },
+                                onIncrease = {
+                                    val current = cartItems[title] ?: 1
+                                    cartItems = cartItems.toMutableMap().apply { this[title] = current + 1 }
+                                }
+                            )
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                // Reset to defaults and close
+                                cartItems = menuItems.associate { it.title to 1 }.toMutableMap()
+                                showCartSheet = false
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colors.surfaceVariant,
+                                contentColor = colors.textPrimary
+                            )
+                        ) {
+                            Text("Cancel")
+                        }
+
+                        Button(
+                            onClick = {
+                                showBookConfirmDialog = true
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colors.dinerPrimary,
+                                contentColor = colors.textPrimary
+                            )
+                        ) {
+                            Text("Book")
+                        }
+                    }
+                }
             }
+        }
+
+        if (showBookConfirmDialog) {
+            AlertDialog(
+                onDismissRequest = { showBookConfirmDialog = false },
+                title = {
+                    Text(
+                        text = "Confirm booking?",
+                        style = typography.sectionTitle,
+                        color = colors.textPrimary
+                    )
+                },
+                text = {
+                    Text(
+                        text = "Proceed to book this menu and open booking summary?",
+                        style = typography.bodyMedium,
+                        color = colors.textSecondary
+                    )
+                },
+                confirmButton = {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Button(
+                            onClick = { showBookConfirmDialog = false },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colors.surfaceVariant,
+                                contentColor = colors.textPrimary
+                            )
+                        ) {
+                            Text("Cancel")
+                        }
+
+                        Button(
+                            onClick = {
+                                showBookConfirmDialog = false
+                                showCartSheet = false
+                                onBookClick()
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp),
+                            shape = RoundedCornerShape(20.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colors.dinerPrimary,
+                                contentColor = colors.textPrimary
+                            )
+                        ) {
+                            Text("Confirm")
+                        }
+                    }
+                },
+                containerColor = colors.surface,
+                titleContentColor = colors.textPrimary,
+                textContentColor = colors.textSecondary
+            )
         }
     }
 }

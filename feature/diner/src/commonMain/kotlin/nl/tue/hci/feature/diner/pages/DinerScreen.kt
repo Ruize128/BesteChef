@@ -206,6 +206,10 @@ fun DinerScreen(
                             chatChefName = chefName
                             currentDestination = DinerDestinations.CHAT
                             showChatScreen = true
+                        },
+                        onBookFromMenu = {
+                            selectedOrderId = "1"
+                            currentDestination = DinerDestinations.ORDERS
                         }
                     )
                     DinerDestinations.CHAT -> DinerChatHistoryScreen(

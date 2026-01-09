@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -198,7 +199,7 @@ fun EditOrderScreen(
             // Menu section
             item {
                 Text(
-                    text = "Menu (editable)",
+                    text = "Menu Preview",
                     style = typography.cardTitle,
                     color = colors.textPrimary,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -225,16 +226,25 @@ fun EditOrderScreen(
                 )
             }
             
-            // Add another dish button
+            // Add another dish button (editable menu style)
             item {
-                TextButton(
+                OutlinedButton(
                     onClick = onAddDishClick,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = colors.statusConfirmedText
+                    ),
+                    border = ButtonDefaults.outlinedButtonBorder.copy(
+                        brush = SolidColor(colors.statusConfirmedText)
+                    )
                 ) {
                     Text(
                         text = "+ Add another dish",
-                        color = colors.statusConfirmedText, // Green
-                        style = typography.labelMedium
+                        style = typography.labelMedium,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -316,10 +326,21 @@ private fun BookingSection(
                     color = colors.textPrimary
                 )
                 
-                TextButton(onClick = onEditClick) {
+                OutlinedButton(
+                    onClick = onEditClick,
+                    modifier = Modifier.height(40.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = colors.chefPrimary
+                    ),
+                    border = ButtonDefaults.outlinedButtonBorder.copy(
+                        brush = SolidColor(colors.chefPrimary)
+                    )
+                ) {
                     Text(
                         text = "Edit",
-                        color = colors.chefPrimary
+                        style = typography.labelMedium,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }

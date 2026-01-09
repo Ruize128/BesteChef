@@ -31,7 +31,8 @@ fun DinerHomeScreen(
     onChefSelect: (String) -> Unit = {},
     onMenuSelect: (String) -> Unit = {},
     onSearch: (location: String?, date: kotlinx.datetime.LocalDate?, guests: String) -> Unit = { _, _, _ -> },
-    onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
+    onChatClick: (String) -> Unit = {}, // Callback to navigate to chat section
+    onBookFromMenu: () -> Unit = {}
 ) {
     when (currentState) {
         HomeScreenState.MENU -> {
@@ -42,7 +43,8 @@ fun DinerHomeScreen(
                 onBackClick = {
                     onStateChange(HomeScreenState.MENU_LIST)
                 },
-                onChatClick = onChatClick
+                onChatClick = onChatClick,
+                onBookClick = onBookFromMenu
             )
         }
         HomeScreenState.MENU_LIST -> {
