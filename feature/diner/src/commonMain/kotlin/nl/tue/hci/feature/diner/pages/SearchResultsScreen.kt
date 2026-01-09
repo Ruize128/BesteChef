@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,6 +40,8 @@ import nl.tue.hci.feature.diner.components.DateDropdownMenu
 import nl.tue.hci.feature.diner.components.LocationDropdownMenu
 import nl.tue.hci.feature.diner.components.formatDate
 import nl.tue.hci.core.ui.icons.rememberIconPainter
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 
 // Saver for LocalDate to make it work with rememberSaveable
 private val LocalDateSaver = Saver<LocalDate?, String>(
@@ -101,6 +104,29 @@ private fun SearchResultsContent(
     var selectedAllergens by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedCuisine by rememberSaveable { mutableStateOf<String?>(null) }
     
+    // Loading states:
+    // - isInitialLoading: when navigating from SearchScreen -> SearchResults (list hidden)
+    // - isTransientLoading: when user edits search fields or filters (list visible, show faded overlay)
+    var isInitialLoading by remember { mutableStateOf(true) }
+    var isTransientLoading by remember { mutableStateOf(false) }
+
+    // Initial navigation loading (incoming params changed)
+    LaunchedEffect(initialLocation, initialDate, initialGuests) {
+        isInitialLoading = true
+        delay(500)
+        isInitialLoading = false
+    }
+
+    // Transient loading when user updates any in-page search/filter fields
+    LaunchedEffect(selectedLocation, selectedDate, guestsNumber, selectedAllergens, selectedCuisine) {
+        // If initial loading is active, skip transient to avoid overlap
+        if (!isInitialLoading) {
+            isTransientLoading = true
+            delay(500)
+            isTransientLoading = false
+        }
+    }
+
     val chefs = listOf(
             ChefResult(
                 name = "Chef Ichiraku",
@@ -170,7 +196,7 @@ private fun SearchResultsContent(
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
         
         // Search parameters row
@@ -410,19 +436,45 @@ private fun SearchResultsContent(
             )
         }
         
-        // Chef results list
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            items(chefs) { chef ->
-                ChefResultCard(
-                    chef = chef,
-                    onButtonClick = {
-                        onChefClick(chef.name)
+        // Chef results list (initial load hides list; transient edits show faded overlay)
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (isInitialLoading) {
+                // Hide list completely and show spinner
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = colors.dinerPrimary)
+                }
+            } else {
+                // Render list
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(chefs) { chef ->
+                        ChefResultCard(
+                            chef = chef,
+                            onButtonClick = {
+                                onChefClick(chef.name)
+                            }
+                        )
                     }
-                )
+                }
+
+                // If transient loading (user edits), show faded overlay with spinner
+                if (isTransientLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(colors.surface.copy(alpha = 0.6f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = colors.dinerPrimary)
+                    }
+                }
             }
         }
     }
