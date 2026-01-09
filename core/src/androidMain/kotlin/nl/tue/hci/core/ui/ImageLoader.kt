@@ -37,6 +37,8 @@ actual fun rememberImagePainter(imageName: String): Painter {
         "middle_eastern_cuisine_3" -> "middle_eastern_cuisine_3"
         "sophie" -> "sophie"
         "chat_icon" -> "chat_icon"
+        "google_logo" -> "ic_google_logo"
+        "apple_logo" -> "ic_apple_logo"
         "filter_icon" -> "filter_icon"
         "sort_icon" -> "sort_icon"
         else -> throw IllegalArgumentException(

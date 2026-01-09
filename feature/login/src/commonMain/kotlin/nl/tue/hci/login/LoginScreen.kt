@@ -31,9 +31,11 @@ import androidx.compose.ui.graphics.painter.Painter
 // Preview removed for multiplatform compatibility
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.focus.onFocusChanged
 import nl.tue.hci.core.model.UserRole
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
+import nl.tue.hci.core.ui.icons.rememberIconPainter
 import nl.tue.hci.core.ui.PlatformBackHandler
 
 
@@ -165,6 +167,12 @@ fun LoginScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if (!focusState.isFocused) {
+                            // user left the email input: trigger mode check
+                            loginStateHolder.onEmailFocusLost()
+                        }
+                    }
                     .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -300,7 +308,7 @@ fun LoginScreen(
             SocialLoginButton(
                 onClick = { loginStateHolder.onGoogleLoginClick() },
                 text = "Continue with Google",
-                iconPainter = null,
+                iconPainter = rememberIconPainter("google_logo"),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
@@ -311,7 +319,7 @@ fun LoginScreen(
             SocialLoginButton(
                 onClick = { loginStateHolder.onAppleLoginClick() },
                 text = "Continue with Apple",
-                iconPainter = null,
+                iconPainter = rememberIconPainter("apple_logo"),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )

@@ -1,6 +1,7 @@
 package nl.tue.hci.login
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +19,6 @@ class LoginStateHolder(
 ) {
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
-
     /**
      * Update email value
      */
@@ -91,6 +91,73 @@ class LoginStateHolder(
     fun enableSignIn() {
         _uiState.update {
             it.copy(isSigningIn = true, isSigningUp = false)
+        }
+    }
+
+    /**
+     * Called when the email input loses focus: immediately re-evaluate whether
+     * the UI should be in sign-in or sign-up mode.
+     */
+    fun onEmailFocusLost() {
+        val currentState = _uiState.value
+        // Only run when currently in sign-in or sign-up mode
+        if (!currentState.isSigningUp && !currentState.isSigningIn) return
+        // Show mock loading state while re-checking
+        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+        coroutineScope.launch {
+            try {
+                // Reuse the same simulated delay as onContinueClick
+                delay(400)
+                val email = _uiState.value.email.trim()
+                if (!isValidEmail(email)) {
+                    _uiState.update { it.copy(isLoading = false) }
+                    return@launch
+                }
+
+                when (email) {
+                    "diner@domain.com", "chef@domain.com" -> switchToSignInMode()
+                    else -> switchToSignUpMode()
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "An error occurred while checking email."
+                    )
+                }
+            }
+        }
+    }
+
+    private fun switchToSignInMode() {
+        _uiState.update {
+            it.copy(
+                isSigningIn = true,
+                isSigningUp = false,
+                errorMessage = null,
+                password = "",
+                confirmPassword = "",
+                selectedRole = null,
+                passwordVisible = false,
+                confirmPasswordVisible = false,
+                isLoading = false
+            )
+        }
+    }
+
+    private fun switchToSignUpMode() {
+        _uiState.update {
+            it.copy(
+                isSigningIn = false,
+                isSigningUp = true,
+                errorMessage = null,
+                password = "",
+                confirmPassword = "",
+                selectedRole = it.selectedRole ?: UserRole.DINER,
+                passwordVisible = false,
+                confirmPasswordVisible = false,
+                isLoading = false
+            )
         }
     }
 
@@ -200,13 +267,14 @@ class LoginStateHolder(
         coroutineScope.launch {
             try {
                 // TODO: Implement Google Sign-In logic
-                delay(500) // Simulate network delay
+                delay(800) // Simulate network delay
                 
-                _uiState.update { 
+                // Mock: Google continues as DINER
+                _uiState.update {
                     it.copy(
                         isLoading = false,
-                        navigationEvent = LoginNavigationEvent.NavigateWithGoogle()
-                    ) 
+                        navigationEvent = LoginNavigationEvent.NavigateToDinerMainPage(UserRole.DINER)
+                    )
                 }
             } catch (e: Exception) {
                 _uiState.update { 
@@ -228,13 +296,14 @@ class LoginStateHolder(
         coroutineScope.launch {
             try {
                 // TODO: Implement Apple Sign-In logic
-                delay(500) // Simulate network delay
+                delay(600) // Simulate network delay
                 
-                _uiState.update { 
+                // Mock: Apple continues as CHEF
+                _uiState.update {
                     it.copy(
                         isLoading = false,
-                        navigationEvent = LoginNavigationEvent.NavigateWithApple()
-                    ) 
+                        navigationEvent = LoginNavigationEvent.NavigateToChefMainPage(UserRole.CHEF)
+                    )
                 }
             } catch (e: Exception) {
                 _uiState.update { 
