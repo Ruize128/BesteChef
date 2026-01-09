@@ -19,6 +19,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -227,6 +228,7 @@ private fun MenuContent(
                                 modifier = Modifier
                                     .size(64.dp)
                                     .clip(RoundedCornerShape(12.dp))
+                                    .alpha(if (qty == 0) 0.5f else 1f)
                             ) {
                                 when {
                                     imageName != null -> {
@@ -248,7 +250,9 @@ private fun MenuContent(
                             }
 
                             Column(
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .alpha(if (qty == 0) 0.5f else 1f),
                                 verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 Text(
@@ -269,7 +273,7 @@ private fun MenuContent(
                                 quantity = qty,
                                 onDecrease = {
                                     val current = cartItems[title] ?: 1
-                                    if (current > 1) {
+                                    if (current > 0) {
                                         cartItems = cartItems.toMutableMap().apply { this[title] = current - 1 }
                                     }
                                 },
