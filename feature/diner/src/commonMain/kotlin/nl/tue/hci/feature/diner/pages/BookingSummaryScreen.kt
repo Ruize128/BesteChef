@@ -143,14 +143,14 @@ fun BookingSummaryScreen(
                     onClick = { showCancelDialog = true },
                     enabled = !isProcessing,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFFEBEE),
-                        contentColor = Color(0xFFE74C3C),
-                        disabledContainerColor = Color(0xFFF5F5F5),
+                        containerColor = colors.alert,
+                        contentColor = colors.onAlert,
+                        disabledContainerColor = colors.buttonBackgroundDisabled,
                         disabledContentColor = colors.textSecondary
                     ),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(16.dp),
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    modifier = Modifier.height(36.dp)
+                    modifier = Modifier.height(32.dp)
                 ) {
                     Text(
                         text = "Cancel",
@@ -305,10 +305,10 @@ fun BookingSummaryScreen(
                         onClick = { showCancelDialog = false },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFE0E0E0),
+                            containerColor = colors.surfaceVariant,
                             contentColor = colors.textPrimary
                         ),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(20.dp)
                     ) {
                         Text(
                             text = "Keep booking",
@@ -327,10 +327,10 @@ fun BookingSummaryScreen(
                         },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFE74C3C),
-                            contentColor = Color.White
+                            containerColor = colors.alert,
+                            contentColor = colors.onAlert
                         ),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(20.dp)
                     ) {
                         Text(
                             text = "Confirm cancel",
