@@ -100,7 +100,7 @@ private val LightBesteChefColors = object : BesteChefColors {
     
     override val onlineIndicator = Color(0xFF4CAF50) // Green
     override val favoriteIcon = Color(0xFFFFD700) // Gold
-    override val alert = Color(0xFF93000A) // Deep alert red for light mode
+    override val alert = Color(0xFFFF5252) // Lighter alert red for light mode
     override val onAlert = Color(0xFFFFFFFF) // White text on alert red
     override val alertContainer = Color(0xFFFFDAD4) // Tinted alert container
     override val onAlertContainer = Color(0xFF410001) // Text on alert container
