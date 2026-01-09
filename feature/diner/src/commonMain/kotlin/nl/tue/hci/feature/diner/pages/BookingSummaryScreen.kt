@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.getImageNameFromTitle
@@ -40,12 +42,16 @@ fun BookingSummaryScreen(
     orderId: String,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onBookAndPayClick: () -> Unit = {}
+    onBookAndPayClick: () -> Unit = {},
+    onCancelClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     
     var isProcessing by rememberSaveable { mutableStateOf(false) }
+    var showCancelDialog by rememberSaveable { mutableStateOf(false) }
     
     // Handle processing delay
     LaunchedEffect(isProcessing) {
@@ -133,7 +139,25 @@ fun BookingSummaryScreen(
                     modifier = Modifier.weight(1f)
                 )
                 
-                Spacer(modifier = Modifier.size(48.dp)) // Balance the back button
+                Button(
+                    onClick = { showCancelDialog = true },
+                    enabled = !isProcessing,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFFEBEE),
+                        contentColor = Color(0xFFE74C3C),
+                        disabledContainerColor = Color(0xFFF5F5F5),
+                        disabledContentColor = colors.textSecondary
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.height(36.dp)
+                ) {
+                    Text(
+                        text = "Cancel",
+                        style = typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
         
@@ -250,6 +274,76 @@ fun BookingSummaryScreen(
                 )
             }
         }
+    }
+    
+    // Cancel confirmation dialog
+    if (showCancelDialog) {
+        AlertDialog(
+            onDismissRequest = { showCancelDialog = false },
+            title = {
+                Text(
+                    text = "Cancel booking?",
+                    style = typography.sectionTitle,
+                    color = colors.textPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = "Are you sure you want to cancel this booking? This action cannot be undone.",
+                    style = typography.bodyMedium,
+                    color = colors.textSecondary
+                )
+            },
+            confirmButton = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Button(
+                        onClick = { showCancelDialog = false },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFE0E0E0),
+                            contentColor = colors.textPrimary
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = "Keep booking",
+                            style = typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    
+                    Button(
+                        onClick = {
+                            showCancelDialog = false
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Delete order complete")
+                            }
+                            onCancelClick()
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFE74C3C),
+                            contentColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = "Confirm cancel",
+                            style = typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            },
+            containerColor = colors.surface,
+            titleContentColor = colors.textPrimary,
+            textContentColor = colors.textSecondary
+        )
     }
 }
 

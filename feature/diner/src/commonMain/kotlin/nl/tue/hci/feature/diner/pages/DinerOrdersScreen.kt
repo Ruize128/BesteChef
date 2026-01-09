@@ -28,9 +28,11 @@ import nl.tue.hci.feature.diner.DinerOrderStatus
 @Composable
 fun DinerOrdersScreen(
     modifier: Modifier = Modifier,
+    orders: List<DinerOrder> = emptyList(),
     initialOrderId: String = "",
     onOrderClick: (String) -> Unit = {},
-    onBookAndPayClick: () -> Unit = {}
+    onBookAndPayClick: () -> Unit = {},
+    onDeleteOrder: (String) -> Unit = {}
 ) {
     var showBookingSummary by rememberSaveable { mutableStateOf(initialOrderId.isNotEmpty()) }
     var selectedOrderId by rememberSaveable { mutableStateOf(if (initialOrderId.isNotEmpty()) initialOrderId else null) }
@@ -55,42 +57,19 @@ fun DinerOrdersScreen(
             onBookAndPayClick = {
                 showBookingSummary = false
                 onBookAndPayClick()
+            },
+            onCancelClick = {
+                // Delete the order and go back to orders list
+                selectedOrderId?.let { orderId ->
+                    onDeleteOrder(orderId)
+                }
+                showBookingSummary = false
+                selectedOrderId = null
             }
         )
     } else {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
-    
-    // Hardcoded orders for diner
-    val orders = listOf(
-        DinerOrder(
-            id = "1",
-            chefName = "Chef Ichiraku",
-            orderDate = "Dec 12, 2025",
-            status = DinerOrderStatus.PENDING,
-            totalPrice = "€102",
-            itemCount = 3,
-            timeAgo = "1h ago"
-        ),
-        DinerOrder(
-            id = "2",
-            chefName = "Chef Marco",
-            orderDate = "Dec 11, 2025",
-            status = DinerOrderStatus.COMPLETED,
-            totalPrice = "€85",
-            itemCount = 2,
-            timeAgo = "1d ago"
-        ),
-        DinerOrder(
-            id = "3",
-            chefName = "Chef Elena",
-            orderDate = "Dec 10, 2025",
-            status = DinerOrderStatus.COMPLETED,
-            totalPrice = "€120",
-            itemCount = 4,
-            timeAgo = "2d ago"
-        )
-    )
     
     Column(
         modifier = modifier

@@ -17,6 +17,8 @@ import nl.tue.hci.core.ui.BesteChefTheme
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.rememberAppExitHandler
+import nl.tue.hci.feature.diner.DinerOrder
+import nl.tue.hci.feature.diner.DinerOrderStatus
 
 @Composable
 fun DinerScreen(
@@ -38,6 +40,46 @@ fun DinerScreen(
         var selectedSearchDate by rememberSaveable { mutableStateOf<kotlinx.datetime.LocalDate?>(null) }
         var selectedSearchGuests by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedOrderId by rememberSaveable { mutableStateOf(if (initialNavigateToBookingSummary) "ichiraku_offer" else "") }
+        
+        // Hardcoded orders list (initial source)
+        val initialOrders = listOf(
+            DinerOrder(
+                id = "1",
+                chefName = "Chef Ichiraku",
+                orderDate = "Dec 12, 2025",
+                status = DinerOrderStatus.PENDING,
+                totalPrice = "€102",
+                itemCount = 3,
+                timeAgo = "1h ago"
+            ),
+            DinerOrder(
+                id = "2",
+                chefName = "Chef Marco",
+                orderDate = "Dec 11, 2025",
+                status = DinerOrderStatus.COMPLETED,
+                totalPrice = "€85",
+                itemCount = 2,
+                timeAgo = "1d ago"
+            ),
+            DinerOrder(
+                id = "3",
+                chefName = "Chef Elena",
+                orderDate = "Dec 10, 2025",
+                status = DinerOrderStatus.COMPLETED,
+                totalPrice = "€120",
+                itemCount = 4,
+                timeAgo = "2d ago"
+            )
+        )
+
+        var orders by rememberSaveable { mutableStateOf(initialOrders) }
+
+        // Refresh orders whenever the user navigates to the Orders tab
+        androidx.compose.runtime.LaunchedEffect(currentDestination) {
+            if (currentDestination == DinerDestinations.ORDERS) {
+                orders = initialOrders
+            }
+        }
         
         val exitApp = rememberAppExitHandler()
 
@@ -175,12 +217,18 @@ fun DinerScreen(
                     )
                     DinerDestinations.ORDERS -> DinerOrdersScreen(
                         modifier = Modifier.padding(innerPadding),
+                        orders = orders,
                         initialOrderId = selectedOrderId,
                         onOrderClick = { orderId ->
                             // Order selection handled internally
                         },
                         onBookAndPayClick = {
                             showPaymentSuccessfulScreen = true
+                        },
+                        onDeleteOrder = { orderId ->
+                            // Remove the deleted order from the list
+                            orders = orders.filter { it.id != orderId }
+                            selectedOrderId = ""
                         }
                     )
                     DinerDestinations.PROFILE -> DinerProfileScreen(
