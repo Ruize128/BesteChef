@@ -41,6 +41,9 @@ fun DinerScreen(
         var showPaymentSuccessfulScreen by rememberSaveable { mutableStateOf(false) }
         var showChatScreen by rememberSaveable { mutableStateOf(false) }
         var chatChefName by rememberSaveable { mutableStateOf("") }
+        // Remember where we came from so we can restore after closing chat
+        var previousDestination by rememberSaveable { mutableStateOf<DinerDestinations?>(null) }
+        var previousHomeState by rememberSaveable { mutableStateOf<HomeScreenState?>(null) }
         var homeScreenState by rememberSaveable { mutableStateOf(HomeScreenState.SEARCH) }
         var selectedChefName by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedMenuName by rememberSaveable { mutableStateOf<String?>(null) }
@@ -101,8 +104,20 @@ fun DinerScreen(
                         showPaymentSuccessfulScreen = false
                     }
                     showChatScreen -> {
-                        // On chat screen, go back to chat history
+                        // On chat screen, restore previous destination/state if available
                         showChatScreen = false
+                        if (previousDestination != null) {
+                            currentDestination = previousDestination!!
+                            // If we came from HOME, restore the home sub-state
+                            if (previousDestination == DinerDestinations.HOME && previousHomeState != null) {
+                                homeScreenState = previousHomeState!!
+                            }
+                            previousDestination = null
+                            previousHomeState = null
+                        } else {
+                            // Fallback: go to chat history
+                            currentDestination = DinerDestinations.CHAT
+                        }
                     }
                     currentDestination == DinerDestinations.HOME -> {
                         // Handle back navigation within home section
@@ -149,9 +164,18 @@ fun DinerScreen(
                 chefName = chatChefName,
                 modifier = modifier,
                 onBackClick = {
+                    // Close chat and restore previous destination/state if available
                     showChatScreen = false
-                    // Ensure we're in the chat section when returning
-                    currentDestination = DinerDestinations.CHAT
+                    if (previousDestination != null) {
+                        currentDestination = previousDestination!!
+                        if (previousDestination == DinerDestinations.HOME && previousHomeState != null) {
+                            homeScreenState = previousHomeState!!
+                        }
+                        previousDestination = null
+                        previousHomeState = null
+                    } else {
+                        currentDestination = DinerDestinations.CHAT
+                    }
                 }
             )
         } else {
@@ -211,9 +235,12 @@ fun DinerScreen(
                         },
                         onChatClick = { chefName ->
                             // Navigate to chat section and open chat
-                            chatChefName = chefName
-                            currentDestination = DinerDestinations.CHAT
-                            showChatScreen = true
+                                // remember where we came from so we can restore later
+                                previousDestination = currentDestination
+                                previousHomeState = homeScreenState
+                                chatChefName = chefName
+                                currentDestination = DinerDestinations.CHAT
+                                showChatScreen = true
                         },
                         onBookFromMenu = {
                             selectedOrderId = "1"
@@ -223,6 +250,9 @@ fun DinerScreen(
                     DinerDestinations.CHAT -> DinerChatHistoryScreen(
                         modifier = Modifier.padding(innerPadding),
                         onChatClick = { chefName ->
+                            // remember where we came from
+                            previousDestination = currentDestination
+                            previousHomeState = homeScreenState
                             chatChefName = chefName
                             showChatScreen = true
                         }

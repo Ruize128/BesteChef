@@ -3,7 +3,7 @@ import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.BorderStroke
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -485,13 +485,13 @@ fun MenuItemCard(
                     )
                     
                     IconButton(
-                        onClick = { },
+                        onClick = onAskClick,
                         modifier = Modifier.size(24.dp)
                     ) {
                         val chatIconPainter = rememberIconPainter("chat_icon")
                         Icon(
                             painter = chatIconPainter,
-                            contentDescription = "Favorite",
+                            contentDescription = "Chat",
                             tint = colors.textSecondary,
                             modifier = Modifier.size(20.dp)
                         )
@@ -514,56 +514,7 @@ fun MenuItemCard(
                 
                 Spacer(modifier = Modifier.height(8.dp))
                 
-                // Action buttons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    // Ask button
-                    OutlinedButton(
-                        onClick = onAskClick,
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(20.dp),
-                        border = BorderStroke(1.dp, colors.outline),
-                        colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = colors.surface,
-                            contentColor = colors.textPrimary
-                        )
-                    ) {
-                        val chatIconPainter = rememberIconPainter("chat_icon")
-                        Icon(
-                            painter = chatIconPainter,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                            tint = colors.textPrimary
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "Ask",
-                            style = typography.bodyMedium,
-                            fontWeight = FontWeight.Medium,
-                            color = colors.textPrimary
-                        )
-                    }
-                    
-                    // Book button
-                    Button(
-                        onClick = { },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = colors.dinerPrimary,
-                            contentColor = colors.textPrimary
-                        ),
-                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
-                    ) {
-                        Text(
-                            text = "Book",
-                            style = typography.bodyMedium,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
+                // Action buttons removed; chat icon on title navigates to chat
             }
         }
     }
