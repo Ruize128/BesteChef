@@ -131,7 +131,7 @@ private fun SearchResultsContent(
             ChefResult(
                 name = "Chef Ichiraku",
                 rating = 5.0f,
-                reviewCount = 2,
+                reviewCount = 7,
                 eventCount = 13,
                 canTravel = true,
                 availableOnDate = true,

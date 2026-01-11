@@ -224,7 +224,7 @@ fun ChefResultCard(
                         color = colors.textPrimary
                     )
                     Text(
-                        text = "• ${chef.reviewCount} reviews / ${chef.eventCount} events",
+                        text = "• ${chef.reviewCount} reviews",
                         style = typography.bodySmall,
                         color = colors.textSecondary
                     )
@@ -280,7 +280,7 @@ fun ChefResultCard(
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                 ) {
                     Text(
-                        text = "Chat & Request quote",
+                        text = "View Menu",
                         style = typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
                         color = colors.textPrimary,
