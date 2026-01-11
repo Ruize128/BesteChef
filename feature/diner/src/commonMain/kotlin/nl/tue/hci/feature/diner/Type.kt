@@ -1,5 +1,4 @@
 package nl.tue.hci.feature.diner.ui.theme
-import nl.tue.hci.core.ui.AppColors
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

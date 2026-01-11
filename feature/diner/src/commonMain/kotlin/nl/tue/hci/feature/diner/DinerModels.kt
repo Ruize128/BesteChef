@@ -1,5 +1,4 @@
 package nl.tue.hci.feature.diner
-import nl.tue.hci.core.ui.AppColors
 
 import androidx.compose.ui.graphics.Color
 

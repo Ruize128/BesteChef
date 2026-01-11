@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -51,7 +52,7 @@ fun ChefScreen(
         var chatCustomerName by rememberSaveable { mutableStateOf(initialChatCustomerName ?: "") }
         var editOrderId by rememberSaveable { mutableStateOf("") }
         var orderDetailsForConfirmed by rememberSaveable { mutableStateOf<nl.tue.hci.feature.chef.model.OrderDetails?>(null) }
-        var menuItemsForConfirmed by rememberSaveable { mutableStateOf<List<nl.tue.hci.feature.chef.model.OfferMenuItem>>(emptyList()) }
+        var menuItemsForConfirmed by remember { mutableStateOf<List<nl.tue.hci.feature.chef.model.OfferMenuItem>>(emptyList()) }
         
         val exitApp = rememberAppExitHandler()
 
@@ -201,7 +202,7 @@ fun ChefOrdersScreen(
     var showEditOrder by rememberSaveable { mutableStateOf(initialOrderId.isNotEmpty()) }
     var showMenuPicker by rememberSaveable { mutableStateOf(false) }
     var selectedOrderId by rememberSaveable { mutableStateOf(if (initialOrderId.isNotEmpty()) initialOrderId else null) }
-    var pendingItemsToAdd by rememberSaveable { mutableStateOf<List<nl.tue.hci.feature.chef.model.SelectedMenuItem>?>(null) }
+    var pendingItemsToAdd by remember { mutableStateOf<List<nl.tue.hci.feature.chef.model.SelectedMenuItem>?>(null) }
     
     // Update selectedOrderId when initialOrderId changes (e.g., from chat screen)
     androidx.compose.runtime.LaunchedEffect(initialOrderId) {

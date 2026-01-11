@@ -8,10 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.datetime.LocalDate
 // Preview removed for multiplatform
 import nl.tue.hci.core.ui.BesteChefTheme
 import nl.tue.hci.core.ui.BesteChefThemeColors
@@ -19,6 +21,12 @@ import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.rememberAppExitHandler
 import nl.tue.hci.feature.diner.DinerOrder
 import nl.tue.hci.feature.diner.DinerOrderStatus
+
+// Saver for LocalDate to make it work with rememberSaveable
+private val LocalDateSaver = Saver<LocalDate?, String>(
+    save = { it?.toString() ?: "" },
+    restore = { if (it.isEmpty()) null else LocalDate.parse(it) }
+)
 
 @Composable
 fun DinerScreen(
@@ -37,7 +45,7 @@ fun DinerScreen(
         var selectedChefName by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedMenuName by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedSearchLocation by rememberSaveable { mutableStateOf<String?>(null) }
-        var selectedSearchDate by rememberSaveable { mutableStateOf<kotlinx.datetime.LocalDate?>(null) }
+        var selectedSearchDate by rememberSaveable(stateSaver = LocalDateSaver) { mutableStateOf<kotlinx.datetime.LocalDate?>(null) }
         var selectedSearchGuests by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedOrderId by rememberSaveable { mutableStateOf(if (initialNavigateToBookingSummary) "ichiraku_offer" else "") }
         
@@ -72,7 +80,7 @@ fun DinerScreen(
             )
         )
 
-        var orders by rememberSaveable { mutableStateOf(initialOrders) }
+        var orders by remember { mutableStateOf(initialOrders) }
 
         // Refresh orders whenever the user navigates to the Orders tab
         androidx.compose.runtime.LaunchedEffect(currentDestination) {
