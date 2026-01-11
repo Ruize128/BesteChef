@@ -14,13 +14,17 @@ import nl.tue.hci.feature.diner.notification.sendBookingOfferNotification
 @Composable
 fun DinerProfileScreen(
     modifier: Modifier = Modifier,
+    onNavigateToOrders: (String) -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
     // Send booking offer notification when screen appears
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(1000) // Delay 1 second to ensure heads-up appears
         kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
-            sendBookingOfferNotification()
+            sendBookingOfferNotification {
+                // Navigate to orders with the specific order ID
+                onNavigateToOrders("ichiraku_offer")
+            }
         }
     }
     

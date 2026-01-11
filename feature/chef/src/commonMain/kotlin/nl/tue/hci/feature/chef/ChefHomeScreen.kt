@@ -45,7 +45,10 @@ fun ChefHomeScreen(
     LaunchedEffect(Unit) {
         kotlinx.coroutines.delay(1000) // Delay 1 second to ensure heads-up appears
         kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
-            sendChatNotification("Sophie", "Question about dessert...")
+            sendChatNotification("Sophie", "Question about dessert...") {
+                // Navigate to chat with Sophie when notification is clicked
+                onChatClick("Sophie")
+            }
         }
     }
     

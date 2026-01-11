@@ -258,7 +258,6 @@ fun EditOrderScreen(
         // Send Offer button
         Button(
             onClick = {
-                sendBookingConfirmedNotification()
                 onSendOfferClick(orderDetails, menuItems.toList())
             },
             modifier = Modifier

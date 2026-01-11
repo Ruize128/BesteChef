@@ -19,6 +19,7 @@ import nl.tue.hci.core.ui.BesteChefTheme
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.rememberAppExitHandler
+import nl.tue.hci.core.ui.components.InAppNotificationOverlay
 import nl.tue.hci.feature.diner.DinerOrder
 import nl.tue.hci.feature.diner.DinerOrderStatus
 
@@ -27,6 +28,16 @@ private val LocalDateSaver = Saver<LocalDate?, String>(
     save = { it?.toString() ?: "" },
     restore = { if (it.isEmpty()) null else LocalDate.parse(it) }
 )
+
+enum class DinerDestinations(
+    val label: String,
+    val icon: ImageVector,
+) {
+    HOME("Home", Icons.Default.Home),
+    CHAT("Chat", Icons.Default.Email),
+    ORDERS("Orders", Icons.Default.Favorite),
+    PROFILE("Profile", Icons.Default.AccountBox),
+}
 
 @Composable
 fun DinerScreen(
@@ -181,7 +192,8 @@ fun DinerScreen(
         } else {
             val colors = BesteChefThemeColors.current()
             
-            Scaffold(
+            Box(modifier = Modifier.fillMaxSize()) {
+                Scaffold(
                 bottomBar = {
                     NavigationBar(
                         containerColor = colors.surfaceContainer
@@ -275,21 +287,18 @@ fun DinerScreen(
                     )
                     DinerDestinations.PROFILE -> DinerProfileScreen(
                         modifier = Modifier.padding(innerPadding),
+                        onNavigateToOrders = { orderId ->
+                            selectedOrderId = orderId
+                            currentDestination = DinerDestinations.ORDERS
+                        },
                         onLogout = onLogout
                     )
                 }
             }
+                
+                // Add in-app notification overlay on top of everything
+                InAppNotificationOverlay()
+            }
         }
     }
 }
-
-enum class DinerDestinations(
-    val label: String,
-    val icon: ImageVector,
-) {
-    HOME("Home", Icons.Default.Home),
-    CHAT("Chat", Icons.Default.Email),
-    ORDERS("Orders", Icons.Default.Favorite),
-    PROFILE("Profile", Icons.Default.AccountBox),
-}
-

@@ -22,7 +22,17 @@ import nl.tue.hci.core.ui.BesteChefTheme
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.rememberAppExitHandler
+import nl.tue.hci.core.ui.components.InAppNotificationOverlay
 
+enum class ChefDestinations(
+    val label: String,
+    val icon: ImageVector,
+) {
+    HOME("Home", Icons.Default.Home),
+    CHAT("Chat", Icons.Default.Email),
+    ORDERS("Orders", Icons.Default.Favorite),
+    PROFILE("Profile", Icons.Default.AccountBox),
+}
 
 @Composable
 fun ChefScreenPreview() {
@@ -83,111 +93,116 @@ fun ChefScreen(
             }
         )
 
-        if (showBookingConfirmedScreen && orderDetailsForConfirmed != null) {
-            // Only OrderConfirmedScreen is full-screen
-            nl.tue.hci.feature.chef.pages.OrderConfirmedScreen(
-                orderDetails = orderDetailsForConfirmed!!,
-                menuItems = menuItemsForConfirmed,
-                modifier = modifier,
-                onDoneClick = {
-                    showBookingConfirmedScreen = false
-                    orderDetailsForConfirmed = null
-                    menuItemsForConfirmed = emptyList()
-                    // Navigate to home screen
-                    currentDestination = ChefDestinations.HOME
-                }
-            )
-        } else if (showChatScreen) {
-            nl.tue.hci.feature.chef.pages.ChefChatScreen(
-                customerName = chatCustomerName,
-                modifier = modifier,
-                onBackClick = {
-                    showChatScreen = false
-                },
-                onEditOrderClick = {
-                    // Navigate to Orders section and open EditOrderScreen there
-                    editOrderId = "chat-${chatCustomerName}" // Generate order ID from customer name
-                    currentDestination = ChefDestinations.ORDERS
-                    showChatScreen = false
-                }
-            )
-        } else {
-            val colors = BesteChefThemeColors.current()
-            
-            Scaffold(
-                bottomBar = {
-                    NavigationBar(
-                        containerColor = colors.surfaceContainer
-                    ) {
-                        ChefDestinations.entries.forEach { destination ->
-                            NavigationBarItem(
-                                icon = {
-                                    Icon(
-                                        destination.icon,
-                                        contentDescription = destination.label
-                                    )
-                                },
-                                label = { Text(destination.label) },
-                                selected = destination == currentDestination,
-                                onClick = { currentDestination = destination },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = colors.chefPrimary,
-                                    selectedTextColor = colors.chefPrimary,
-                                    indicatorColor = colors.surface,
-                                    unselectedIconColor = colors.textSecondary,
-                                    unselectedTextColor = colors.textSecondary
-                                )
-                            )
-                        }
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (showBookingConfirmedScreen && orderDetailsForConfirmed != null) {
+                // Only OrderConfirmedScreen is full-screen
+                nl.tue.hci.feature.chef.pages.OrderConfirmedScreen(
+                    orderDetails = orderDetailsForConfirmed!!,
+                    menuItems = menuItemsForConfirmed,
+                    modifier = modifier,
+                    onDoneClick = {
+                        showBookingConfirmedScreen = false
+                        orderDetailsForConfirmed = null
+                        menuItemsForConfirmed = emptyList()
+                        // Navigate to orders section home (clear any specific order being edited)
+                        editOrderId = ""
+                        currentDestination = ChefDestinations.ORDERS
                     }
-                },
-                modifier = modifier.fillMaxSize()
-            ) { innerPadding ->
-                when (currentDestination) {
-                    ChefDestinations.HOME -> ChefHomeScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        onChatClick = { customerName ->
-                            chatCustomerName = customerName
-                            showChatScreen = true
+                )
+            } else if (showChatScreen) {
+                nl.tue.hci.feature.chef.pages.ChefChatScreen(
+                    customerName = chatCustomerName,
+                    modifier = modifier,
+                    onBackClick = {
+                        showChatScreen = false
+                    },
+                    onEditOrderClick = {
+                        // Navigate to Orders section and open EditOrderScreen there
+                        editOrderId = "chat-${chatCustomerName}" // Generate order ID from customer name
+                        currentDestination = ChefDestinations.ORDERS
+                        showChatScreen = false
+                    }
+                )
+            } else {
+                val colors = BesteChefThemeColors.current()
+                
+                Scaffold(
+                    bottomBar = {
+                        NavigationBar(
+                            containerColor = colors.surfaceContainer
+                        ) {
+                            ChefDestinations.entries.forEach { destination ->
+                                NavigationBarItem(
+                                    icon = {
+                                        Icon(
+                                            destination.icon,
+                                            contentDescription = destination.label
+                                        )
+                                    },
+                                    label = { Text(destination.label) },
+                                    selected = destination == currentDestination,
+                                    onClick = { currentDestination = destination },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = colors.chefPrimary,
+                                        selectedTextColor = colors.chefPrimary,
+                                        indicatorColor = colors.surface,
+                                        unselectedIconColor = colors.textSecondary,
+                                        unselectedTextColor = colors.textSecondary
+                                    )
+                                )
+                            }
                         }
-                    )
-                    ChefDestinations.CHAT -> ChefChatHistoryScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        onChatClick = { customerName ->
-                            chatCustomerName = customerName
-                            showChatScreen = true
-                        }
-                    )
-                    ChefDestinations.ORDERS -> ChefOrdersScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        initialOrderId = editOrderId,
-                        onOrderClick = { orderId ->
-                            editOrderId = orderId
-                        },
-                        onSendOfferClick = { orderDetails, menuItems ->
-                            orderDetailsForConfirmed = orderDetails
-                            menuItemsForConfirmed = menuItems
-                            showBookingConfirmedScreen = true
-                        }
-                    )
-                    ChefDestinations.PROFILE -> ChefProfileScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        onLogout = onLogout
-                    )
+                    },
+                    modifier = modifier.fillMaxSize()
+                ) { innerPadding ->
+                    when (currentDestination) {
+                        ChefDestinations.HOME -> ChefHomeScreen(
+                            modifier = Modifier.padding(innerPadding),
+                            onChatClick = { customerName ->
+                                chatCustomerName = customerName
+                                showChatScreen = true
+                            }
+                        )
+                        ChefDestinations.CHAT -> ChefChatHistoryScreen(
+                            modifier = Modifier.padding(innerPadding),
+                            onChatClick = { customerName ->
+                                chatCustomerName = customerName
+                                showChatScreen = true
+                            }
+                        )
+                        ChefDestinations.ORDERS -> ChefOrdersScreen(
+                            modifier = Modifier.padding(innerPadding),
+                            initialOrderId = editOrderId,
+                            onOrderClick = { orderId ->
+                                editOrderId = orderId
+                            },
+                            onSendOfferClick = { orderDetails, menuItems ->
+                                // Send notification before showing confirmation screen
+                                nl.tue.hci.feature.chef.notification.sendBookingConfirmedNotification {
+                                    // When notification is clicked, dismiss booking confirmed screen and go to orders
+                                    showBookingConfirmedScreen = false
+                                    orderDetailsForConfirmed = null
+                                    menuItemsForConfirmed = emptyList()
+                                    editOrderId = ""
+                                    currentDestination = ChefDestinations.ORDERS
+                                }
+                                orderDetailsForConfirmed = orderDetails
+                                menuItemsForConfirmed = menuItems
+                                showBookingConfirmedScreen = true
+                            }
+                        )
+                        ChefDestinations.PROFILE -> ChefProfileScreen(
+                            modifier = Modifier.padding(innerPadding),
+                            onLogout = onLogout
+                        )
+                    }
                 }
             }
+            
+            // Add in-app notification overlay on top of everything - always visible
+            InAppNotificationOverlay()
         }
     }
-}
-
-enum class ChefDestinations(
-    val label: String,
-    val icon: ImageVector,
-) {
-    HOME("Home", Icons.Default.Home),
-    CHAT("Chat", Icons.Default.Email),
-    ORDERS("Orders", Icons.Default.Favorite),
-    PROFILE("Profile", Icons.Default.AccountBox),
 }
 
 // ChefHomeScreen is now in ChefHomeScreen.kt
