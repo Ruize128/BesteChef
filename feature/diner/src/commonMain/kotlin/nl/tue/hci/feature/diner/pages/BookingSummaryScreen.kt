@@ -310,11 +310,13 @@ fun BookingSummaryScreen(
                         ),
                         shape = RoundedCornerShape(20.dp)
                     ) {
-                        Text(
-                            text = "Keep booking",
-                            style = typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
+                            Text(
+                                text = "Keep booking",
+                                style = typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
                     }
                     
                     Button(
@@ -332,11 +334,13 @@ fun BookingSummaryScreen(
                         ),
                         shape = RoundedCornerShape(20.dp)
                     ) {
-                        Text(
-                            text = "Confirm cancel",
-                            style = typography.bodyMedium,
-                            fontWeight = FontWeight.Bold
-                        )
+                            Text(
+                                text = "Confirm cancel",
+                                style = typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
                     }
                 }
             },
