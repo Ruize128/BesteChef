@@ -165,7 +165,8 @@ fun DinerScreen(
                 modifier = modifier,
                 onDoneClick = {
                     showPaymentSuccessfulScreen = false
-                    // Navigate back to Orders section
+                    // Clear selected order and navigate to Orders list
+                    selectedOrderId = ""
                     currentDestination = DinerDestinations.ORDERS
                 }
             )
