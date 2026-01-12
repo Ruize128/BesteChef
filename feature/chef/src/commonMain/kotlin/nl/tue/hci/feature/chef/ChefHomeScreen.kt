@@ -97,7 +97,6 @@ fun ChefHomeScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(84.dp)
                     .padding(horizontal = 16.dp, vertical = 16.dp),
             ) {
                 Avatar(

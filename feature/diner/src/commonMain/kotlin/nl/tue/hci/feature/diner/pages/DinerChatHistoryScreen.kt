@@ -53,7 +53,6 @@ fun DinerChatHistoryScreen(
         // Header
         Surface(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
             color = colors.surface,
             shadowElevation = 0.dp,
             tonalElevation = 0.dp
@@ -62,6 +61,7 @@ fun DinerChatHistoryScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 16.dp)
+                    .height(40.dp)
             ) {
                 Text(
                     text = "Chats",

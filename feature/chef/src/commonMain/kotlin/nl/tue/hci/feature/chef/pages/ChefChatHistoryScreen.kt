@@ -75,6 +75,7 @@ fun ChefChatHistoryScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 16.dp)
+                    .height(40.dp)
             ) {
                 Text(
                     text = "Chats",
