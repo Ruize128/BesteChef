@@ -15,8 +15,8 @@ import nl.tue.hci.core.data.createUserSessionRepository
 import nl.tue.hci.core.model.UserRole
 import nl.tue.hci.feature.chef.ChefScreen
 import nl.tue.hci.feature.diner.pages.DinerScreen
-import nl.tue.hci.login.LoginScreen
-import nl.tue.hci.login.LoginStateHolder
+import nl.tue.hci.feature.login.LoginScreen
+import nl.tue.hci.feature.login.LoginStateHolder
 
 @Composable
 fun BesteChefApp(

@@ -6,10 +6,8 @@ plugins {
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
         }
     }
     
@@ -21,6 +19,13 @@ kotlin {
                 }
             }
         }
+    }
+    
+    jvm("desktop")
+    
+    // Configure hierarchy to share code properly
+    sourceSets.all {
+        languageSettings.optIn("kotlin.RequiresOptIn")
     }
     
     sourceSets {
@@ -46,6 +51,13 @@ kotlin {
         val wasmJsMain by getting {
             dependencies {
                 // No additional dependencies needed for localStorage
+            }
+        }
+        
+        val desktopMain by getting {
+            dependsOn(commonMain)
+            dependencies {
+                // Desktop will use desktopMain implementations
             }
         }
     }

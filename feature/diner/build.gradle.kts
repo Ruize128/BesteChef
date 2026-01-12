@@ -6,10 +6,8 @@ plugins {
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
         }
     }
     
@@ -20,6 +18,12 @@ kotlin {
                     enabled.set(true)
                 }
             }
+        }
+    }
+    
+    jvm("desktop") {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
         }
     }
     
@@ -41,12 +45,8 @@ kotlin {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.androidx.lifecycle.runtime.ktx)
                 implementation(libs.androidx.activity.compose)
-                val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
-                implementation(composeBom)
+                implementation(libs.androidx.compose.bom)
                 implementation("androidx.compose.material3:material3-adaptive-navigation-suite")
-                // HorizontalPager is part of foundation-pager, but it might not be in BOM
-                // Try using androidx.compose.foundation:foundation which might include it
-                // Or use the pager library directly if available
                 implementation("androidx.compose.foundation:foundation")
                 // For @Preview support
                 implementation(libs.androidx.compose.ui.tooling)
@@ -58,36 +58,25 @@ kotlin {
                 // Web-specific dependencies if needed
             }
         }
+        
+        val desktopMain by getting {
+            dependencies {
+                // Desktop-specific dependencies if needed
+            }
+        }
     }
 }
 
 android {
     namespace = "nl.tue.hci.feature.diner"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 28
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-    
-    lint {
-        abortOnError = false
-        checkReleaseBuilds = false
     }
 }

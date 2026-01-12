@@ -1,17 +1,23 @@
 import java.util.Properties
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrainsCompose)
 }
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
+    }
+    
+    jvm("desktop") {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
         }
     }
     
@@ -144,12 +150,26 @@ kotlin {
                 implementation(libs.androidx.core.ktx)
                 implementation(libs.androidx.lifecycle.runtime.ktx)
                 implementation(libs.androidx.activity.compose)
+                implementation(project(":feature:login"))
+                implementation(project(":feature:chef"))
+                implementation(project(":feature:diner"))
             }
         }
         
         val wasmJsMain by getting {
             dependencies {
-                // Web-specific dependencies
+                implementation(project(":feature:login"))
+                implementation(project(":feature:chef"))
+                implementation(project(":feature:diner"))
+            }
+        }
+        
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+                implementation(project(":feature:login"))
+                implementation(project(":feature:chef"))
+                implementation(project(":feature:diner"))
             }
         }
     }
@@ -244,3 +264,27 @@ tasks.register("buildRelease") {
     description = "Builds both optimized release APK and production web build"
     dependsOn("assembleRelease", "wasmJsBrowserProductionWebpack")
 }
+
+
+// Compose Desktop application configuration
+compose.desktop {
+    application {
+        mainClass = "nl.tue.hci.bestechef.MainKt"
+        
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Pkg)
+            packageName = "BesteChef"
+            packageVersion = "1.0.0"
+            description = "BesteChef - Restaurant Management Application"
+            copyright = "© 2026 BesteChef. All rights reserved."
+            vendor = "BesteChef"
+            
+            macOS {
+                bundleID = "nl.tue.hci.bestechef"
+                // Icon is optional; uncomment if you provide icon.icns
+                // iconFile.set(project.file("src/desktopMain/resources/icon.icns"))
+            }
+        }
+    }
+}
+

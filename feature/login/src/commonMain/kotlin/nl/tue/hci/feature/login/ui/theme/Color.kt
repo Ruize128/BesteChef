@@ -1,4 +1,4 @@
-package nl.tue.hci.login.ui.theme
+package nl.tue.hci.feature.login.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

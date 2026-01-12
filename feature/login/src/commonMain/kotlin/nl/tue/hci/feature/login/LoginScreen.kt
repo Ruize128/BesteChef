@@ -1,11 +1,10 @@
-package nl.tue.hci.login
+package nl.tue.hci.feature.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -28,6 +27,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.foundation.Image
 // Preview removed for multiplatform compatibility
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -308,7 +308,7 @@ fun LoginScreen(
             SocialLoginButton(
                 onClick = { loginStateHolder.onGoogleLoginClick() },
                 text = "Continue with Google",
-                iconPainter = rememberIconPainter("google_logo"),
+                iconPainter = googleLogoPainter(),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
@@ -319,7 +319,7 @@ fun LoginScreen(
             SocialLoginButton(
                 onClick = { loginStateHolder.onAppleLoginClick() },
                 text = "Continue with Apple",
-                iconPainter = rememberIconPainter("apple_logo"),
+                iconPainter = appleLogoPainter(),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
@@ -360,14 +360,40 @@ fun SocialLoginButton(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (iconPainter != null) {
-                Image(
-                    painter = iconPainter,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
+            // Draw Google or Apple logo based on the text
+            if (text.contains("Google")) {
+                // Google logo - colorful "G"
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    Color(0xFF4285F4), // Blue
+                                    Color(0xFF34A853), // Green
+                                    Color(0xFFFBBC05), // Yellow
+                                    Color(0xFFEA4335)  // Red
+                                )
+                            ),
+                            shape = RoundedCornerShape(3.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "G",
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            } else if (text.contains("Apple")) {
+                // Apple logo
+                Text(
+                    text = "🍎",
+                    fontSize = 18.sp
                 )
-                Spacer(modifier = Modifier.width(12.dp))
             }
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = text,
                 fontSize = 16.sp,
@@ -572,4 +598,24 @@ fun ConfirmPasswordInput(
             }
         }
     )
+}
+
+/**
+ * Create a Google logo painter using drawScope
+ */
+@Composable
+fun googleLogoPainter(): Painter? {
+    // Return null - the SocialLoginButton will draw the icon directly
+    // The icon is drawn in the SocialLoginButton composable itself
+    return null
+}
+
+/**
+ * Create an Apple logo painter using text emoji
+ */
+@Composable
+fun appleLogoPainter(): Painter? {
+    // Return null - the SocialLoginButton will draw the icon directly
+    // The icon is drawn in the SocialLoginButton composable itself
+    return null
 }

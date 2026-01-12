@@ -1,4 +1,4 @@
-package nl.tue.hci.login
+package nl.tue.hci.feature.login
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

@@ -1,4 +1,4 @@
-package nl.tue.hci.login
+package nl.tue.hci.feature.login
 
 import nl.tue.hci.core.model.UserRole
 
