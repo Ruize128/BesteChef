@@ -184,7 +184,7 @@ fun BookingSummaryScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 12.dp),
-                        contentAlignment = Alignment.CenterStart
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "${bookingDetails.location} • ${bookingDetails.date} • ${bookingDetails.guests} guests",
@@ -395,13 +395,14 @@ private fun DateAndGuestsCard(
                         color = colors.textSecondary,
                     )
                 }
-                
-                TextButton(onClick = onDateEditClick) {
-                    Text(
-                        text = "Edit",
-                        color = colors.dinerPrimary
-                    )
-                }
+
+                // Remove here because it is not the responsibility of this iteration
+//                TextButton(onClick = onDateEditClick) {
+//                    Text(
+//                        text = "Edit",
+//                        color = colors.dinerPrimary
+//                    )
+//                }
             }
             
             // Guests row
@@ -425,13 +426,14 @@ private fun DateAndGuestsCard(
                         color = colors.textSecondary,
                     )
                 }
-                
-                TextButton(onClick = onGuestsChangeClick) {
-                    Text(
-                        text = "Change",
-                        color = colors.dinerPrimary
-                    )
-                }
+
+                // Remove here because it is not the responsibility of this iteration
+//                TextButton(onClick = onGuestsChangeClick) {
+//                    Text(
+//                        text = "Change",
+//                        color = colors.dinerPrimary
+//                    )
+//                }
             }
         }
     }
@@ -476,13 +478,13 @@ private fun BookingSection(
                     color = colors.textSecondary,
                 )
             }
-            
-            TextButton(onClick = onEditClick) {
-                Text(
-                    text = editButtonText,
-                    color = colors.dinerPrimary
-                )
-            }
+            // Remove here because it is not the responsibility of this iteration
+//            TextButton(onClick = onEditClick) {
+//                Text(
+//                    text = editButtonText,
+//                    color = colors.dinerPrimary
+//                )
+//            }
         }
     }
 }
