@@ -115,8 +115,9 @@ private fun OrderCard(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         color = colors.surface,
         shadowElevation = 0.dp,
         tonalElevation = 0.dp
