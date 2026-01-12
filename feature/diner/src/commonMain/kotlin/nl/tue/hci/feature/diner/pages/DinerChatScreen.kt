@@ -36,7 +36,8 @@ import nl.tue.hci.core.model.ChatMessage
 fun DinerChatScreen(
     chefName: String,
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onBookingOfferClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
@@ -72,6 +73,22 @@ fun DinerChatScreen(
                 avatarImageName = "sophie", // Diner's avatar
                 avatarColor = colors.dinerSecondary,
                 bubbleColor = colors.dinerPrimary, // Diner's bubble color
+            ),
+            ChatMessage(
+                text = "Here's my offer for your event:",
+                timestamp = "10:20",
+                isFromMe = false, // From chef
+                bookingOffer = nl.tue.hci.core.model.BookingOfferData(
+                    date = "Dec 12, 2025",
+                    time = "18:30",
+                    guests = "6 guests",
+                    venue = "Private Dining Room",
+                    price = "€250"
+                ),
+                avatarText = "DH",
+                avatarImageName = "ichiraku", // Chef's avatar
+                avatarColor = colors.chefSecondary,
+                bubbleColor = colors.chefPrimary, // Chef's bubble color
             )
         )
     }
@@ -159,7 +176,10 @@ fun DinerChatScreen(
             }
             
             items(messages) { message ->
-                ChatBubble(message = message)
+                ChatBubble(
+                    message = message,
+                    onBookingOfferClick = onBookingOfferClick
+                )
             }
         }
         

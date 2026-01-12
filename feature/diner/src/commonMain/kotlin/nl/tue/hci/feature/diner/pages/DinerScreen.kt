@@ -188,6 +188,12 @@ fun DinerScreen(
                     } else {
                         currentDestination = DinerDestinations.CHAT
                     }
+                },
+                onBookingOfferClick = {
+                    // Navigate to booking offer in Orders
+                    showChatScreen = false
+                    selectedOrderId = "ichiraku_offer"
+                    currentDestination = DinerDestinations.ORDERS
                 }
             )
         } else {

@@ -121,6 +121,12 @@ fun ChefScreen(
                         editOrderId = "chat-${chatCustomerName}" // Generate order ID from customer name
                         currentDestination = ChefDestinations.ORDERS
                         showChatScreen = false
+                    },
+                    onBookingOfferClick = {
+                        // Navigate to booking offer in Orders
+                        showChatScreen = false
+                        editOrderId = "chat-${chatCustomerName}"
+                        currentDestination = ChefDestinations.ORDERS
                     }
                 )
             } else {
