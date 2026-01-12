@@ -163,21 +163,48 @@ fun ChefChatScreen(
             }
         }
         
-        // Dish description bar
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = colors.surface,
-            shadowElevation = 0.dp,
-            tonalElevation = 0.dp
+        // Box to overlay floating dish bar on chat messages
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
         ) {
-            Column {
-                // Top border
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    thickness = (0.5).dp,
-                    color = colors.outline
-                )
+            // Chat messages area (behind the floating bar)
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 88.dp, // Space for floating bar
+                    bottom = 16.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Date separator
+                item {
+                    DateSeparator(dateText = "Today • Dec 12, 2025")
+                }
                 
+                items(messages) { message ->
+                    ChatBubble(
+                        message = message,
+                        onBookingOfferClick = onBookingOfferClick
+                    )
+                }
+            }
+            
+            // Floating Dish description bar (on top)
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                    .align(Alignment.TopCenter),
+                color = colors.surface,
+                shape = RoundedCornerShape(20.dp),
+                shadowElevation = 3.dp,
+                tonalElevation = 0.dp
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -234,28 +261,6 @@ fun ChefChatScreen(
                         )
                     }
                 }
-            }
-        }
-        
-        // Chat messages area
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // Date separator
-            item {
-                DateSeparator(dateText = "Today • Dec 12, 2025")
-            }
-            
-            items(messages) { message ->
-                ChatBubble(
-                    message = message,
-                    onBookingOfferClick = onBookingOfferClick
-                )
             }
         }
         
