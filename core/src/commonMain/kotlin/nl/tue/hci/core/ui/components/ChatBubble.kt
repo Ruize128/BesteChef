@@ -63,9 +63,10 @@ fun ChatBubble(
                 Card(
                     modifier = Modifier
                         .width(280.dp)
+                        .clip(RoundedCornerShape(20.dp))
                         .clickable(onClick = onBookingOfferClick),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                    colors = CardDefaults.cardColors(containerColor = colors.surface)
                 ) {
                     Column {
                         // Restaurant image header
