@@ -61,8 +61,10 @@ fun ChefScreen(
         var showBookingConfirmedScreen by rememberSaveable { mutableStateOf(false) }
         var chatCustomerName by rememberSaveable { mutableStateOf(initialChatCustomerName ?: "") }
         var editOrderId by rememberSaveable { mutableStateOf("") }
+        var editOrderSource by rememberSaveable { mutableStateOf<String?>(null) } // Track if edit order came from chat or orders
         var orderDetailsForConfirmed by rememberSaveable { mutableStateOf<nl.tue.hci.feature.chef.model.OrderDetails?>(null) }
         var menuItemsForConfirmed by remember { mutableStateOf<List<nl.tue.hci.feature.chef.model.OfferMenuItem>>(emptyList()) }
+        var sentOrderId by rememberSaveable { mutableStateOf<String?>(null) }
         
         val exitApp = rememberAppExitHandler()
 
@@ -101,6 +103,9 @@ fun ChefScreen(
                     menuItems = menuItemsForConfirmed,
                     modifier = modifier,
                     onDoneClick = {
+                        // Update the order status from DRAFT to SENT and store the sent order ID
+                        sentOrderId = "1" // Store identifier for the sent order (order ID for Sophie)
+                        
                         showBookingConfirmedScreen = false
                         orderDetailsForConfirmed = null
                         menuItemsForConfirmed = emptyList()
@@ -119,6 +124,7 @@ fun ChefScreen(
                     onEditOrderClick = {
                         // Navigate to Orders section and open EditOrderScreen there
                         editOrderId = "chat-${chatCustomerName}" // Generate order ID from customer name
+                        editOrderSource = "chat" // Track that we came from chat
                         currentDestination = ChefDestinations.ORDERS
                         showChatScreen = false
                     },
@@ -126,6 +132,7 @@ fun ChefScreen(
                         // Navigate to booking offer in Orders
                         showChatScreen = false
                         editOrderId = "chat-${chatCustomerName}"
+                        editOrderSource = "chat" // Track that we came from chat
                         currentDestination = ChefDestinations.ORDERS
                     }
                 )
@@ -179,8 +186,11 @@ fun ChefScreen(
                         ChefDestinations.ORDERS -> ChefOrdersScreen(
                             modifier = Modifier.padding(innerPadding),
                             initialOrderId = editOrderId,
+                            editOrderSource = editOrderSource,
+                            sentOrderId = sentOrderId,
                             onOrderClick = { orderId ->
                                 editOrderId = orderId
+                                editOrderSource = "orders" // Track that we came from orders list
                             },
                             onSendOfferClick = { orderDetails, menuItems ->
                                 // Send notification before showing confirmation screen
@@ -195,6 +205,15 @@ fun ChefScreen(
                                 orderDetailsForConfirmed = orderDetails
                                 menuItemsForConfirmed = menuItems
                                 showBookingConfirmedScreen = true
+                            },
+                            onBackFromEditOrder = { source ->
+                                // Handle back from edit order - return to chat or stay in orders
+                                if (source == "chat") {
+                                    showChatScreen = true
+                                    currentDestination = ChefDestinations.CHAT
+                                }
+                                editOrderId = ""
+                                editOrderSource = null
                             }
                         )
                         ChefDestinations.PROFILE -> ChefProfileScreen(
@@ -217,18 +236,65 @@ fun ChefScreen(
 fun ChefOrdersScreen(
     modifier: Modifier = Modifier,
     initialOrderId: String = "",
+    editOrderSource: String? = null,
+    sentOrderId: String? = null,
     onOrderClick: (String) -> Unit = {},
-    onSendOfferClick: (nl.tue.hci.feature.chef.model.OrderDetails, List<nl.tue.hci.feature.chef.model.OfferMenuItem>) -> Unit = { _, _ -> }
+    onSendOfferClick: (nl.tue.hci.feature.chef.model.OrderDetails, List<nl.tue.hci.feature.chef.model.OfferMenuItem>) -> Unit = { _, _ -> },
+    onBackFromEditOrder: (source: String?) -> Unit = {}
 ) {
     var showEditOrder by rememberSaveable { mutableStateOf(initialOrderId.isNotEmpty()) }
     var showMenuPicker by rememberSaveable { mutableStateOf(false) }
     var selectedOrderId by rememberSaveable { mutableStateOf(if (initialOrderId.isNotEmpty()) initialOrderId else null) }
+    var selectedOrderStatus by rememberSaveable { mutableStateOf(nl.tue.hci.feature.chef.model.OrderStatus.DRAFT) }
     var pendingItemsToAdd by remember { mutableStateOf<List<nl.tue.hci.feature.chef.model.SelectedMenuItem>?>(null) }
+    
+    // Mock orders list (same as in ChefOrdersListScreen)
+    val orders = remember(sentOrderId) {
+        listOf(
+            nl.tue.hci.feature.chef.model.Order(
+                id = "1",
+                customerName = "Sophie",
+                orderDate = "Dec 12, 2025",
+                status = if (sentOrderId == "1") nl.tue.hci.feature.chef.model.OrderStatus.SENT else nl.tue.hci.feature.chef.model.OrderStatus.DRAFT,
+                totalPrice = "€22",
+                itemCount = 2,
+                timeAgo = "2h ago"
+            ),
+            nl.tue.hci.feature.chef.model.Order(
+                id = "2",
+                customerName = "Liam",
+                orderDate = "Dec 12, 2025",
+                status = nl.tue.hci.feature.chef.model.OrderStatus.CONFIRMED,
+                totalPrice = "€65",
+                itemCount = 1,
+                timeAgo = "1d ago"
+            ),
+            nl.tue.hci.feature.chef.model.Order(
+                id = "3",
+                customerName = "Emma",
+                orderDate = "Dec 11, 2025",
+                status = nl.tue.hci.feature.chef.model.OrderStatus.COMPLETED,
+                totalPrice = "€36",
+                itemCount = 3,
+                timeAgo = "2d ago"
+            )
+        )
+    }
+    
+    // Refresh orders whenever navigating to orders tab or when sentOrderId changes
+    androidx.compose.runtime.LaunchedEffect(sentOrderId) {
+        // Orders list will be refreshed with default mock data
+    }
     
     // Update selectedOrderId when initialOrderId changes (e.g., from chat screen)
     androidx.compose.runtime.LaunchedEffect(initialOrderId) {
         if (initialOrderId.isNotEmpty() && selectedOrderId != initialOrderId) {
             selectedOrderId = initialOrderId
+            // Look up the status of the selected order
+            val order = orders.find { it.id == initialOrderId }
+            if (order != null) {
+                selectedOrderStatus = order.status
+            }
             showEditOrder = true
         }
     }
@@ -247,12 +313,14 @@ fun ChefOrdersScreen(
     } else if (showEditOrder && selectedOrderId != null) {
         nl.tue.hci.feature.chef.pages.EditOrderScreen(
             orderId = selectedOrderId ?: "",
+            orderStatus = selectedOrderStatus,
             modifier = modifier,
             onBackClick = {
                 showEditOrder = false
                 selectedOrderId = null
                 pendingItemsToAdd = null
                 onOrderClick("") // Clear the order selection
+                onBackFromEditOrder(editOrderSource) // Notify parent about the source to return
             },
             onAddDishClick = {
                 showMenuPicker = true
@@ -266,8 +334,14 @@ fun ChefOrdersScreen(
     } else {
         nl.tue.hci.feature.chef.pages.ChefOrdersListScreen(
             modifier = modifier,
+            sentOrderId = sentOrderId,
             onOrderClick = { orderId ->
                 selectedOrderId = orderId
+                // Look up the status of the selected order
+                val order = orders.find { it.id == orderId }
+                if (order != null) {
+                    selectedOrderStatus = order.status
+                }
                 showEditOrder = true
                 onOrderClick(orderId)
             }

@@ -24,18 +24,20 @@ import nl.tue.hci.feature.chef.model.OrderStatus
 @Composable
 fun ChefOrdersListScreen(
     modifier: Modifier = Modifier,
+    sentOrderId: String? = null,
     onOrderClick: (String) -> Unit = {} // orderId
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
     
-    // Hardcoded orders
+    // Hardcoded orders with default mock data
+    // When sentOrderId matches an order, that order's status becomes SENT
     val orders = listOf(
         Order(
             id = "1",
             customerName = "Sophie",
             orderDate = "Dec 12, 2025",
-            status = OrderStatus.PENDING,
+            status = if (sentOrderId == "1") OrderStatus.SENT else OrderStatus.DRAFT,
             totalPrice = "€22",
             itemCount = 2,
             timeAgo = "2h ago"
@@ -53,7 +55,7 @@ fun ChefOrdersListScreen(
             id = "3",
             customerName = "Emma",
             orderDate = "Dec 11, 2025",
-            status = OrderStatus.IN_PROGRESS,
+            status = OrderStatus.COMPLETED,
             totalPrice = "€36",
             itemCount = 3,
             timeAgo = "2d ago"
@@ -164,17 +166,26 @@ private fun OrderCard(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 StatusBadge(
-                    text = order.status.name.replace("_", " "),
+                    text = when (order.status) {
+                        OrderStatus.DRAFT -> "Draft"
+                        OrderStatus.SENT -> "Sent"
+                        OrderStatus.CONFIRMED -> "Confirmed"
+                        OrderStatus.COMPLETED -> "Completed"
+                        OrderStatus.CANCELLED -> "Cancelled"
+                    },
                     backgroundColor = when (order.status) {
-                        OrderStatus.PENDING -> colors.statusNewBackground
+                        OrderStatus.DRAFT -> colors.statusNewBackground
+                        OrderStatus.SENT -> colors.statusOngoingBackground
                         OrderStatus.CONFIRMED -> colors.statusConfirmedBackground
-                        OrderStatus.IN_PROGRESS -> colors.buttonBackground
-                        else -> colors.buttonBackground
+                        OrderStatus.COMPLETED -> colors.statusConfirmedBackground
+                        OrderStatus.CANCELLED -> Color(0xFFEF5350) // Red
                     },
                     textColor = when (order.status) {
-                        OrderStatus.PENDING -> colors.statusNewText
+                        OrderStatus.DRAFT -> colors.statusNewText
+                        OrderStatus.SENT -> colors.statusOngoingText
                         OrderStatus.CONFIRMED -> colors.statusConfirmedText
-                        else -> colors.textPrimary
+                        OrderStatus.COMPLETED -> colors.statusConfirmedText
+                        OrderStatus.CANCELLED -> Color.White
                     }
                 )
                 Text(

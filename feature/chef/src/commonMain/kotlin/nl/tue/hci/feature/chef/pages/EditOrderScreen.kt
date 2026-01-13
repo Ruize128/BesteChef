@@ -28,10 +28,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
+import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.components.QuantitySelector
 import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.feature.chef.model.OrderDetails
+import nl.tue.hci.feature.chef.model.OrderStatus
 import nl.tue.hci.feature.chef.model.OfferMenuItem
 import nl.tue.hci.feature.chef.model.PriceSummary
 import nl.tue.hci.feature.chef.model.SelectedMenuItem
@@ -40,6 +42,7 @@ import nl.tue.hci.feature.chef.notification.sendBookingConfirmedNotification
 @Composable
 fun EditOrderScreen(
     orderId: String,
+    orderStatus: OrderStatus = OrderStatus.DRAFT,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onAddDishClick: () -> Unit = {},
@@ -56,7 +59,8 @@ fun EditOrderScreen(
             date = "Dec 12, 2025",
             time = "7:00 PM",
             guests = 6,
-            venue = "xxxxxx"
+            venue = "xxxxxx",
+            status = orderStatus
         )
     }
     
@@ -141,6 +145,15 @@ fun EditOrderScreen(
         )
     }
     
+    // Handle system back gesture
+    PlatformBackHandler(
+        enabled = true,
+        onBack = onBackClick
+    )
+    
+    // Determine if this order is editable (only DRAFT status allows editing)
+    val isEditable = orderDetails.status == OrderStatus.DRAFT
+    
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -156,9 +169,8 @@ fun EditOrderScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-                    .height(40.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
                     onClick = onBackClick,
@@ -210,6 +222,7 @@ fun EditOrderScreen(
             items(menuItems) { item ->
                 OfferMenuItemCard(
                     item = item,
+                    isEditable = isEditable,
                     onQuantityDecrease = {
                         val index = menuItems.indexOf(item)
                         if (menuItems[index].quantity > 1) {
@@ -228,67 +241,71 @@ fun EditOrderScreen(
             }
             
             // Add another dish button (editable menu style)
-            item {
-                OutlinedButton(
-                    onClick = onAddDishClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = colors.statusConfirmedText
-                    ),
-                    border = ButtonDefaults.outlinedButtonBorder.copy(
-                        brush = SolidColor(colors.statusConfirmedText)
-                    )
-                ) {
-                    Text(
-                        text = "+ Add another dish",
-                        style = typography.labelMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+            if (isEditable) {
+                item {
+                    OutlinedButton(
+                        onClick = onAddDishClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = colors.statusConfirmedText
+                        ),
+                        border = ButtonDefaults.outlinedButtonBorder.copy(
+                            brush = SolidColor(colors.statusConfirmedText)
+                        )
+                    ) {
+                        Text(
+                            text = "+ Add another dish",
+                            style = typography.labelMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
             
             // Price summary section
             item {
-                PriceSummarySection(priceSummary = priceSummary)
+                PriceSummarySection(priceSummary = priceSummary, orderStatus = orderDetails.status)
             }
         }
         
-        // Send Offer button
-        Button(
-            onClick = {
-                onSendOfferClick(orderDetails, menuItems.toList())
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp)
-                .height(40.dp),
-            shape = RoundedCornerShape(20.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colors.chefPrimary,
-                contentColor = colors.textPrimary,
-            ),
-            contentPadding = PaddingValues(0.dp),
-        ) {
-            Row(
+        // Send Offer button (only show for DRAFT status)
+        if (isEditable) {
+            Button(
+                onClick = {
+                    onSendOfferClick(orderDetails, menuItems.toList())
+                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+                    .height(40.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colors.chefPrimary,
+                    contentColor = colors.textPrimary,
+                ),
+                contentPadding = PaddingValues(0.dp),
             ) {
-                Text(
-                    text = "Send Offer",
-                    style = typography.cardTitle,
-                    color = colors.textPrimary,
-                )
-                Text(
-                    text = priceSummary.total,
-                    style = typography.cardTitle,
-                    color = colors.textPrimary,
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Send Offer",
+                        style = typography.cardTitle,
+                        color = colors.textPrimary,
+                    )
+                    Text(
+                        text = priceSummary.total,
+                        style = typography.cardTitle,
+                        color = colors.textPrimary,
+                    )
+                }
             }
         }
     }
@@ -364,6 +381,7 @@ private fun BookingSection(
 @Composable
 private fun OfferMenuItemCard(
     item: OfferMenuItem,
+    isEditable: Boolean = true,
     onQuantityDecrease: () -> Unit,
     onQuantityIncrease: () -> Unit
 ) {
@@ -435,20 +453,35 @@ private fun OfferMenuItemCard(
                     style = typography.cardTitle,
                     color = colors.textPrimary
                 )
-                QuantitySelector(
-                    quantity = item.quantity,
-                    onDecrease = onQuantityDecrease,
-                    onIncrease = onQuantityIncrease
-                )
+                if (isEditable) {
+                    QuantitySelector(
+                        quantity = item.quantity,
+                        onDecrease = onQuantityDecrease,
+                        onIncrease = onQuantityIncrease
+                    )
+                } else {
+                    // Show quantity as simple text for non-editable orders
+                    Text(
+                        text = "x${item.quantity}",
+                        style = typography.bodyMedium,
+                        color = colors.textSecondary
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun PriceSummarySection(priceSummary: PriceSummary) {
+private fun PriceSummarySection(priceSummary: PriceSummary, orderStatus: OrderStatus = OrderStatus.DRAFT) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
+    
+    // Calculate total (subtotal + service fee)
+    val subtotalValue = priceSummary.subtotal.replace("€", "").replace(",", ".").toDoubleOrNull() ?: 0.0
+    val serviceFeeValue = priceSummary.serviceFee.replace("€", "").replace(",", ".").toDoubleOrNull() ?: 0.0
+    val totalValue = subtotalValue + serviceFeeValue
+    val totalText = "€${totalValue.toInt()}"
     
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -494,31 +527,52 @@ private fun PriceSummarySection(priceSummary: PriceSummary) {
             )
         }
         
-        // Deposit due now (highlighted)
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(32.dp),
-            shape = RoundedCornerShape(16.dp),
-            color = colors.statusConfirmedBackground // Light green
+        // Total (subtotal + service fee) - bold
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
+            Text(
+                text = "Total",
+                style = typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = colors.textPrimary
+            )
+            Text(
+                text = totalText,
+                style = typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = colors.textPrimary
+            )
+        }
+        
+        // Deposit information - conditional based on status
+        if (orderStatus != OrderStatus.COMPLETED) {
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .height(32.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = colors.statusConfirmedBackground // Light green
             ) {
-                Text(
-                    text = "Deposit due now",
-                    style = typography.labelMedium,
-                    color = colors.textPrimary
-                )
-                Text(
-                    text = "${priceSummary.depositAmount} (${priceSummary.depositPercentage}%)",
-                    style = typography.labelMedium,
-                    color = colors.chefPrimary
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (orderStatus == OrderStatus.CONFIRMED) "Deposit paid" else "Deposit due now",
+                        style = typography.labelMedium,
+                        color = colors.textPrimary
+                    )
+                    Text(
+                        text = "${priceSummary.depositAmount} (${priceSummary.depositPercentage}%)",
+                        style = typography.labelMedium,
+                        color = colors.chefPrimary
+                    )
+                }
             }
         }
     }

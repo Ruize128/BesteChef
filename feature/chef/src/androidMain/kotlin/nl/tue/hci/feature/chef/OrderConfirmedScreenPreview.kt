@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import nl.tue.hci.feature.chef.model.OfferMenuItem
 import nl.tue.hci.feature.chef.model.OrderDetails
+import nl.tue.hci.feature.chef.model.OrderStatus
 import nl.tue.hci.feature.chef.pages.OrderConfirmedScreen
 import nl.tue.hci.core.ui.BesteChefTheme
 
@@ -18,7 +19,8 @@ fun OrderConfirmedScreenPreview() {
             date = "Dec 12, 2025",
             time = "7:00 PM",
             guests = 6,
-            venue = "xxxxxx"
+            venue = "xxxxxx",
+            status = OrderStatus.DRAFT // Provide default status
         )
         
         // Mocked menu items

@@ -53,11 +53,22 @@ data class Order(
 )
 
 enum class OrderStatus {
-    PENDING,
-    CONFIRMED,
-    IN_PROGRESS,
-    COMPLETED,
-    CANCELLED
+    /**
+     * Order Status Transitions for Chef Orders:
+     * DRAFT -> SENT -> CONFIRMED -> COMPLETED
+     *                           -> CANCELLED
+     *
+     * DRAFT: Initial state when order is created (not yet sent to customer)
+     * SENT: Order offer has been sent to customer
+     * CONFIRMED: Customer has confirmed the order
+     * COMPLETED: Order has been completed
+     * CANCELLED: Order has been cancelled at any point
+     */
+    DRAFT,      // Order created, waiting to be sent
+    SENT,       // Order sent to customer, waiting for confirmation
+    CONFIRMED,  // Customer confirmed the order
+    COMPLETED,  // Order completed
+    CANCELLED   // Order cancelled
 }
 
 data class MenuPickerItem(
@@ -80,7 +91,8 @@ data class OrderDetails(
     val date: String,
     val time: String,
     val guests: Int,
-    val venue: String
+    val venue: String,
+    var status: OrderStatus // Changed to var to allow reassignment
 )
 
 data class OfferMenuItem(
@@ -97,6 +109,6 @@ data class PriceSummary(
     val serviceFee: String,
     val depositAmount: String,
     val depositPercentage: Int,
-    val total: String
+    val total: String // Added total field
 )
 
