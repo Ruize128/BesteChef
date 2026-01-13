@@ -36,14 +36,18 @@ import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.feature.diner.BookingSummaryDetails
 import nl.tue.hci.feature.diner.BookingSummaryMenuItem
 import nl.tue.hci.feature.diner.BookingPriceSummary
+import nl.tue.hci.feature.diner.DinerOrder
+import nl.tue.hci.feature.diner.DinerOrderStatus
 
 @Composable
 fun BookingSummaryScreen(
     orderId: String,
     modifier: Modifier = Modifier,
+    order: DinerOrder? = null,
     onBackClick: () -> Unit = {},
     onBookAndPayClick: () -> Unit = {},
-    onCancelClick: () -> Unit = {}
+    onCancelClick: () -> Unit = {},
+    onPayRemainingClick: (() -> Unit)? = null
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
@@ -53,11 +57,33 @@ fun BookingSummaryScreen(
     var isProcessing by rememberSaveable { mutableStateOf(false) }
     var showCancelDialog by rememberSaveable { mutableStateOf(false) }
     
+    // Determine order status based on order object or fallback to orderId mapping
+    val orderStatus = if (order != null) {
+        when (order.status) {
+            DinerOrderStatus.PENDING -> "PENDING"
+            DinerOrderStatus.CONFIRMED -> "ON_GOING"
+            DinerOrderStatus.IN_PROGRESS -> "ON_GOING"
+            DinerOrderStatus.COMPLETED -> "COMPLETED"
+            DinerOrderStatus.CANCELLED -> "CANCELLED"
+        }
+    } else {
+        // Fallback for when order is not provided
+        when (orderId) {
+            "ichiraku_offer" -> "COMPLETED"
+            else -> "ON_GOING"
+        }
+    }
+    
     // Handle processing delay
     LaunchedEffect(isProcessing) {
         if (isProcessing) {
             kotlinx.coroutines.delay(1000) // 1 second delay
-            onBookAndPayClick()
+            // Check which button was clicked based on orderStatus
+            when (orderStatus) {
+                "PENDING" -> onBookAndPayClick() // Book & Pay clicked
+                "ON_GOING" -> onPayRemainingClick?.invoke() // Pay remaining clicked
+                else -> onBookAndPayClick()
+            }
             isProcessing = false
         }
     }
@@ -92,11 +118,24 @@ fun BookingSummaryScreen(
         )
     }
     
-    val priceSummary = remember {
+    val priceSummary = remember(orderStatus) {
         val subtotal = 93.0 // €45 + €48
         val serviceFee = 10.0
-        val depositPercentage = 20
-        val depositAmount = (subtotal + serviceFee) * depositPercentage / 100.0
+        val total = subtotal + serviceFee
+        
+        val depositPercentage = when (orderStatus) {
+            "PENDING" -> 20 // 20% deposit for pending
+            "ON_GOING" -> 0 // No deposit for ongoing, show remaining
+            "COMPLETED" -> 0 // No deposit for completed, show total
+            else -> 20
+        }
+        
+        val depositAmount = when (orderStatus) {
+            "PENDING" -> total * 20 / 100.0 // 20% deposit
+            "ON_GOING" -> total * 80 / 100.0 // 80% remaining to pay
+            "COMPLETED" -> total // Show total price
+            else -> total * 20 / 100.0
+        }
         
         BookingPriceSummary(
             subtotal = "€${subtotal.toInt()}",
@@ -140,24 +179,30 @@ fun BookingSummaryScreen(
                     modifier = Modifier.weight(1f)
                 )
                 
-                Button(
-                    onClick = { showCancelDialog = true },
-                    enabled = !isProcessing,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colors.alert,
-                        contentColor = colors.onAlert,
-                        disabledContainerColor = colors.buttonBackgroundDisabled,
-                        disabledContentColor = colors.textSecondary
-                    ),
-                    shape = RoundedCornerShape(16.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    modifier = Modifier.height(32.dp)
-                ) {
-                    Text(
-                        text = "Cancel",
-                        style = typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
-                    )
+                // Cancel button (only for PENDING and ON_GOING orders)
+                if (orderStatus == "PENDING" || orderStatus == "ON_GOING") {
+                    Button(
+                        onClick = { showCancelDialog = true },
+                        enabled = !isProcessing,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.alert,
+                            contentColor = colors.onAlert,
+                            disabledContainerColor = colors.buttonBackgroundDisabled,
+                            disabledContentColor = colors.textSecondary
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        modifier = Modifier.height(32.dp)
+                    ) {
+                        Text(
+                            text = "Cancel",
+                            style = typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                } else {
+                    // Spacer for completed orders
+                    Spacer(modifier = Modifier.width(40.dp))
                 }
             }
         }
@@ -232,48 +277,58 @@ fun BookingSummaryScreen(
             
             // Price summary section
             item {
-                PriceSummarySection(priceSummary = priceSummary)
+                PriceSummarySection(priceSummary = priceSummary, orderStatus = orderStatus)
             }
         }
         
-        // Book & Pay button
-        Button(
-            onClick = { isProcessing = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 32.dp, top = 16.dp)
-                .height(40.dp),
-            shape = RoundedCornerShape(20.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colors.dinerPrimary,
-                contentColor = colors.textPrimary
-            ),
-            enabled = !isProcessing
-        ) {
-            if (isProcessing) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    strokeWidth = 2.dp,
-                    color = colors.textPrimary
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Processing...",
-                    style = typography.cardTitle,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.textPrimary
-                )
-            } else {
-                Text(
-                    text = "Book & Pay ${priceSummary.depositAmount} deposit (${priceSummary.depositPercentage}%)",
-                    style = typography.cardTitle,
-                    fontStyle = FontStyle.Italic,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.textPrimary
-                )
+        // Payment button - different text based on status
+        if (orderStatus == "PENDING" || orderStatus == "ON_GOING") {
+            Button(
+                onClick = { isProcessing = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 32.dp, top = 16.dp)
+                    .height(40.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colors.dinerPrimary,
+                    contentColor = colors.textPrimary
+                ),
+                enabled = !isProcessing
+            ) {
+                if (isProcessing) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp,
+                        color = colors.textPrimary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Processing...",
+                        style = typography.cardTitle,
+                        fontStyle = FontStyle.Italic,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+                } else {
+                    val buttonText = when (orderStatus) {
+                        "PENDING" -> "Book & Pay ${priceSummary.depositAmount} deposit (${priceSummary.depositPercentage}%)"
+                        "ON_GOING" -> "Pay remaining balance ${priceSummary.depositAmount}"
+                        else -> "Book & Pay ${priceSummary.depositAmount}"
+                    }
+                    Text(
+                        text = buttonText,
+                        style = typography.cardTitle,
+                        fontStyle = FontStyle.Italic,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+                }
             }
+        } else {
+            // Completed order - no action buttons
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
     
@@ -559,7 +614,7 @@ private fun MenuItemCard(item: BookingSummaryMenuItem) {
 }
 
 @Composable
-private fun PriceSummarySection(priceSummary: BookingPriceSummary) {
+private fun PriceSummarySection(priceSummary: BookingPriceSummary, orderStatus: String) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
     
@@ -627,20 +682,30 @@ private fun PriceSummarySection(priceSummary: BookingPriceSummary) {
                     )
             )
             
-            // Deposit due now - highlighted
+            // Last line - different text based on status
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Deposit due now",
+                    text = when (orderStatus) {
+                        "PENDING" -> "Deposit due now"
+                        "ON_GOING" -> "Remaining to pay"
+                        "COMPLETED" -> "Total paid"
+                        else -> "Deposit due now"
+                    },
                     style = typography.cardTitle,
                     fontStyle = FontStyle.Italic,
                     fontWeight = FontWeight.Bold,
                     color = colors.textPrimary
                 )
                 Text(
-                    text = "${priceSummary.depositAmount} (${priceSummary.depositPercentage}%)",
+                    text = when (orderStatus) {
+                        "PENDING" -> "${priceSummary.depositAmount} (${priceSummary.depositPercentage}%)"
+                        "ON_GOING" -> priceSummary.depositAmount
+                        "COMPLETED" -> priceSummary.depositAmount
+                        else -> "${priceSummary.depositAmount} (${priceSummary.depositPercentage}%)"
+                    },
                     style = typography.cardTitle,
                     fontWeight = FontWeight.Bold,
                     color = colors.dinerPrimary

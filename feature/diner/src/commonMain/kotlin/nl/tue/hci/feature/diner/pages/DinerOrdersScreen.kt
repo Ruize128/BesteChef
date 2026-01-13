@@ -33,7 +33,8 @@ fun DinerOrdersScreen(
     initialOrderId: String = "",
     onOrderClick: (String) -> Unit = {},
     onBookAndPayClick: () -> Unit = {},
-    onDeleteOrder: (String) -> Unit = {}
+    onDeleteOrder: (String) -> Unit = {},
+    onUpdateOrderStatus: (String, DinerOrderStatus) -> Unit = { _, _ -> }
 ) {
     var showBookingSummary by rememberSaveable { mutableStateOf(initialOrderId.isNotEmpty()) }
     var selectedOrderId by rememberSaveable { mutableStateOf(if (initialOrderId.isNotEmpty()) initialOrderId else null) }
@@ -47,8 +48,12 @@ fun DinerOrdersScreen(
     }
     
     if (showBookingSummary && selectedOrderId != null) {
+        // Find the order in the list
+        val selectedOrder = orders.find { it.id == selectedOrderId }
+        
         BookingSummaryScreen(
             orderId = selectedOrderId ?: "",
+            order = selectedOrder,
             modifier = modifier,
             onBackClick = {
                 showBookingSummary = false
@@ -56,6 +61,10 @@ fun DinerOrdersScreen(
                 onOrderClick("") // Clear the order selection
             },
             onBookAndPayClick = {
+                // Update order status to CONFIRMED (ongoing)
+                selectedOrderId?.let { orderId ->
+                    onUpdateOrderStatus(orderId, DinerOrderStatus.CONFIRMED)
+                }
                 showBookingSummary = false
                 onBookAndPayClick()
             },
@@ -66,6 +75,14 @@ fun DinerOrdersScreen(
                 }
                 showBookingSummary = false
                 selectedOrderId = null
+            },
+            onPayRemainingClick = {
+                // Update order status to COMPLETED
+                selectedOrderId?.let { orderId ->
+                    onUpdateOrderStatus(orderId, DinerOrderStatus.COMPLETED)
+                }
+                showBookingSummary = false
+                onBookAndPayClick()
             }
         )
     } else {
@@ -181,15 +198,23 @@ private fun OrderCard(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 StatusBadge(
-                    text = order.status.name.replace("_", " "),
+                    text = when (order.status) {
+                        DinerOrderStatus.PENDING -> "Pending"
+                        DinerOrderStatus.CONFIRMED -> "Ongoing"
+                        DinerOrderStatus.IN_PROGRESS -> "Ongoing"
+                        DinerOrderStatus.COMPLETED -> "Completed"
+                        DinerOrderStatus.CANCELLED -> "Cancelled"
+                    },
                     backgroundColor = when (order.status) {
-                        DinerOrderStatus.CONFIRMED -> colors.statusConfirmedBackground
+                        DinerOrderStatus.CONFIRMED -> colors.statusOngoingBackground
+                        DinerOrderStatus.IN_PROGRESS -> colors.statusOngoingBackground
                         DinerOrderStatus.COMPLETED -> colors.statusConfirmedBackground
                         DinerOrderStatus.PENDING -> colors.statusNewBackground
                         else -> colors.buttonBackground
                     },
                     textColor = when (order.status) {
-                        DinerOrderStatus.CONFIRMED -> colors.statusConfirmedText
+                        DinerOrderStatus.CONFIRMED -> colors.statusOngoingText
+                        DinerOrderStatus.IN_PROGRESS -> colors.statusOngoingText
                         DinerOrderStatus.COMPLETED -> colors.statusConfirmedText
                         DinerOrderStatus.PENDING -> colors.statusNewText
                         else -> colors.textPrimary

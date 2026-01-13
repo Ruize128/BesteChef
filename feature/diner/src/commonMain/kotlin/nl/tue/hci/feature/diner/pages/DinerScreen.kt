@@ -290,6 +290,16 @@ fun DinerScreen(
                             // Remove the deleted order from the list
                             orders = orders.filter { it.id != orderId }
                             selectedOrderId = ""
+                        },
+                        onUpdateOrderStatus = { orderId, newStatus ->
+                            // Update the order status in the mutable list
+                            orders = orders.map { order ->
+                                if (order.id == orderId) {
+                                    order.copy(status = newStatus)
+                                } else {
+                                    order
+                                }
+                            }
                         }
                     )
                     DinerDestinations.PROFILE -> DinerProfileScreen(

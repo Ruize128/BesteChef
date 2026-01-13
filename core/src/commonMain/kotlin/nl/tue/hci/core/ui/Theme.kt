@@ -47,6 +47,8 @@ interface BesteChefColors {
     // Status colors
     val statusNewBackground: Color
     val statusNewText: Color
+    val statusOngoingBackground: Color
+    val statusOngoingText: Color
     val statusConfirmedBackground: Color
     val statusConfirmedText: Color
     
@@ -95,6 +97,8 @@ private val LightBesteChefColors = object : BesteChefColors {
 
     override val statusNewBackground = Color(0xFFFFEBEE) // Light red
     override val statusNewText = Color(0xFFD32F2F) // Red
+    override val statusOngoingBackground = Color(0xFFBBDEFB) // Light blue
+    override val statusOngoingText = Color(0xFF1565C0) // Dark blue
     override val statusConfirmedBackground = Color(0xFFE8F5E9) // Light green
     override val statusConfirmedText = Color(0xFF2E7D32) // Green
     
@@ -244,6 +248,8 @@ private val DarkBesteChefColors = object : BesteChefColors {
 
     override val statusNewBackground = Color(0xFF4A1F1F) // Dark red background
     override val statusNewText = Color(0xFFFF5252) // Brighter red
+    override val statusOngoingBackground = Color(0xFF1F2F4A) // Dark blue background
+    override val statusOngoingText = Color(0xFF64B5F6) // Brighter blue
     override val statusConfirmedBackground = Color(0xFF1F4A1F) // Dark green background
     override val statusConfirmedText = Color(0xFF66BB6A) // Brighter green
     
