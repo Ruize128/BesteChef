@@ -325,24 +325,25 @@ private fun BookingSection(
                     style = typography.cardTitle,
                     color = colors.textPrimary
                 )
-                
-                OutlinedButton(
-                    onClick = onEditClick,
-                    modifier = Modifier.height(40.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = colors.chefPrimary
-                    ),
-                    border = ButtonDefaults.outlinedButtonBorder.copy(
-                        brush = SolidColor(colors.chefPrimary)
-                    )
-                ) {
-                    Text(
-                        text = "Edit",
-                        style = typography.labelMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+
+                // remove this because the UI is too complicated for a UI prototype
+//                OutlinedButton(
+//                    onClick = onEditClick,
+//                    modifier = Modifier.height(40.dp),
+//                    shape = RoundedCornerShape(20.dp),
+//                    colors = ButtonDefaults.outlinedButtonColors(
+//                        contentColor = colors.chefPrimary
+//                    ),
+//                    border = ButtonDefaults.outlinedButtonBorder.copy(
+//                        brush = SolidColor(colors.chefPrimary)
+//                    )
+//                ) {
+//                    Text(
+//                        text = "Edit",
+//                        style = typography.labelMedium,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                }
             }
             
             Text(
