@@ -5,6 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -247,22 +252,28 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-            // Continue button - changes color based on selected role
+            // Continue / Sign in / Sign up button - animated color based on selected role
+        val targetButtonColor = when (uiState.selectedRole) {
+            UserRole.CHEF -> colors.chefPrimary
+            UserRole.DINER -> colors.dinerPrimary
+            else -> colors.dinerPrimary
+        }
+        val animatedButtonColor by animateColorAsState(
+            targetValue = targetButtonColor,
+            animationSpec = tween(durationMillis = 300)
+        )
+
         Button(
-                onClick = { loginStateHolder.onContinueClick() },
+            onClick = { loginStateHolder.onContinueClick() },
             modifier = Modifier
                 .fillMaxWidth()
-                    .height(40.dp),
-                shape = RoundedCornerShape(20.dp),
+                .height(40.dp),
+            shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = when (uiState.selectedRole) {
-                    UserRole.CHEF -> colors.chefPrimary
-                    UserRole.DINER -> colors.dinerPrimary
-                    else -> colors.dinerPrimary // Default to diner if no role selected
-                }
-                ),
-                enabled = !uiState.isLoading
-            ) {
+                containerColor = animatedButtonColor
+            ),
+            enabled = !uiState.isLoading
+        ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
@@ -270,8 +281,13 @@ fun LoginScreen(
                         strokeWidth = 2.dp
                     )
                 } else {
+                    val buttonText = when {
+                        uiState.isSigningIn -> "Sign in"
+                        uiState.isSigningUp -> "Sign up"
+                        else -> "Sign in/Sign up"
+                    }
                     Text(
-                        text = "Continue",
+                        text = buttonText,
                         color = colors.textPrimary,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
@@ -412,75 +428,98 @@ fun RoleSelector(
 ) {
     val colors = BesteChefThemeColors.current()
     
-    Row(
+    // Animated selector: a sliding rounded indicator behind the selected option
+    BoxWithConstraints(
         modifier = modifier
             .height(40.dp)
             .background(
                 color = colors.surfaceContainer,
                 shape = RoundedCornerShape(20.dp)
-            ),
-        horizontalArrangement = Arrangement.spacedBy(0.dp)
-    ) {
-        // Chef option
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()
-                .background(
-                    color = if (selectedRole == UserRole.CHEF) {
-                        colors.chefPrimary
-                    } else {
-                        Color.Transparent
-                    },
-                    shape = RoundedCornerShape(20.dp)
-                )
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { onRoleSelected(UserRole.CHEF) },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Chef",
-                color = if (selectedRole == UserRole.CHEF) {
-                    colors.textOnPrimary
-                } else {
-                    colors.textSecondary
-                },
-                fontSize = 16.sp,
-                fontWeight = if (selectedRole == UserRole.CHEF) FontWeight.Medium else FontWeight.Normal
             )
+    ) {
+        val totalWidth = maxWidth
+        val optionWidth = totalWidth / 2
+
+        val targetOffset = when (selectedRole) {
+            UserRole.CHEF -> 0.dp
+            UserRole.DINER -> optionWidth
+            else -> 0.dp
         }
 
-        // Diner option
+        val animatedOffset by animateDpAsState(
+            targetValue = targetOffset,
+            animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+        )
+
+        // indicator background with animated color
+        val targetIndicatorColor = when (selectedRole) {
+            UserRole.CHEF -> colors.chefPrimary
+            UserRole.DINER -> colors.dinerPrimary
+            else -> Color.Transparent
+        }
+        val animatedIndicatorColor by animateColorAsState(
+            targetValue = targetIndicatorColor,
+            animationSpec = tween(durationMillis = 300)
+        )
+
         Box(
             modifier = Modifier
-                .weight(1f)
+                .offset(x = animatedOffset)
+                .width(optionWidth)
                 .fillMaxHeight()
+                .padding(4.dp)
+                .clip(RoundedCornerShape(16.dp))
                 .background(
-                    color = if (selectedRole == UserRole.DINER) {
-                        colors.dinerPrimary
-                    } else {
-                        Color.Transparent
-                    },
-                    shape = RoundedCornerShape(20.dp)
+                    color = animatedIndicatorColor
                 )
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { onRoleSelected(UserRole.DINER) },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Diner",
-                color = if (selectedRole == UserRole.DINER) {
-                    colors.textOnPrimary
-                } else {
-                    colors.textSecondary
-                },
-                fontSize = 16.sp,
-                fontWeight = if (selectedRole == UserRole.DINER) FontWeight.Medium else FontWeight.Normal
-            )
+        )
+
+        Row(modifier = Modifier.fillMaxSize()) {
+            // Chef option (clickable)
+            Box(
+                modifier = Modifier
+                    .width(optionWidth)
+                    .fillMaxHeight()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { onRoleSelected(UserRole.CHEF) },
+                contentAlignment = Alignment.Center
+            ) {
+                val chefTextColor by animateColorAsState(
+                    targetValue = if (selectedRole == UserRole.CHEF) colors.textOnPrimary else colors.textSecondary,
+                    animationSpec = tween(durationMillis = 250)
+                )
+                Text(
+                    text = "Chef",
+                    color = chefTextColor,
+                    fontSize = 16.sp,
+                    fontWeight = if (selectedRole == UserRole.CHEF) FontWeight.Medium else FontWeight.Normal
+                )
+            }
+
+            // Diner option (clickable)
+            Box(
+                modifier = Modifier
+                    .width(optionWidth)
+                    .fillMaxHeight()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { onRoleSelected(UserRole.DINER) },
+                contentAlignment = Alignment.Center
+            ) {
+                val dinerTextColor by animateColorAsState(
+                    targetValue = if (selectedRole == UserRole.DINER) colors.textOnPrimary else colors.textSecondary,
+                    animationSpec = tween(durationMillis = 250)
+                )
+                Text(
+                    text = "Diner",
+                    color = dinerTextColor,
+                    fontSize = 16.sp,
+                    fontWeight = if (selectedRole == UserRole.DINER) FontWeight.Medium else FontWeight.Normal
+                )
+            }
         }
     }
 }
