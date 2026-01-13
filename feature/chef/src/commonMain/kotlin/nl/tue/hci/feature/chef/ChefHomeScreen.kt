@@ -80,8 +80,16 @@ fun ChefHomeScreen(
     )
     
     var selectedFilter by remember { mutableStateOf("All") }
+    var isLoading by remember { mutableStateOf(false) }
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
+    
+    // Handle loading state when filter changes
+    LaunchedEffect(selectedFilter) {
+        isLoading = true
+        kotlinx.coroutines.delay(300) // Mock loading delay
+        isLoading = false
+    }
     
     Column(
         modifier = modifier
@@ -204,6 +212,35 @@ fun ChefHomeScreen(
                     booking = booking,
                     onClick = { onChatClick(booking.customerName) }
                 )
+            }
+        }
+        
+        // Loading overlay
+        if (isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(colors.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .size(80.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    color = colors.surface,
+                    shadowElevation = 8.dp
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
+                            strokeWidth = 4.dp,
+                            color = colors.chefPrimary
+                        )
+                    }
+                }
             }
         }
     }
