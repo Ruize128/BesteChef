@@ -42,7 +42,7 @@ fun ChefChatHistoryScreen(
             customerName = "Liam",
             lastMessage = "Looking forward to the event!",
             timestamp = "Yesterday",
-            unreadCount = 2
+            unreadCount = 0
         ),
         ChatHistoryItem(
             id = "3",
