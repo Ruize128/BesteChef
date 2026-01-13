@@ -337,9 +337,8 @@ fun DinerScreen(
                             showPaymentSuccessfulScreen = true
                         },
                         onDeleteOrder = { orderId ->
-                            // Remove the deleted order from the list
-                            orders = orders.filter { it.id != orderId }
-                            selectedOrderId = ""
+                            // No longer deleting orders - they are marked as cancelled instead
+                            // This callback is kept for compatibility but does nothing
                         },
                         onUpdateOrderStatus = { orderId, newStatus ->
                             // Update the order status in the mutable list

@@ -128,6 +128,7 @@ fun BookingSummaryScreen(
             "PENDING" -> 20 // 20% deposit for pending
             "ON_GOING" -> 0 // No deposit for ongoing, show remaining
             "COMPLETED" -> 0 // No deposit for completed, show total
+            "CANCELLED" -> 0 // No deposit for cancelled, show total
             else -> 20
         }
         
@@ -135,6 +136,7 @@ fun BookingSummaryScreen(
             "PENDING" -> total * 20 / 100.0 // 20% deposit
             "ON_GOING" -> total * 80 / 100.0 // 80% remaining to pay
             "COMPLETED" -> total // Show total price
+            "CANCELLED" -> total // Show total price
             else -> total * 20 / 100.0
         }
         
@@ -693,6 +695,7 @@ private fun PriceSummarySection(priceSummary: BookingPriceSummary, orderStatus: 
                         "PENDING" -> "Deposit due now"
                         "ON_GOING" -> "Remaining to pay"
                         "COMPLETED" -> "Total paid"
+                        "CANCELLED" -> "Total price"
                         else -> "Deposit due now"
                     },
                     style = typography.cardTitle,
@@ -705,6 +708,7 @@ private fun PriceSummarySection(priceSummary: BookingPriceSummary, orderStatus: 
                         "PENDING" -> "${priceSummary.depositAmount} (${priceSummary.depositPercentage}%)"
                         "ON_GOING" -> priceSummary.depositAmount
                         "COMPLETED" -> priceSummary.depositAmount
+                        "CANCELLED" -> priceSummary.depositAmount
                         else -> "${priceSummary.depositAmount} (${priceSummary.depositPercentage}%)"
                     },
                     style = typography.cardTitle,

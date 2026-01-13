@@ -69,9 +69,9 @@ fun DinerOrdersScreen(
                 onBookAndPayClick()
             },
             onCancelClick = {
-                // Delete the order and go back to orders list
+                // Update order status to CANCELLED and go back to orders list
                 selectedOrderId?.let { orderId ->
-                    onDeleteOrder(orderId)
+                    onUpdateOrderStatus(orderId, DinerOrderStatus.CANCELLED)
                 }
                 showBookingSummary = false
                 selectedOrderId = null
