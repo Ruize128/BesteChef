@@ -39,6 +39,9 @@ import nl.tue.hci.feature.diner.components.ChefResultCard
 import nl.tue.hci.feature.diner.components.DateDropdownMenu
 import nl.tue.hci.feature.diner.components.LocationDropdownMenu
 import nl.tue.hci.feature.diner.components.formatDate
+import nl.tue.hci.feature.diner.components.FilterModal
+import nl.tue.hci.feature.diner.components.AllergensSelectionModal
+import nl.tue.hci.feature.diner.components.CuisineSelectionModal
 import nl.tue.hci.core.ui.icons.rememberIconPainter
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.delay
@@ -58,6 +61,8 @@ fun SearchResultsScreen(
     initialLocation: String? = null,
     initialDate: kotlinx.datetime.LocalDate? = null,
     initialGuests: String? = null,
+    initialAllergens: Set<String> = emptySet(),
+    initialCuisine: String? = null,
     onBackClick: () -> Unit = {},
     onChefClick: (String) -> Unit = {}, // Callback when chef is selected to show menu
     onChatClick: (String) -> Unit = {} // Callback to navigate to chat section
@@ -68,6 +73,8 @@ fun SearchResultsScreen(
         initialLocation = initialLocation,
         initialDate = initialDate,
         initialGuests = initialGuests,
+        initialAllergens = initialAllergens,
+        initialCuisine = initialCuisine,
         onBackClick = onBackClick,
         onChefClick = onChefClick,
         onChatClick = onChatClick
@@ -80,6 +87,8 @@ private fun SearchResultsContent(
     initialLocation: String? = null,
     initialDate: kotlinx.datetime.LocalDate? = null,
     initialGuests: String? = null,
+    initialAllergens: Set<String> = emptySet(),
+    initialCuisine: String? = null,
     onBackClick: () -> Unit = {},
     onChefClick: (String) -> Unit = {},
     onChatClick: (String) -> Unit = {}
@@ -99,10 +108,15 @@ private fun SearchResultsContent(
     
     var guestsNumber by rememberSaveable { mutableStateOf(initialGuests ?: "6") }
     
+    var selectedAllergens by rememberSaveable { mutableStateOf<Set<String>>(initialAllergens) }
+    var selectedCuisine by rememberSaveable { mutableStateOf<String?>(initialCuisine) }
+    
     // Filter modal state
     var isFilterModalOpen by rememberSaveable { mutableStateOf(false) }
-    var selectedAllergens by rememberSaveable { mutableStateOf<String?>(null) }
-    var selectedCuisine by rememberSaveable { mutableStateOf<String?>(null) }
+    
+    // Sub-modals for filter selections
+    var isAllergensSelectionOpen by rememberSaveable { mutableStateOf(false) }
+    var isCuisineSelectionOpen by rememberSaveable { mutableStateOf(false) }
     
     // Loading states:
     // - isInitialLoading: when navigating from SearchScreen -> SearchResults (list hidden)
@@ -369,7 +383,7 @@ private fun SearchResultsContent(
                     .weight(1f)
                     .height(24.dp),
                 shape = RoundedCornerShape(16.dp),
-                color = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
+                color = if (isFilterModalOpen || selectedAllergens.isNotEmpty() || selectedCuisine != null) {
                     colors.dinerPrimary
                 } else {
                     colors.surface
@@ -390,7 +404,7 @@ private fun SearchResultsContent(
                         painter = filterIconPainter,
                         contentDescription = "Filter",
                         modifier = Modifier.size(14.dp),
-                        tint = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
+                        tint = if (isFilterModalOpen || selectedAllergens.isNotEmpty() || selectedCuisine != null) {
                             colors.textOnPrimary
                         } else {
                             colors.textPrimary
@@ -400,7 +414,7 @@ private fun SearchResultsContent(
                     Text(
                         text = "Filter",
                         style = typography.bodySmall.copy(fontSize = 12.sp),
-                        color = if (isFilterModalOpen || selectedAllergens != null || selectedCuisine != null) {
+                        color = if (isFilterModalOpen || selectedAllergens.isNotEmpty() || selectedCuisine != null) {
                             colors.textOnPrimary
                         } else {
                             colors.textPrimary
@@ -431,6 +445,26 @@ private fun SearchResultsContent(
                 },
                 selectedAllergens = selectedAllergens,
                 onAllergensSelected = { selectedAllergens = it },
+                onOpenAllergensSelection = { isAllergensSelectionOpen = true },
+                selectedCuisine = selectedCuisine,
+                onCuisineSelected = { selectedCuisine = it },
+                onOpenCuisineSelection = { isCuisineSelectionOpen = true }
+            )
+        }
+        
+        // Allergens selection modal
+        if (isAllergensSelectionOpen) {
+            AllergensSelectionModal(
+                onDismiss = { isAllergensSelectionOpen = false },
+                selectedAllergens = selectedAllergens,
+                onAllergensSelected = { selectedAllergens = it }
+            )
+        }
+        
+        // Cuisine selection modal
+        if (isCuisineSelectionOpen) {
+            CuisineSelectionModal(
+                onDismiss = { isCuisineSelectionOpen = false },
                 selectedCuisine = selectedCuisine,
                 onCuisineSelected = { selectedCuisine = it }
             )
@@ -484,138 +518,4 @@ private fun SearchResultsContent(
 /**
  * Filter modal dialog component
  */
-@Composable
-fun FilterModal(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-    selectedAllergens: String?,
-    onAllergensSelected: (String?) -> Unit,
-    selectedCuisine: String?,
-    onCuisineSelected: (String?) -> Unit
-) {
-    val colors = BesteChefThemeColors.current()
-    val typography = BesteChefThemeTypography.current()
-    
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false
-        )
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Title
-                Text(
-                    text = "Filters",
-                    style = typography.sectionTitle
-                )
-                
-                // Allergens field
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    color = colors.surface,
-                    onClick = {
-                        // Placeholder for allergens selection
-                        onAllergensSelected("nuts")
-                    },
-                    shadowElevation = 0.dp,
-                    tonalElevation = 0.dp
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = selectedAllergens?.let { "Allergens: $it" } ?: "Allergens (optional) — e.g. nuts, dairy",
-                            style = typography.bodyMedium,
-                            color = if (selectedAllergens != null) {
-                                colors.textSecondary
-                            } else {
-                                colors.textSecondary.copy(alpha = 0.6f)
-                            }
-                        )
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Dropdown",
-                            tint = colors.textSecondary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-                
-                // Cuisine field
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    color = colors.surface,
-                    onClick = {
-                        // Placeholder for cuisine selection
-                        onCuisineSelected("Japanese Fusion")
-                    },
-                    shadowElevation = 0.dp,
-                    tonalElevation = 0.dp
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = selectedCuisine?.let { "Cuisine: $it" } ?: "Cuisine (optional) — e.g. Japanese",
-                            style = typography.bodyMedium,
-                            color = if (selectedCuisine != null) {
-                                colors.textSecondary
-                            } else {
-                                colors.textSecondary.copy(alpha = 0.6f)
-                            }
-                        )
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Dropdown",
-                            tint = colors.textSecondary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                // Confirm button
-                Button(
-                    onClick = onConfirm,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.End),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colors.dinerPrimary
-                    )
-                ) {
-                    Text(
-                        text = "Confirm",
-                        style = typography.buttonText,
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-                    )
-                }
-            }
-        }
-    }
-}
 

@@ -2,6 +2,7 @@ package nl.tue.hci.feature.diner.pages
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -13,11 +14,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +37,8 @@ import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.feature.diner.components.DateDropdownMenu
 import nl.tue.hci.feature.diner.components.LocationDropdownMenu
 import nl.tue.hci.feature.diner.components.formatDate
+import nl.tue.hci.feature.diner.components.AllergensSelectionModal
+import nl.tue.hci.feature.diner.components.CuisineSelectionModal
 
 // Saver for LocalDate to make it work with rememberSaveable
 private val LocalDateSaver = Saver<LocalDate?, String>(
@@ -45,7 +50,7 @@ private val LocalDateSaver = Saver<LocalDate?, String>(
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    onSearchClick: (selectedLocation: String?, selectedDate: LocalDate?, guests: String) -> Unit = { _, _, _ -> }
+    onSearchClick: (selectedLocation: String?, selectedDate: LocalDate?, guests: String, selectedAllergens: Set<String>, selectedCuisine: String?) -> Unit = { _, _, _, _, _ -> }
 ) {
     // Static data for form fields
     val locationPlaceholder = "Where?"
@@ -67,6 +72,14 @@ fun SearchScreen(
     
     // Guests state (default 6)
     var guestsNumber by rememberSaveable { mutableStateOf("6") }
+    
+    // Allergens state
+    var selectedAllergens by rememberSaveable { mutableStateOf<Set<String>>(emptySet()) }
+    var isAllergensSelectionOpen by rememberSaveable { mutableStateOf(false) }
+    
+    // Cuisine state
+    var selectedCuisine by rememberSaveable { mutableStateOf<String?>(null) }
+    var isCuisineSelectionOpen by rememberSaveable { mutableStateOf(false) }
 
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
@@ -253,7 +266,7 @@ fun SearchScreen(
                 // Search button
                 Button(
                     onClick = {
-                        onSearchClick(selectedLocation, selectedDate, guestsNumber)
+                        onSearchClick(selectedLocation, selectedDate, guestsNumber, selectedAllergens, selectedCuisine)
                     },
                     modifier = Modifier
                         .padding(8.dp)
@@ -279,9 +292,16 @@ fun SearchScreen(
         Spacer(modifier = Modifier.height(16.dp))
         
         // Allergens field
+        val allergenShape = RoundedCornerShape(16.dp)
         Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(allergenShape)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple()
+                ) { isAllergensSelectionOpen = true },
+            shape = allergenShape,
             color = colors.surface,
             shadowElevation = 0.dp,
             tonalElevation = 0.dp
@@ -293,11 +313,21 @@ fun SearchScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = allergensPlaceholder,
-                    style = typography.bodyMedium,
-                    color = colors.textSecondary.copy(alpha = 0.6f)
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    if (selectedAllergens.isNotEmpty()) {
+                        Text(
+                            text = selectedAllergens.joinToString(", "),
+                            style = typography.bodyMedium,
+                            color = colors.textPrimary
+                        )
+                    } else {
+                        Text(
+                            text = allergensPlaceholder,
+                            style = typography.bodyMedium,
+                            color = colors.textSecondary.copy(alpha = 0.6f)
+                        )
+                    }
+                }
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowDown,
                     contentDescription = "Dropdown",
@@ -310,9 +340,16 @@ fun SearchScreen(
         Spacer(modifier = Modifier.height(12.dp))
         
         // Cuisine field
+        val cuisineShape = RoundedCornerShape(16.dp)
         Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(cuisineShape)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple()
+                ) { isCuisineSelectionOpen = true },
+            shape = cuisineShape,
             color = colors.surface,
             shadowElevation = 0.dp,
             tonalElevation = 0.dp
@@ -324,11 +361,22 @@ fun SearchScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = cuisinePlaceholder,
-                    style = typography.bodyMedium,
-                    color = colors.textSecondary.copy(alpha = 0.6f)
-                )
+                Column(modifier = Modifier.weight(1f)) {
+                    val cuisine = selectedCuisine
+                    if (cuisine != null) {
+                        Text(
+                            text = cuisine,
+                            style = typography.bodyMedium,
+                            color = colors.textPrimary
+                        )
+                    } else {
+                        Text(
+                            text = cuisinePlaceholder,
+                            style = typography.bodyMedium,
+                            color = colors.textSecondary.copy(alpha = 0.6f)
+                        )
+                    }
+                }
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowDown,
                     contentDescription = "Dropdown",
@@ -336,6 +384,28 @@ fun SearchScreen(
                     modifier = Modifier.size(20.dp)
                 )
             }
+        }
+        
+        // Allergens selection modal
+        if (isAllergensSelectionOpen) {
+            AllergensSelectionModal(
+                onDismiss = { isAllergensSelectionOpen = false },
+                selectedAllergens = selectedAllergens,
+                onAllergensSelected = { allergens ->
+                    selectedAllergens = allergens
+                }
+            )
+        }
+        
+        // Cuisine selection modal
+        if (isCuisineSelectionOpen) {
+            CuisineSelectionModal(
+                onDismiss = { isCuisineSelectionOpen = false },
+                selectedCuisine = selectedCuisine,
+                onCuisineSelected = { cuisine ->
+                    selectedCuisine = cuisine
+                }
+            )
         }
     }
 }

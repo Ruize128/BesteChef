@@ -61,6 +61,8 @@ fun DinerScreen(
         var selectedSearchLocation by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedSearchDate by rememberSaveable(stateSaver = LocalDateSaver) { mutableStateOf<kotlinx.datetime.LocalDate?>(null) }
         var selectedSearchGuests by rememberSaveable { mutableStateOf<String?>(null) }
+        var selectedSearchAllergens by rememberSaveable { mutableStateOf<Set<String>>(emptySet()) }
+        var selectedSearchCuisine by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedOrderId by rememberSaveable { mutableStateOf(if (initialNavigateToBookingSummary) "ichiraku_offer" else "") }
         
         // Hardcoded orders list (initial source)
@@ -238,6 +240,8 @@ fun DinerScreen(
                         selectedSearchLocation = selectedSearchLocation,
                         selectedSearchDate = selectedSearchDate,
                         selectedSearchGuests = selectedSearchGuests,
+                        selectedSearchAllergens = selectedSearchAllergens,
+                        selectedSearchCuisine = selectedSearchCuisine,
                         onStateChange = { newState ->
                             homeScreenState = newState
                         },
@@ -247,10 +251,12 @@ fun DinerScreen(
                         onMenuSelect = { menuName ->
                             selectedMenuName = menuName
                         },
-                        onSearch = { location, date, guests ->
+                        onSearch = { location, date, guests, allergens, cuisine ->
                             selectedSearchLocation = location
                             selectedSearchDate = date
                             selectedSearchGuests = guests
+                            selectedSearchAllergens = allergens
+                            selectedSearchCuisine = cuisine
                         },
                         onChatClick = { chefName ->
                             // Navigate to chat section and open chat
