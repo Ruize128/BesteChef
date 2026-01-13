@@ -11,7 +11,8 @@ data class ChefResult(
     val canTravel: Boolean,
     val availableOnDate: Boolean,
     val quote: String,
-    val imageColor: Color
+    val imageColor: Color,
+    val avatarImageName: String? = null
 )
 
 data class ChefMenu(

@@ -3,8 +3,10 @@ import nl.tue.hci.core.ui.BesteChefThemeColors
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -29,7 +31,9 @@ import androidx.compose.foundation.Image
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.getChefCarouselImageNames
 import nl.tue.hci.core.ui.getChefImageName
+import nl.tue.hci.core.ui.getAvatarImageName
 import nl.tue.hci.core.ui.rememberImagePainter
+import nl.tue.hci.core.ui.components.Avatar
 import nl.tue.hci.feature.diner.ChefResult
 import nl.tue.hci.feature.diner.pages.ImageCarouselWithPager
 
@@ -123,7 +127,9 @@ fun ChefResultCard(
     val typography = BesteChefThemeTypography.current()
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        onClick = onButtonClick,
+        modifier = Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
@@ -209,36 +215,64 @@ fun ChefResultCard(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Chef name
-                Text(
-                    text = chef.name,
-                    style = typography.cardTitle,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.textPrimary
-                )
-                
-                // Rating and reviews
+                // Chef name with avatar (reuse Avatar component from chat)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Rating",
-                        modifier = Modifier.size(18.dp),
-                        tint = colors.favoriteIcon
-                    )
-                    Text(
-                        text = "${chef.rating}",
-                        style = typography.bodyMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = colors.textPrimary
-                    )
-                    Text(
-                        text = "• ${chef.reviewCount} reviews",
-                        style = typography.bodySmall,
-                        color = colors.textSecondary
-                    )
+                    val initials = chef.name.split(' ').mapNotNull { it.firstOrNull()?.toString() }.take(2).joinToString("")
+                    val avatarImage = chef.avatarImageName
+
+                    if (avatarImage != null) {
+                        Avatar(
+                            text = initials,
+                            size = 36,
+                            imageName = avatarImage,
+                            backgroundColor = colors.surfaceVariant,
+                            textColor = colors.textPrimary
+                        )
+                    } else {
+                        Avatar(
+                            text = initials,
+                            size = 36,
+                            imageName = null,
+                            backgroundColor = colors.surfaceVariant,
+                            textColor = colors.textPrimary
+                        )
+                    }
+
+                    Column {
+                        Text(
+                            text = chef.name,
+                            style = typography.cardTitle,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.textPrimary
+                        )
+
+                        // Rating and reviews (inline with name)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "Rating",
+                                modifier = Modifier.size(16.dp),
+                                tint = colors.favoriteIcon
+                            )
+                            Text(
+                                text = "${chef.rating}",
+                                style = typography.bodySmall,
+                                fontWeight = FontWeight.Medium,
+                                color = colors.textPrimary
+                            )
+                            Text(
+                                text = "• ${chef.reviewCount} reviews",
+                                style = typography.bodySmall,
+                                color = colors.textSecondary
+                            )
+                        }
+                    }
                 }
                 
                 // Availability info

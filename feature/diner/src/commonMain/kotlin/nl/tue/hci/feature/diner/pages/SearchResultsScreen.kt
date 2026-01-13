@@ -156,7 +156,8 @@ private fun SearchResultsContent(
                 canTravel = true,
                 availableOnDate = true,
                 quote = "Enhancing classic flavors with a touch of style",
-                imageColor = colors.imagePlaceholder1 // Light mint green
+                imageColor = colors.imagePlaceholder1, // Light mint green
+                avatarImageName = "ichiraku"
             ),
             ChefResult(
                 name = "Chef Verstappen",
