@@ -69,7 +69,8 @@ fun BookingSummaryScreen(
     } else {
         // Fallback for when order is not provided
         when (orderId) {
-            "ichiraku_offer" -> "COMPLETED"
+            // Offer coming from chat should show as pending by default
+            "ichiraku_offer" -> "PENDING"
             else -> "ON_GOING"
         }
     }

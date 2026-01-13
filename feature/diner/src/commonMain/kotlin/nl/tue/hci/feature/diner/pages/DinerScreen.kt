@@ -132,6 +132,30 @@ fun DinerScreen(
                             currentDestination = DinerDestinations.CHAT
                         }
                     }
+                    // If we're on Orders and a booking summary is open (selectedOrderId set),
+                    // treat system back like the header back: close the summary and restore
+                    // previous destination (e.g., chat) if available.
+                    currentDestination == DinerDestinations.ORDERS && selectedOrderId.isNotEmpty() -> {
+                        // Close booking summary
+                        selectedOrderId = ""
+                        if (previousDestination != null) {
+                            val dest = previousDestination!!
+                            previousDestination = null
+                            if (dest == DinerDestinations.HOME && previousHomeState != null) {
+                                currentDestination = DinerDestinations.HOME
+                                homeScreenState = previousHomeState!!
+                                previousHomeState = null
+                            } else if (dest == DinerDestinations.CHAT) {
+                                currentDestination = DinerDestinations.CHAT
+                                showChatScreen = true
+                            } else {
+                                currentDestination = dest
+                            }
+                        } else {
+                            // No previous destination recorded, stay on Orders list
+                            currentDestination = DinerDestinations.ORDERS
+                        }
+                    }
                     currentDestination == DinerDestinations.HOME -> {
                         // Handle back navigation within home section
                         when (homeScreenState) {
@@ -193,6 +217,9 @@ fun DinerScreen(
                 },
                 onBookingOfferClick = {
                     // Navigate to booking offer in Orders
+                    // Remember we came from chat so we can restore it when closing booking
+                    previousDestination = DinerDestinations.CHAT
+                    previousHomeState = null
                     showChatScreen = false
                     selectedOrderId = "ichiraku_offer"
                     currentDestination = DinerDestinations.ORDERS
@@ -287,7 +314,24 @@ fun DinerScreen(
                         orders = orders,
                         initialOrderId = selectedOrderId,
                         onOrderClick = { orderId ->
-                            // Order selection handled internally
+                            // If booking summary was closed (empty id), restore previous context
+                            if (orderId.isEmpty()) {
+                                if (previousDestination != null) {
+                                    // If previous destination was chat, re-open chat
+                                    val dest = previousDestination!!
+                                    previousDestination = null
+                                    if (dest == DinerDestinations.HOME && previousHomeState != null) {
+                                        currentDestination = DinerDestinations.HOME
+                                        homeScreenState = previousHomeState!!
+                                        previousHomeState = null
+                                    } else if (dest == DinerDestinations.CHAT) {
+                                        currentDestination = DinerDestinations.CHAT
+                                        showChatScreen = true
+                                    } else {
+                                        currentDestination = dest
+                                    }
+                                }
+                            }
                         },
                         onBookAndPayClick = {
                             showPaymentSuccessfulScreen = true
