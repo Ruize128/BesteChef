@@ -1,11 +1,14 @@
 package nl.tue.hci.feature.diner.pages
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.ui.draw.clip
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -69,6 +72,31 @@ actual fun ImageCarouselWithPager(
                             }
                         }
                 )
+            }
+        }
+        // Indicators (desktop) — show when more than one image
+        if (images.size > 1) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 8.dp)
+                    .background(
+                        Color.Black.copy(alpha = 0.4f),
+                        RoundedCornerShape(12.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                images.forEachIndexed { index, _ ->
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(
+                                if (index == pagerState.currentPage) Color.White else Color.White.copy(alpha = 0.5f)
+                            )
+                    )
+                }
             }
         }
     }
