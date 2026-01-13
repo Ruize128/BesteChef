@@ -10,11 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.Dp
 import nl.tue.hci.core.ui.BesteChefThemeColors
 
 @Composable
@@ -22,7 +24,8 @@ fun QuantitySelector(
     quantity: Int,
     onDecrease: () -> Unit,
     onIncrease: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    buttonSize: Dp = 32.dp
 ) {
     val colors = BesteChefThemeColors.current()
     
@@ -32,36 +35,37 @@ fun QuantitySelector(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Decrease button
+        val isZero = quantity == 0
         Box(
             modifier = Modifier
-                .size(24.dp)
+                .size(buttonSize)
                 .clip(CircleShape)
-                .background(colors.buttonBackground)
+                .background(colors.buttonBackground.copy(alpha = if (isZero) 0.5f else 1f))
                 .clickable(onClick = onDecrease),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "-",
-                fontSize = 16.sp,
+                fontSize = (buttonSize.value / 2).sp,
                 fontWeight = FontWeight.Bold,
-                color = colors.textPrimary
+                color = colors.textPrimary.copy(alpha = if (isZero) 0.5f else 1f)
             )
         }
         
         // Quantity display
         Text(
             text = quantity.toString(),
-            fontSize = 14.sp,
+            fontSize = (buttonSize.value / 2.2).sp,
             fontWeight = FontWeight.Medium,
             color = colors.textPrimary,
-            modifier = Modifier.width(24.dp),
+            modifier = Modifier.width(buttonSize),
             textAlign = TextAlign.Center
         )
         
-        // Increase button
+        // Increase button (always active)
         Box(
             modifier = Modifier
-                .size(24.dp)
+                .size(buttonSize)
                 .clip(CircleShape)
                 .background(colors.buttonBackground)
                 .clickable(onClick = onIncrease),
@@ -69,7 +73,7 @@ fun QuantitySelector(
         ) {
             Text(
                 text = "+",
-                fontSize = 16.sp,
+                fontSize = (buttonSize.value / 2).sp,
                 fontWeight = FontWeight.Bold,
                 color = colors.textPrimary
             )

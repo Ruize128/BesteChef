@@ -83,35 +83,39 @@ private fun MenuContent(
                 description = "Sea salt, spring onion, yuzu dressing.",
                 serves = "2-3",
                 prepTime = "45 min prep",
-                imageColor = colors.imagePlaceholder1 // Light green
+                imageColor = colors.imagePlaceholder1, // Light green
+                defaultNumber = 2
             ),
             MenuItem(
                 title = "Yuzu Mousse (Dessert)",
                 description = "Light citrus mousse with candied peel.",
                 serves = "6",
                 prepTime = "30 min prep",
-                imageColor = colors.imagePlaceholder2 // Light orange/peach
+                imageColor = colors.imagePlaceholder2, // Light orange/peach
+                defaultNumber = 1
             ),
             MenuItem(
                 title = "Wagyu Beef Steak",
                 description = "Premium wagyu with truffle butter and seasonal vegetables.",
                 serves = "2",
                 prepTime = "60 min prep",
-                imageColor = colors.imagePlaceholder4 // Light beige
+                imageColor = colors.imagePlaceholder4, // Light beige
+                defaultNumber = 2
             ),
             MenuItem(
                 title = "Sushi Platter",
                 description = "Assorted fresh sushi with wasabi and pickled ginger.",
                 serves = "4-5",
                 prepTime = "90 min prep",
-                imageColor = colors.imagePlaceholder1 // Light green
+                imageColor = colors.imagePlaceholder1, // Light green
+                defaultNumber = 1
             )
         )
     }
 
     var showCartSheet by rememberSaveable { mutableStateOf(false) }
     var showBookConfirmDialog by rememberSaveable { mutableStateOf(false) }
-    var cartItems by remember { mutableStateOf(menuItems.associate { it.title to 1 }.toMutableMap()) }
+    var cartItems by remember { mutableStateOf(menuItems.associate { it.title to it.defaultNumber }.toMutableMap()) }
 
     Box(
         modifier = modifier
@@ -133,7 +137,7 @@ private fun MenuContent(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 16.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.Start
                 ) {
                     IconButton(
                         onClick = {
@@ -152,16 +156,19 @@ private fun MenuContent(
                             tint = colors.textPrimary
                         )
                     }
-                    
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
                     Text(
-                        text = chefName,
+                        text = if (menuName.isNotEmpty()) menuName else chefName,
                         style = typography.sectionTitle,
                         color = colors.textPrimary,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.weight(1f)
                     )
-                    
+
                     IconButton(
                         onClick = onChatClick,
                         modifier = Modifier.size(40.dp)
@@ -183,9 +190,20 @@ private fun MenuContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(menuItems) { item ->
+                    val qty = cartItems[item.title] ?: 1
                     MenuItemCard(
                         menuItem = item,
-                        onAskClick = onChatClick,
+                        quantity = qty,
+                        onDecrease = {
+                            val current = cartItems[item.title] ?: 1
+                            if (current > 0) {
+                                cartItems = cartItems.toMutableMap().apply { this[item.title] = current - 1 }
+                            }
+                        },
+                        onIncrease = {
+                            val current = cartItems[item.title] ?: 1
+                            cartItems = cartItems.toMutableMap().apply { this[item.title] = current + 1 }
+                        },
                         onImageClick = { imageName ->
                             imagePreviewShown = true
                             currentPreviewImage = imageName
@@ -234,6 +252,7 @@ private fun MenuContent(
                     cartItems.entries.forEach { (title, qty) ->
                         val menuItem = menuItems.find { it.title == title }
                         val imageName = remember(title) { getImageNameFromTitle(title) }
+                        val isZero = qty == 0
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -245,15 +264,20 @@ private fun MenuContent(
                                 modifier = Modifier
                                     .size(64.dp)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .alpha(if (qty == 0) 0.5f else 1f)
                             ) {
                                 when {
                                     imageName != null -> {
                                         Image(
                                             painter = rememberImagePainter(imageName),
                                             contentDescription = title,
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentScale = ContentScale.Crop
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clickable {
+                                                    currentPreviewImage = imageName
+                                                    imagePreviewShown = true
+                                                },
+                                            contentScale = ContentScale.Crop,
+                                            alpha = if (isZero) 0.5f else 1f
                                         )
                                     }
                                     menuItem != null -> {
@@ -261,6 +285,7 @@ private fun MenuContent(
                                             modifier = Modifier
                                                 .fillMaxSize()
                                                 .background(menuItem.imageColor)
+                                                .alpha(if (isZero) 0.5f else 1f)
                                         )
                                     }
                                 }
@@ -268,20 +293,21 @@ private fun MenuContent(
 
                             Column(
                                 modifier = Modifier
-                                    .weight(1f)
-                                    .alpha(if (qty == 0) 0.5f else 1f),
+                                    .weight(1f),
                                 verticalArrangement = Arrangement.spacedBy(2.dp)
                             ) {
                                 Text(
                                     text = title,
                                     style = typography.bodyMedium,
-                                    color = colors.textPrimary
+                                    color = colors.textPrimary,
+                                    modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
                                 )
                                 menuItem?.let {
                                     Text(
                                         text = it.description,
                                         style = typography.bodySmall,
-                                        color = colors.textSecondary
+                                        color = colors.textSecondary,
+                                        modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
                                     )
                                 }
                             }
@@ -428,14 +454,19 @@ private fun MenuContent(
 @Composable
 fun MenuItemCard(
     menuItem: MenuItem,
-    onAskClick: () -> Unit = {},
+    quantity: Int = 1,
+    onDecrease: () -> Unit = {},
+    onIncrease: () -> Unit = {},
     onImageClick: ((String) -> Unit)? = null
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
     
+    val isZero = quantity == 0
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
@@ -454,6 +485,7 @@ fun MenuItemCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
+                    .alpha(if (isZero) 0.5f else 1f)
             ) {
                 if (carouselImages != null && carouselImages.isNotEmpty()) {
                     // Use HorizontalPager for smooth carousel
@@ -524,35 +556,31 @@ fun MenuItemCard(
                         text = menuItem.title,
                         style = typography.cardTitle,
                         color = colors.textPrimary,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f).alpha(if (isZero) 0.5f else 1f)
                     )
-                    
-                    IconButton(
-                        onClick = onAskClick,
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        val chatIconPainter = rememberIconPainter("chat_icon")
-                        Icon(
-                            painter = chatIconPainter,
-                            contentDescription = "Chat",
-                            tint = colors.textSecondary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+
+                    // Quantity selector in-place (keeps in sync with cart)
+                    QuantitySelector(
+                        quantity = quantity,
+                        onDecrease = onDecrease,
+                        onIncrease = onIncrease
+                    )
                 }
                 
                 // Description
                 Text(
                     text = menuItem.description,
                     style = typography.bodyMedium,
-                    color = colors.textSecondary
+                    color = colors.textSecondary,
+                    modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
                 )
                 
                 // Serves and prep time
                 Text(
                     text = "Serves ${menuItem.serves} · ${menuItem.prepTime}",
                     style = typography.bodySmall,
-                    color = colors.textSecondary
+                    color = colors.textSecondary,
+                    modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
                 )
                 
                 Spacer(modifier = Modifier.height(8.dp))

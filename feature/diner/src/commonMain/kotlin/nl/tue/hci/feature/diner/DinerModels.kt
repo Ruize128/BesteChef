@@ -28,7 +28,8 @@ data class MenuItem(
     val description: String,
     val serves: String,
     val prepTime: String,
-    val imageColor: Color
+    val imageColor: Color,
+    val defaultNumber: Int = 1
 )
 
 data class DinerChatHistoryItem(
