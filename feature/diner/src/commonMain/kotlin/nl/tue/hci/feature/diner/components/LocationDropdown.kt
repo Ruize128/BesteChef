@@ -45,7 +45,7 @@ fun LocationDropdownMenu(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onLocationSelected: (String) -> Unit,
-    currentPositionCity: String = "Amsterdam",
+    currentPositionCity: String = "Eindhoven",
     cities: List<String> = defaultCities,
     modifier: Modifier = Modifier
 ) {
@@ -127,26 +127,36 @@ fun LocationDropdownMenu(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        // Current position option
+                        // Current position option (first item)
                         item {
-                            Row(
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable { onLocationSelected(currentPositionCity) }
-                                    .padding(vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                                    .padding(vertical = 8.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.LocationOn,
-                                    contentDescription = "Current position",
-                                    tint = colors.dinerPrimary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.LocationOn,
+                                        contentDescription = "Current position",
+                                        tint = colors.dinerPrimary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Text(
+                                        text = currentPositionCity,
+                                        style = typography.bodyMedium,
+                                        color = colors.textPrimary
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = currentPositionCity,
-                                    style = typography.bodyMedium,
-                                    color = colors.textPrimary
+                                    text = "Based on your current location",
+                                    style = typography.bodySmall,
+                                    color = colors.textSecondary,
+                                    modifier = Modifier.padding(start = 32.dp)
                                 )
                             }
                             HorizontalDivider(
