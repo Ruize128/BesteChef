@@ -2,6 +2,7 @@ package nl.tue.hci.feature.diner.components
 import nl.tue.hci.core.ui.BesteChefThemeColors
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -115,7 +116,8 @@ fun ActionButton(
 @Composable
 fun ChefResultCard(
     chef: ChefResult,
-    onButtonClick: () -> Unit = {}
+    onButtonClick: () -> Unit = {},
+    onImageClick: ((String) -> Unit)? = null
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
@@ -154,14 +156,23 @@ fun ChefResultCard(
                             currentIndex = currentImageIndex,
                             onIndexChange = { currentImageIndex = it },
                             contentDescription = chef.name,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            onImageClick = onImageClick
                         )
                     } else if (singleImageName != null) {
                         // Single image (e.g., Chef Example Two)
                         Image(
                             painter = rememberImagePainter(singleImageName),
                             contentDescription = chef.name,
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .let { modifier ->
+                                    if (onImageClick != null) {
+                                        modifier.clickable { onImageClick(singleImageName) }
+                                    } else {
+                                        modifier
+                                    }
+                                },
                             contentScale = ContentScale.Crop
                         )
                     } else {

@@ -9,6 +9,7 @@ expect fun ImageCarouselWithPager(
     currentIndex: Int,
     onIndexChange: (Int) -> Unit,
     contentDescription: String,
-    modifier: Modifier
+    modifier: Modifier,
+    onImageClick: ((String) -> Unit)? = null
 )
 

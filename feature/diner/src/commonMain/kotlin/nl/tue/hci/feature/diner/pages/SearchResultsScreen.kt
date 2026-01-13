@@ -37,9 +37,11 @@ import nl.tue.hci.feature.diner.components.ActionButton
 import nl.tue.hci.feature.diner.ChefResult
 import nl.tue.hci.feature.diner.components.ChefResultCard
 import nl.tue.hci.feature.diner.components.DateDropdownMenu
+import nl.tue.hci.feature.diner.components.FilterModal
 import nl.tue.hci.feature.diner.components.LocationDropdownMenu
 import nl.tue.hci.feature.diner.components.formatDate
-import nl.tue.hci.feature.diner.components.FilterModal
+import nl.tue.hci.core.ui.components.ImagePreviewOverlay
+import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.feature.diner.components.AllergensSelectionModal
 import nl.tue.hci.feature.diner.components.CuisineSelectionModal
 import nl.tue.hci.core.ui.icons.rememberIconPainter
@@ -118,6 +120,10 @@ private fun SearchResultsContent(
     var isAllergensSelectionOpen by rememberSaveable { mutableStateOf(false) }
     var isCuisineSelectionOpen by rememberSaveable { mutableStateOf(false) }
     
+    // Full-screen image preview state
+    var showImagePreview by rememberSaveable { mutableStateOf(false) }
+    var previewImageName by rememberSaveable { mutableStateOf<String?>(null) }
+    
     // Loading states:
     // - isInitialLoading: when navigating from SearchScreen -> SearchResults (list hidden)
     // - isTransientLoading: when user edits search fields or filters (list visible, show faded overlay)
@@ -193,7 +199,14 @@ private fun SearchResultsContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = onBackClick,
+                    onClick = {
+                        if (showImagePreview) {
+                            showImagePreview = false
+                            previewImageName = null
+                        } else {
+                            onBackClick()
+                        }
+                    },
                     modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
@@ -493,6 +506,10 @@ private fun SearchResultsContent(
                             chef = chef,
                             onButtonClick = {
                                 onChefClick(chef.name)
+                            },
+                            onImageClick = { imageName ->
+                                previewImageName = imageName
+                                showImagePreview = true
                             }
                         )
                     }
@@ -512,6 +529,20 @@ private fun SearchResultsContent(
             }
         }
     }
+
+    // Full-screen image preview overlay
+    PlatformBackHandler(enabled = showImagePreview) {
+        showImagePreview = false
+        previewImageName = null
+    }
+    ImagePreviewOverlay(
+        showPreview = showImagePreview,
+        imageName = previewImageName,
+        onDismiss = {
+            showImagePreview = false
+            previewImageName = null
+        }
+    )
 }
 
 

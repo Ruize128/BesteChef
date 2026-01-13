@@ -1,5 +1,6 @@
 package nl.tue.hci.feature.diner.pages
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,6 +29,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.ChatBubble
+import nl.tue.hci.core.ui.components.ImagePreviewOverlay
+import nl.tue.hci.core.ui.PlatformBackHandler
+import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.model.ChatMessage
 
 
@@ -41,6 +45,10 @@ fun DinerChatScreen(
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
+    
+    // Full-screen image preview state
+    var showImagePreview by rememberSaveable { mutableStateOf(false) }
+    var previewImageName by rememberSaveable { mutableStateOf<String?>(null) }
     
     // Hardcoded initial messages
     // For diner chat: isFromMe=false = chef, isFromMe=true = diner
@@ -131,7 +139,14 @@ fun DinerChatScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 IconButton(
-                    onClick = onBackClick,
+                    onClick = {
+                        if (showImagePreview) {
+                            showImagePreview = false
+                            previewImageName = null
+                        } else {
+                            onBackClick()
+                        }
+                    },
                     modifier = Modifier.size(40.dp)
                 ) {
                     Icon(
@@ -179,7 +194,11 @@ fun DinerChatScreen(
             items(messages) { message ->
                 ChatBubble(
                     message = message,
-                    onBookingOfferClick = onBookingOfferClick
+                    onBookingOfferClick = onBookingOfferClick,
+                    onImageClick = { imageName ->
+                        previewImageName = imageName
+                        showImagePreview = true
+                    }
                 )
             }
         }
@@ -266,6 +285,20 @@ fun DinerChatScreen(
             }
         }
     }
+
+    // Full-screen image preview overlay
+    PlatformBackHandler(enabled = showImagePreview) {
+        showImagePreview = false
+        previewImageName = null
+    }
+    ImagePreviewOverlay(
+        showPreview = showImagePreview,
+        imageName = previewImageName,
+        onDismiss = {
+            showImagePreview = false
+            previewImageName = null
+        }
+    )
 }
 
 @Composable

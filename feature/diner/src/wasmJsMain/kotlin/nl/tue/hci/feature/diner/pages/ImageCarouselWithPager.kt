@@ -1,6 +1,7 @@
 package nl.tue.hci.feature.diner.pages
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,7 +21,8 @@ actual fun ImageCarouselWithPager(
     currentIndex: Int,
     onIndexChange: (Int) -> Unit,
     contentDescription: String,
-    modifier: Modifier
+    modifier: Modifier,
+    onImageClick: ((String) -> Unit)?
 ) {
     // Web implementation: Simple image display with manual swipe handling
     // For now, just show the current image
@@ -33,7 +35,14 @@ actual fun ImageCarouselWithPager(
             contentDescription = contentDescription,
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(0.dp)),
+                .clip(RoundedCornerShape(0.dp))
+                .let { modifier ->
+                    if (onImageClick != null) {
+                        modifier.clickable { onImageClick(images[currentIndex]) }
+                    } else {
+                        modifier
+                    }
+                },
             contentScale = ContentScale.Crop
         )
         

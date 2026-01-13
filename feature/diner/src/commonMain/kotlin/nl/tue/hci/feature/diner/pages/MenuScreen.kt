@@ -1,8 +1,10 @@
 package nl.tue.hci.feature.diner.pages
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
+import nl.tue.hci.core.ui.components.ImagePreviewOverlay
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
+import nl.tue.hci.core.ui.PlatformBackHandler
 import androidx.compose.ui.layout.ContentScale
 import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.getCarouselImageNames
@@ -68,6 +71,9 @@ private fun MenuContent(
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
+    
+    var imagePreviewShown by rememberSaveable { mutableStateOf(false) }
+    var currentPreviewImage by rememberSaveable { mutableStateOf<String?>(null) }
     
     // Hardcoded menu items
     val menuItems = remember(colors) {
@@ -130,7 +136,14 @@ private fun MenuContent(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
-                        onClick = onBackClick,
+                        onClick = {
+                            if (imagePreviewShown) {
+                                imagePreviewShown = false
+                                currentPreviewImage = null
+                            } else {
+                                onBackClick()
+                            }
+                        },
                         modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
@@ -172,7 +185,11 @@ private fun MenuContent(
                 items(menuItems) { item ->
                     MenuItemCard(
                         menuItem = item,
-                        onAskClick = onChatClick
+                        onAskClick = onChatClick,
+                        onImageClick = { imageName ->
+                            imagePreviewShown = true
+                            currentPreviewImage = imageName
+                        }
                     )
                 }
             }
@@ -389,13 +406,30 @@ private fun MenuContent(
                 textContentColor = colors.textSecondary
             )
         }
+
+        // Handle back button when image preview is showing
+        PlatformBackHandler(enabled = imagePreviewShown) {
+            imagePreviewShown = false
+            currentPreviewImage = null
+        }
+
+        // Image Preview Overlay
+        ImagePreviewOverlay(
+            showPreview = imagePreviewShown,
+            imageName = currentPreviewImage,
+            onDismiss = {
+                imagePreviewShown = false
+                currentPreviewImage = null
+            }
+        )
     }
 }
 
 @Composable
 fun MenuItemCard(
     menuItem: MenuItem,
-    onAskClick: () -> Unit = {}
+    onAskClick: () -> Unit = {},
+    onImageClick: ((String) -> Unit)? = null
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
@@ -427,6 +461,7 @@ fun MenuItemCard(
                         images = carouselImages,
                         currentIndex = currentImageIndex,
                         onIndexChange = { currentImageIndex = it },
+                        onImageClick = onImageClick,
                         contentDescription = menuItem.title,
                         modifier = Modifier.fillMaxSize()
                     )
@@ -435,7 +470,15 @@ fun MenuItemCard(
                     Image(
                         painter = rememberImagePainter(imageName),
                         contentDescription = menuItem.title,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .then(
+                                if (onImageClick != null) {
+                                    Modifier.clickable { onImageClick(imageName) }
+                                } else {
+                                    Modifier
+                                }
+                            ),
                         contentScale = ContentScale.Crop
                     )
                 } else {

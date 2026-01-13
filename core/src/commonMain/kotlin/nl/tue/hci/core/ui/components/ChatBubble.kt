@@ -34,7 +34,8 @@ import nl.tue.hci.core.ui.rememberImagePainter
 @Composable
 fun ChatBubble(
     message: ChatMessage,
-    onBookingOfferClick: () -> Unit = {}
+    onBookingOfferClick: () -> Unit = {},
+    onImageClick: (String) -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
     
@@ -202,6 +203,7 @@ fun ChatBubble(
                     modifier = Modifier
                         .width(200.dp)
                         .height(150.dp)
+                        .clickable { onImageClick("yuzu_mousse") }
                 ) {
                     Image(
                         painter = rememberImagePainter("yuzu_mousse"),

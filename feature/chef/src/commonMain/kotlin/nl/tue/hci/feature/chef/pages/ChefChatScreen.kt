@@ -1,6 +1,7 @@
 package nl.tue.hci.feature.chef.pages
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +32,8 @@ import androidx.compose.ui.text.style.TextAlign
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.ChatBubble
+import nl.tue.hci.core.ui.components.ImagePreviewOverlay
+import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.model.ChatMessage
 
 @Composable
@@ -43,6 +46,10 @@ fun ChefChatScreen(
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
+    
+    // Full-screen image preview state
+    var showImagePreview by rememberSaveable { mutableStateOf(false) }
+    var previewImageName by rememberSaveable { mutableStateOf<String?>(null) }
     
     // Hardcoded initial messages
     // For chef chat: isFromMe=true = chef, isFromMe=false = customer
@@ -189,7 +196,11 @@ fun ChefChatScreen(
                 items(messages) { message ->
                     ChatBubble(
                         message = message,
-                        onBookingOfferClick = onBookingOfferClick
+                        onBookingOfferClick = onBookingOfferClick,
+                        onImageClick = { imageName ->
+                            previewImageName = imageName
+                            showImagePreview = true
+                        }
                     )
                 }
             }
@@ -348,6 +359,16 @@ fun ChefChatScreen(
             }
         }
     }
+
+    // Full-screen image preview overlay
+    ImagePreviewOverlay(
+        showPreview = showImagePreview,
+        imageName = previewImageName,
+        onDismiss = {
+            showImagePreview = false
+            previewImageName = null
+        }
+    )
 }
 
 @Composable

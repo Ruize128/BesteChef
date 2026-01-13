@@ -1,6 +1,7 @@
 package nl.tue.hci.feature.diner.pages
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -23,7 +24,8 @@ actual fun ImageCarouselWithPager(
     currentIndex: Int,
     onIndexChange: (Int) -> Unit,
     contentDescription: String,
-    modifier: Modifier
+    modifier: Modifier,
+    onImageClick: ((String) -> Unit)?
 ) {
     val pagerState = rememberPagerState(pageCount = { images.size })
     
@@ -57,7 +59,15 @@ actual fun ImageCarouselWithPager(
                     painter = imagePainter,
                     contentDescription = contentDescription,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .let { modifier ->
+                            if (onImageClick != null) {
+                                modifier.clickable { onImageClick(images[page]) }
+                            } else {
+                                modifier
+                            }
+                        }
                 )
             }
         }
