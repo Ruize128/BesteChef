@@ -4,6 +4,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -14,10 +15,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 import nl.tue.hci.core.notification.InAppNotification
 import nl.tue.hci.core.notification.NotificationState
 import nl.tue.hci.core.notification.NotificationType
@@ -65,7 +72,7 @@ fun InAppNotificationOverlay(
 }
 
 /**
- * Individual notification card with slide-in animation
+ * Individual notification card with slide-in animation and swipe-up to dismiss
  */
 @Composable
 private fun InAppNotificationCard(
@@ -78,10 +85,15 @@ private fun InAppNotificationCard(
     val typography = BesteChefThemeTypography.current()
     
     var visible by remember { mutableStateOf(false) }
+    var offsetY by remember { mutableStateOf(0f) }
+    var isDragging by remember { mutableStateOf(false) }
     
     LaunchedEffect(Unit) {
         visible = true
     }
+    
+    // Dismiss threshold - swipe up at least 100dp to dismiss
+    val dismissThreshold = -100f
     
     AnimatedVisibility(
         visible = visible,
@@ -99,8 +111,42 @@ private fun InAppNotificationCard(
         Surface(
             modifier = modifier
                 .fillMaxWidth()
+                .offset { IntOffset(0, offsetY.roundToInt()) }
+                .graphicsLayer {
+                    // Fade out as swiping up
+                    alpha = 1f - (offsetY.coerceAtMost(0f) / dismissThreshold).coerceIn(0f, 1f)
+                }
                 .shadow(8.dp, RoundedCornerShape(16.dp))
-                .clickable { onClick() },
+                .pointerInput(Unit) {
+                    detectVerticalDragGestures(
+                        onDragStart = { isDragging = true },
+                        onDragEnd = {
+                            isDragging = false
+                            if (offsetY < dismissThreshold) {
+                                // Swiped up enough, dismiss
+                                visible = false
+                                CoroutineScope(Dispatchers.Default).launch {
+                                    delay(300)
+                                    onDismiss()
+                                }
+                            } else {
+                                // Snap back to original position
+                                offsetY = 0f
+                            }
+                        },
+                        onDragCancel = {
+                            isDragging = false
+                            offsetY = 0f
+                        },
+                        onVerticalDrag = { change, dragAmount ->
+                            change.consume()
+                            // Only allow upward dragging (negative values)
+                            val newOffset = offsetY + dragAmount
+                            offsetY = if (newOffset < 0) newOffset else 0f
+                        }
+                    )
+                }
+                .clickable(enabled = !isDragging) { onClick() },
             shape = RoundedCornerShape(16.dp),
             color = colors.surfaceVariant,
             tonalElevation = 4.dp
