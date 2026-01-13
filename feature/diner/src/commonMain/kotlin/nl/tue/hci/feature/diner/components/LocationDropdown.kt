@@ -82,7 +82,7 @@ fun LocationDropdownMenu(
                     // Search input bar
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
+                        shape = RoundedCornerShape(20.dp),
                         color = colors.surfaceVariant,
                         shadowElevation = 0.dp,
                         tonalElevation = 0.dp

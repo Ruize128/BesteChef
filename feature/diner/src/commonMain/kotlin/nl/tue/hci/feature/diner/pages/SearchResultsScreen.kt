@@ -46,6 +46,7 @@ import nl.tue.hci.feature.diner.components.AllergensSelectionModal
 import nl.tue.hci.feature.diner.components.CuisineSelectionModal
 import nl.tue.hci.core.ui.icons.rememberIconPainter
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.draw.clip
 import kotlinx.coroutines.delay
 
 // Saver for LocalDate to make it work with rememberSaveable
@@ -53,6 +54,7 @@ private val LocalDateSaver = Saver<LocalDate?, String>(
     save = { it?.toString() ?: "" },
     restore = { if (it.isEmpty()) null else LocalDate.parse(it) }
 )
+
 
 
 
@@ -115,6 +117,9 @@ private fun SearchResultsContent(
     
     // Filter modal state
     var isFilterModalOpen by rememberSaveable { mutableStateOf(false) }
+    // Sort menu state
+    var isSortMenuOpen by rememberSaveable { mutableStateOf(false) }
+    var selectedSortOption by rememberSaveable { mutableStateOf("Relevance") }
     
     // Sub-modals for filter selections
     var isAllergensSelectionOpen by rememberSaveable { mutableStateOf(false) }
@@ -143,6 +148,15 @@ private fun SearchResultsContent(
         if (!isInitialLoading) {
             isTransientLoading = true
             delay(500)
+            isTransientLoading = false
+        }
+    }
+
+    // Trigger mock refresh when sort option changes
+    LaunchedEffect(selectedSortOption) {
+        if (!isInitialLoading) {
+            isTransientLoading = true
+            delay(400)
             isTransientLoading = false
         }
     }
@@ -387,15 +401,16 @@ private fun SearchResultsContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = 12.dp, bottom = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Filter button with active state
             Surface(
                 modifier = Modifier
-                    .weight(1f)
-                    .height(24.dp),
+                    .height(24.dp)
+                    .wrapContentWidth(),
                 shape = RoundedCornerShape(16.dp),
                 color = if (isFilterModalOpen || selectedAllergens.isNotEmpty() || selectedCuisine != null) {
                     colors.dinerPrimary
@@ -408,8 +423,8 @@ private fun SearchResultsContent(
             ) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 0.dp),
+                        .wrapContentWidth()
+                        .padding(horizontal = 24.dp, vertical = 0.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -437,16 +452,68 @@ private fun SearchResultsContent(
                 }
             }
 
-            ActionButton(
-                text = "Sort",
-                iconPainter = rememberIconPainter("sort_icon"),
-                modifier = Modifier.weight(1f)
-            )
-            ActionButton(
-                text = "Search text",
-                icon = Icons.Default.Search,
-                modifier = Modifier.weight(1f)
-            )
+            // Sort button with dropdown
+            Box(modifier = Modifier.wrapContentWidth()) {
+                Surface(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .height(24.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = if (selectedSortOption.contains("Price") || selectedSortOption.contains("Rating")) colors.dinerPrimary else colors.surface,
+                    onClick = { isSortMenuOpen = !isSortMenuOpen },
+                    shadowElevation = 0.dp,
+                    tonalElevation = 0.dp
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(horizontal = 24.dp, vertical = 0.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val sortIconPainter = rememberIconPainter("sort_icon")
+                        Icon(
+                            painter = sortIconPainter,
+                            contentDescription = "Sort",
+                            modifier = Modifier.size(14.dp),
+                            tint = if (selectedSortOption.contains("Price") || selectedSortOption.contains("Rating")) colors.textOnPrimary else colors.textPrimary
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = selectedSortOption,
+                            style = typography.bodySmall.copy(fontSize = 12.sp),
+                            color = if (selectedSortOption.contains("Price") || selectedSortOption.contains("Rating")) colors.textOnPrimary else colors.textPrimary
+                        )
+                    }
+                }
+
+                DropdownMenu(
+                expanded = isSortMenuOpen,
+                onDismissRequest = { isSortMenuOpen = false },
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(colors.surface),
+                shape = RoundedCornerShape(20.dp),
+                shadowElevation = 0.dp,
+                border = BorderStroke(1.dp, colors.outline)
+            ) {
+                    val sortOptions = listOf(
+                        "Relevance",
+                        "Rating (High → Low)",
+                        "Price (Low → High)",
+                        "Price (High → Low)"
+                    )
+                    sortOptions.forEach { option ->
+                        DropdownMenuItem(
+                            text = { Text(option, color = colors.textPrimary) },
+                            onClick = {
+                                selectedSortOption = option
+                                isSortMenuOpen = false
+                            }
+                        )
+                    }
+                }
+            }
         }
         
         // Filter modal
