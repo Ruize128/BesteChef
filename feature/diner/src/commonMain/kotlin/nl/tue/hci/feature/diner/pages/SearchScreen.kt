@@ -119,7 +119,7 @@ fun SearchScreen(
             ) {
                 // Location field
                 Box(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1.1f)
                 ) {
                     Column(
                         modifier = Modifier
@@ -135,12 +135,13 @@ fun SearchScreen(
                         Text(
                             text = selectedLocation ?: locationPlaceholder,
                             style = typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
                             color = if (selectedLocation != null) {
                                 colors.textPrimary
                             } else {
                                 colors.textSecondary.copy(alpha = 0.6f)
                             },
-                            modifier = Modifier.padding(top = 4.dp)
+                            modifier = Modifier.padding(top = 4.dp),
                         )
                     }
                     
@@ -217,7 +218,7 @@ fun SearchScreen(
                 // Guests field
                 Column(
                     modifier = Modifier
-                        .weight(0.8f)
+                        .weight(0.7f)
                         .padding(16.dp)
                 ) {
                     Text(

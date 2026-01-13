@@ -45,7 +45,8 @@ fun AllergensSelectionModal(
                 .fillMaxWidth(0.9f)
                 .padding(16.dp),
             shape = RoundedCornerShape(20.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = colors.surfaceContainer)
         ) {
             Column(
                 modifier = Modifier

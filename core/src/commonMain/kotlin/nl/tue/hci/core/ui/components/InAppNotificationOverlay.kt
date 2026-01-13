@@ -102,7 +102,7 @@ private fun InAppNotificationCard(
                 .shadow(8.dp, RoundedCornerShape(16.dp))
                 .clickable { onClick() },
             shape = RoundedCornerShape(16.dp),
-            color = colors.surface,
+            color = colors.surfaceVariant,
             tonalElevation = 4.dp
         ) {
             Row(
