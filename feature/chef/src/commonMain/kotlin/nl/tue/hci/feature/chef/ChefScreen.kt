@@ -23,6 +23,7 @@ import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.rememberAppExitHandler
 import nl.tue.hci.core.ui.components.InAppNotificationOverlay
+import nl.tue.hci.feature.chef.pages.ChefProfileScreen
 
 enum class ChefDestinations(
     val label: String,
@@ -365,37 +366,5 @@ fun ChefOrdersScreen(
                 onOrderClick(orderId)
             }
         )
-    }
-}
-
-@Composable
-fun ChefProfileScreen(
-    modifier: Modifier = Modifier,
-    onLogout: () -> Unit = {}
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = "Profile",
-            style = MaterialTheme.typography.headlineMedium
-        )
-        Text(
-            text = "Manage your chef profile and settings.",
-            style = MaterialTheme.typography.bodyLarge
-        )
-        
-        Spacer(modifier = Modifier.weight(1f))
-        
-        // Logout button
-        Button(
-            onClick = onLogout,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Logout")
-        }
     }
 }
