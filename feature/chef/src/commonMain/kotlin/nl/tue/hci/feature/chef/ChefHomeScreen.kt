@@ -17,12 +17,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.Avatar
@@ -30,14 +26,14 @@ import nl.tue.hci.core.ui.components.FilterButton
 import nl.tue.hci.core.ui.components.StatusBadge
 import nl.tue.hci.feature.chef.model.BookingInquiry
 import nl.tue.hci.feature.chef.model.BookingStatus
-import nl.tue.hci.core.ui.BesteChefTheme
 import nl.tue.hci.feature.chef.notification.sendChatNotification
 
 
 @Composable
 fun ChefHomeScreen(
     modifier: Modifier = Modifier,
-    onChatClick: (String) -> Unit = {} // customerName
+    onChatClick: (String) -> Unit = {}, // customerName
+    onOrderClick: (String, String) -> Unit = { _, _ -> } // bookingId, status
 ) {
     val coroutineScope = rememberCoroutineScope()
     
@@ -70,8 +66,8 @@ fun ChefHomeScreen(
         BookingInquiry(
             id = "2",
             customerName = "Liam",
-            message = "Booking confirmed (Dec 12 • 6 guests)",
-            date = "Dec 12",
+            message = "Booking confirmed (Dec 10 • 6 guests)",
+            date = "Dec 10",
             guests = 6,
             timeAgo = "3d",
             status = BookingStatus.CONFIRMED,
@@ -81,6 +77,8 @@ fun ChefHomeScreen(
     
     var selectedFilter by remember { mutableStateOf("All") }
     var isLoading by remember { mutableStateOf(false) }
+    var showCalendar by remember { mutableStateOf(false) }
+    var selectedDate by remember { mutableStateOf("Dec 12") }
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
     
@@ -164,7 +162,9 @@ fun ChefHomeScreen(
                         color = colors.chefPrimary,
                         modifier = Modifier
                             .width(64.dp)
-                            .clickable(onClick = {}),
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable(onClick = { showCalendar = true })
+                            .padding(vertical = 4.dp),
                         textAlign = TextAlign.Center,
                     )
                 }
@@ -244,8 +244,22 @@ fun ChefHomeScreen(
             }
         }
     }
+    
+    // Calendar modal
+    if (showCalendar) {
+        CalendarModal(
+            onDismiss = { showCalendar = false },
+            bookings = bookingsList,
+            selectedDate = selectedDate,
+            onDateSelected = { selectedDate = it },
+            onOrderClick = { bookingId, status ->
+                // Navigate to order edit screen with booking ID and status
+                onOrderClick(bookingId, status)
+                showCalendar = false
+            }
+        )
+    }
 }
-
 @Composable
 private fun BookingInquiryCard(
     booking: BookingInquiry,

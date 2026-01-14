@@ -61,6 +61,7 @@ fun ChefScreen(
         var showBookingConfirmedScreen by rememberSaveable { mutableStateOf(false) }
         var chatCustomerName by rememberSaveable { mutableStateOf(initialChatCustomerName ?: "") }
         var editOrderId by rememberSaveable { mutableStateOf("") }
+        var editOrderStatus by rememberSaveable { mutableStateOf<String?>(null) }
         var editOrderSource by rememberSaveable { mutableStateOf<String?>(null) } // Track if edit order came from chat or orders
         var orderDetailsForConfirmed by rememberSaveable { mutableStateOf<nl.tue.hci.feature.chef.model.OrderDetails?>(null) }
         var menuItemsForConfirmed by remember { mutableStateOf<List<nl.tue.hci.feature.chef.model.OfferMenuItem>>(emptyList()) }
@@ -174,6 +175,11 @@ fun ChefScreen(
                             onChatClick = { customerName ->
                                 chatCustomerName = customerName
                                 showChatScreen = true
+                            },
+                            onOrderClick = { bookingId, status ->
+                                editOrderId = bookingId
+                                editOrderStatus = status
+                                currentDestination = ChefDestinations.ORDERS
                             }
                         )
                         ChefDestinations.CHAT -> ChefChatHistoryScreen(
@@ -186,6 +192,7 @@ fun ChefScreen(
                         ChefDestinations.ORDERS -> ChefOrdersScreen(
                             modifier = Modifier.padding(innerPadding),
                             initialOrderId = editOrderId,
+                            initialOrderStatus = editOrderStatus,
                             editOrderSource = editOrderSource,
                             sentOrderId = sentOrderId,
                             onOrderClick = { orderId ->
@@ -213,6 +220,7 @@ fun ChefScreen(
                                     currentDestination = ChefDestinations.CHAT
                                 }
                                 editOrderId = ""
+                                editOrderStatus = null
                                 editOrderSource = null
                             }
                         )
@@ -236,6 +244,7 @@ fun ChefScreen(
 fun ChefOrdersScreen(
     modifier: Modifier = Modifier,
     initialOrderId: String = "",
+    initialOrderStatus: String? = null,
     editOrderSource: String? = null,
     sentOrderId: String? = null,
     onOrderClick: (String) -> Unit = {},
@@ -245,7 +254,17 @@ fun ChefOrdersScreen(
     var showEditOrder by rememberSaveable { mutableStateOf(initialOrderId.isNotEmpty()) }
     var showMenuPicker by rememberSaveable { mutableStateOf(false) }
     var selectedOrderId by rememberSaveable { mutableStateOf(if (initialOrderId.isNotEmpty()) initialOrderId else null) }
-    var selectedOrderStatus by rememberSaveable { mutableStateOf(nl.tue.hci.feature.chef.model.OrderStatus.DRAFT) }
+    var selectedOrderStatus by rememberSaveable { 
+        mutableStateOf(
+            when (initialOrderStatus) {
+                "CONFIRMED" -> nl.tue.hci.feature.chef.model.OrderStatus.CONFIRMED
+                "SENT" -> nl.tue.hci.feature.chef.model.OrderStatus.SENT
+                "COMPLETED" -> nl.tue.hci.feature.chef.model.OrderStatus.COMPLETED
+                "CANCELLED" -> nl.tue.hci.feature.chef.model.OrderStatus.CANCELLED
+                else -> nl.tue.hci.feature.chef.model.OrderStatus.DRAFT
+            }
+        )
+    }
     var pendingItemsToAdd by remember { mutableStateOf<List<nl.tue.hci.feature.chef.model.SelectedMenuItem>?>(null) }
     
     // Mock orders list (same as in ChefOrdersListScreen)
