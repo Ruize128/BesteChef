@@ -28,11 +28,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
+import nl.tue.hci.core.ui.BesteChefColors
 import nl.tue.hci.core.ui.components.ChatBubble
 import nl.tue.hci.core.ui.components.ImagePreviewOverlay
 import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.model.ChatMessage
+import nl.tue.hci.core.data.GlobalDatabase
 
 
 
@@ -50,58 +52,68 @@ fun DinerChatScreen(
     var showImagePreview by rememberSaveable { mutableStateOf(false) }
     var previewImageName by rememberSaveable { mutableStateOf<String?>(null) }
     
-    // Hardcoded initial messages
+    // Load messages from database or use default initial messages
     // For diner chat: isFromMe=false = chef, isFromMe=true = diner
-    val initialMessages = remember(colors) {
-        listOf(
-            ChatMessage(
-                text = "Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo.",
-                timestamp = "10:12",
-                isFromMe = false, // From chef
-                avatarText = "DH",
-                avatarImageName = "ichiraku", // Chef's avatar
-                avatarColor = colors.chefSecondary,
-                bubbleColor = colors.chefPrimary, // Chef's bubble color
-            ),
-            ChatMessage(
-                text = "",
-                timestamp = "10:13",
-                isFromMe = false, // From chef
-                imagePreview = "Yuzu mousse (preview)",
-                avatarText = "DH",
-                avatarImageName = "ichiraku", // Chef's avatar
-                avatarColor = colors.chefSecondary,
-                bubbleColor = colors.chefPrimary, // Chef's bubble color
-            ),
-            ChatMessage(
-                text = "Thanks — yes please, that would help.",
-                timestamp = "10:16",
-                isFromMe = true, // From diner
-                avatarText = "ME",
-                avatarImageName = "sophie", // Diner's avatar
-                avatarColor = colors.dinerSecondary,
-                bubbleColor = colors.dinerPrimary, // Diner's bubble color
-            ),
-            ChatMessage(
-                text = "Here's my offer for your event:",
-                timestamp = "10:20",
-                isFromMe = false, // From chef
-                bookingOffer = nl.tue.hci.core.model.BookingOfferData(
-                    date = "Dec 12, 2025",
-                    time = "18:30",
-                    guests = "6 guests",
-                    venue = "Private Dining Room",
-                    price = "€250"
-                ),
-                avatarText = "DH",
-                avatarImageName = "ichiraku", // Chef's avatar
-                avatarColor = colors.chefSecondary,
-                bubbleColor = colors.chefPrimary, // Chef's bubble color
-            )
-        )
+    val messages = remember(colors) {
+        mutableStateListOf<ChatMessage>().apply {
+            val loadedMessages = loadChatMessagesFromDatabase(colors)
+            if (loadedMessages.isNotEmpty()) {
+                addAll(loadedMessages)
+            } else {
+                // Default initial messages if database is empty
+                addAll(
+                    listOf(
+                        ChatMessage(
+                            text = "Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo.",
+                            timestamp = "10:12",
+                            isFromMe = false,
+                            avatarText = "DH",
+                            avatarImageName = "ichiraku",
+                            avatarColor = colors.chefSecondary,
+                            bubbleColor = colors.chefPrimary,
+                        ),
+                        ChatMessage(
+                            text = "",
+                            timestamp = "10:13",
+                            isFromMe = false,
+                            imagePreview = "Yuzu mousse (preview)",
+                            avatarText = "DH",
+                            avatarImageName = "ichiraku",
+                            avatarColor = colors.chefSecondary,
+                            bubbleColor = colors.chefPrimary,
+                        ),
+                        ChatMessage(
+                            text = "Thanks — yes please, that would help.",
+                            timestamp = "10:16",
+                            isFromMe = true,
+                            avatarText = "ME",
+                            avatarImageName = "sophie",
+                            avatarColor = colors.dinerSecondary,
+                            bubbleColor = colors.dinerPrimary,
+                        ),
+                        ChatMessage(
+                            text = "Here's my offer for your event:",
+                            timestamp = "10:20",
+                            isFromMe = false,
+                            bookingOffer = nl.tue.hci.core.model.BookingOfferData(
+                                date = "Dec 12, 2025",
+                                time = "18:30",
+                                guests = "6 guests",
+                                venue = "Private Dining Room",
+                                price = "€250"
+                            ),
+                            avatarText = "DH",
+                            avatarImageName = "ichiraku",
+                            avatarColor = colors.chefSecondary,
+                            bubbleColor = colors.chefPrimary,
+                        )
+                    )
+                )
+                // Save initial messages to database
+                saveChatMessagesToDatabase(this)
+            }
+        }
     }
-    
-    val messages = remember { mutableStateListOf<ChatMessage>().apply { addAll(initialMessages) } }
     var messageText by rememberSaveable { mutableStateOf("") }
     val listState = rememberLazyListState()
     
@@ -266,6 +278,8 @@ fun DinerChatScreen(
                                 bubbleColor = colors.dinerPrimary, // Diner's bubble color
                             )
                             messages.add(newMessage)
+                            // Save messages to database
+                            saveChatMessagesToDatabase(messages)
                             messageText = ""
                         }
                     },
@@ -319,6 +333,107 @@ fun DateSeparator(dateText: String) {
                 style = MaterialTheme.typography.bodySmall,
                 color = colors.textTertiary
             )
+        }
+    }
+}
+
+/**
+ * Save chat messages to database using a simplified encoding format.
+ * Special message types (images, booking offers) are encoded with markers.
+ */
+private fun saveChatMessagesToDatabase(messages: List<ChatMessage>) {
+    val encodedMessages = messages.map { message ->
+        when {
+            // Image message: "IMAGE|timestamp|isFromMe"
+            message.imagePreview != null -> {
+                "IMAGE|${message.timestamp}|${message.isFromMe}"
+            }
+            // Booking offer message: "BOOKING|timestamp|isFromMe"
+            message.bookingOffer != null -> {
+                "BOOKING|${message.timestamp}|${message.isFromMe}"
+            }
+            // Text message: "TEXT|timestamp|isFromMe|messageText"
+            else -> {
+                "TEXT|${message.timestamp}|${message.isFromMe}|${message.text}"
+            }
+        }
+    }
+    
+    // Store as pipe-separated string
+    GlobalDatabase.writeString(
+        "ichiraku_chat_messages",
+        encodedMessages.joinToString("||")
+    )
+}
+
+/**
+ * Load chat messages from database and reconstruct ChatMessage objects.
+ * Uses theme colors for avatars and bubbles.
+ */
+private fun loadChatMessagesFromDatabase(
+    colors: BesteChefColors
+): List<ChatMessage> {
+    val storedData = GlobalDatabase.readString("ichiraku_chat_messages") ?: return emptyList()
+    
+    if (storedData.isBlank()) return emptyList()
+    
+    return storedData.split("||").mapNotNull { encodedMessage ->
+        val parts = encodedMessage.split("|")
+        if (parts.size < 3) return@mapNotNull null
+        
+        val type = parts[0]
+        val timestamp = parts[1]
+        val isFromMe = parts[2].toBoolean()
+        
+        when (type) {
+            "IMAGE" -> {
+                // Reconstruct image message with fixed demo content
+                ChatMessage(
+                    text = "",
+                    timestamp = timestamp,
+                    isFromMe = isFromMe,
+                    imagePreview = "Yuzu mousse (preview)",
+                    avatarText = if (isFromMe) "ME" else "DH",
+                    avatarImageName = if (isFromMe) "sophie" else "ichiraku",
+                    avatarColor = if (isFromMe) colors.dinerSecondary else colors.chefSecondary,
+                    bubbleColor = if (isFromMe) colors.dinerPrimary else colors.chefPrimary,
+                )
+            }
+            "BOOKING" -> {
+                // Reconstruct booking offer message with fixed demo content
+                ChatMessage(
+                    text = "Here's my offer for your event:",
+                    timestamp = timestamp,
+                    isFromMe = isFromMe,
+                    bookingOffer = nl.tue.hci.core.model.BookingOfferData(
+                        date = "Dec 12, 2025",
+                        time = "18:30",
+                        guests = "6 guests",
+                        venue = "Private Dining Room",
+                        price = "€250"
+                    ),
+                    avatarText = if (isFromMe) "ME" else "DH",
+                    avatarImageName = if (isFromMe) "sophie" else "ichiraku",
+                    avatarColor = if (isFromMe) colors.dinerSecondary else colors.chefSecondary,
+                    bubbleColor = if (isFromMe) colors.dinerPrimary else colors.chefPrimary,
+                )
+            }
+            "TEXT" -> {
+                // Reconstruct text message
+                if (parts.size < 4) return@mapNotNull null
+                val text = parts.drop(3).joinToString("|") // Handle pipe characters in message text
+                
+                ChatMessage(
+                    text = text,
+                    timestamp = timestamp,
+                    isFromMe = isFromMe,
+                    avatarText = if (isFromMe) "ME" else "DH",
+                    avatarImageName = if (isFromMe) "sophie" else "ichiraku",
+                    avatarColor = if (isFromMe) colors.dinerSecondary else colors.chefSecondary,
+                    bubbleColor = if (isFromMe) colors.dinerPrimary else colors.chefPrimary,
+                )
+            }
+            else -> null
         }
     }
 }
