@@ -34,6 +34,7 @@ import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.rememberImagePainter
+import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.feature.diner.BookingSummaryDetails
 import nl.tue.hci.feature.diner.BookingSummaryMenuItem
 import nl.tue.hci.feature.diner.BookingPriceSummary
@@ -343,6 +344,11 @@ fun BookingSummaryScreen(
             // Completed order - no action buttons
             Spacer(modifier = Modifier.height(32.dp))
         }
+    }
+    
+    // Handle system back gesture - same behavior as back arrow
+    PlatformBackHandler {
+        onBackClick()
     }
     
     // Cancel confirmation dialog

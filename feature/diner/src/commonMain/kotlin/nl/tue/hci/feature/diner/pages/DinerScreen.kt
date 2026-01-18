@@ -319,6 +319,9 @@ fun DinerScreen(
                                 showChatScreen = true
                         },
                         onBookFromMenu = {
+                            // Remember where we came from so we can restore after closing booking
+                            previousDestination = currentDestination
+                            previousHomeState = homeScreenState
                             selectedOrderId = "1"
                             currentDestination = DinerDestinations.ORDERS
                         }
@@ -344,6 +347,8 @@ fun DinerScreen(
                                     // If previous destination was chat, re-open chat
                                     val dest = previousDestination!!
                                     previousDestination = null
+                                    // Clear selected order so switching to Orders later shows the list
+                                    selectedOrderId = ""
                                     if (dest == DinerDestinations.HOME && previousHomeState != null) {
                                         currentDestination = DinerDestinations.HOME
                                         homeScreenState = previousHomeState!!
