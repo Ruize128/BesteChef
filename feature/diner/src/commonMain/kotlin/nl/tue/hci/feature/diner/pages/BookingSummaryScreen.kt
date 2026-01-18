@@ -115,7 +115,7 @@ fun BookingSummaryScreen(
         listOf(
             BookingSummaryMenuItem(
                 id = "1",
-                title = "Grilled Mackerel",
+                title = "Grilled Mackerel with Miso",
                 description = "Serves 2-3 • Contains: Fish",
                 price = "€45",
                 imageColor = colors.imagePlaceholder1 // Light green
@@ -126,13 +126,27 @@ fun BookingSummaryScreen(
                 description = "Serves 6 • Can be nut-free",
                 price = "€48",
                 imageColor = colors.imagePlaceholder2 // Light orange
+            ),
+            BookingSummaryMenuItem(
+                id = "3",
+                title = "Wagyu Beef Steak",
+                description = "Serves 2 • Premium cut with truffle butter",
+                price = "€90",
+                imageColor = colors.imagePlaceholder4 // Light beige
+            ),
+            BookingSummaryMenuItem(
+                id = "4",
+                title = "Sushi Platter",
+                description = "Serves 4-5 • Assorted fresh nigiri and maki",
+                price = "€70",
+                imageColor = colors.imagePlaceholder1 // Light green
             )
         )
     }
     
     val priceSummary = remember(orderStatus) {
-        val subtotal = 93.0 // €45 + €48
-        val serviceFee = 10.0
+        val subtotal = 257.0 // Sum of menu item prices
+        val serviceFee = 15.0
         val total = subtotal + serviceFee
         
         val depositPercentage = when (orderStatus) {

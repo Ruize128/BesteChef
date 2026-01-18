@@ -7,6 +7,7 @@ package nl.tue.hci.core.ui
 fun getImageNameFromTitle(title: String): String? {
     return when {
         title.contains("Yuzu", ignoreCase = true) || title.contains("yuzu", ignoreCase = true) -> "yuzu_mousse"
+        title.contains("Caramel", ignoreCase = true) || title.contains("caramel", ignoreCase = true) -> "honey_nut_caramel"
         title.contains("Grilled Mackerel", ignoreCase = true) || title.contains("Mackerel", ignoreCase = true) -> "grilled_mackerel_with_miso"
         title.contains("Seared seabass", ignoreCase = true) || title.contains("seabass", ignoreCase = true) -> "seared_seabass"
         title.contains("5-course Omakase", ignoreCase = true) || title.contains("Omakase", ignoreCase = true) -> "omakase_5_course"

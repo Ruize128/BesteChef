@@ -27,12 +27,13 @@ fun OrderConfirmedScreenPreview() {
         val menuItems = listOf(
             OfferMenuItem(
                 id = "1",
-                title = "5-course Omakase",
-                description = "per guest • €65",
-                price = "€65",
+                title = "Grilled Mackerel with Miso",
+                description = "Sea salt, spring onion, yuzu dressing.",
+                price = "€45",
                 imageColor = Color(0xFFB2E5D4), // Light green
                 quantity = 1
             ),
+
             OfferMenuItem(
                 id = "2",
                 title = "Yuzu mousse (sub)",
@@ -42,12 +43,20 @@ fun OrderConfirmedScreenPreview() {
                 quantity = 2
             ),
             OfferMenuItem(
-                id = "5",
-                title = "Caesar Salad",
-                description = "Fresh romaine, parmesan, croutons",
-                price = "€9",
+                id = "3",
+                title = "Wagyu Beef Steak",
+                description = "Premium wagyu with truffle butter.",
+                price = "€90",
+                imageColor = Color(0xFFE0D4C4),
+                quantity = 1
+            ),
+            OfferMenuItem(
+                id = "4",
+                title = "Sushi Platter",
+                description = "Assorted fresh sushi with wasabi and ginger.",
+                price = "€70",
                 imageColor = Color(0xFFB2E5D4),
-                quantity = 2
+                quantity = 1
             )
         )
         

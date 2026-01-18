@@ -50,12 +50,12 @@ fun MenuPickerScreen(
         listOf(
             MenuPickerItem(
                 id = "1",
-                title = "Yuzu mousse",
-                description = "light citrus dessert.",
-                price = "€8",
+                title = "Honey Nut & Caramel",
+                description = "Roasted nuts, salted caramel glaze.",
+                price = "€12",
                 imageColor = colors.imagePlaceholder1, // Light green
-                dietaryTag = "Nut-free",
-                dietaryTagColor = colors.chefPrimary,
+                dietaryTag = "Contains nuts",
+                dietaryTagColor = colors.alert,
                 category = "Desserts"
             ),
             MenuPickerItem(
@@ -67,6 +67,16 @@ fun MenuPickerScreen(
                 dietaryTag = "Fish",
                 dietaryTagColor = colors.dinerPrimary, // Light blue/cyan
                 category = "Mains"
+            ),
+            MenuPickerItem(
+                id = "1",
+                title = "Yuzu mousse",
+                description = "light citrus dessert.",
+                price = "€8",
+                imageColor = colors.imagePlaceholder1, // Light green
+                dietaryTag = "Nut-free",
+                dietaryTagColor = colors.chefPrimary,
+                category = "Desserts"
             ),
             MenuPickerItem(
                 id = "3",

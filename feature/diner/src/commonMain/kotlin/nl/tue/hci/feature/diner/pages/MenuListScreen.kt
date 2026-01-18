@@ -193,7 +193,7 @@ private fun MenuListContent(
 
                 val candidates = getCarouselImageNames(menu.name) ?: getChefCarouselImageNames(chefName) ?: listOf()
                 val imageName = remember(menu.id) {
-                    demoCoverImages[menu.id] ?: (candidates.firstOrNull() ?: "yuzu_mousse")
+                    demoCoverImages[menu.id] ?: (candidates.firstOrNull() ?: "honey_nut_caramel")
                 }
 
                 MenuCard(
@@ -283,7 +283,7 @@ private fun ChefInfoHeader(
 
             // Introduction paragraph
             Text(
-                text = "I blend traditional Japanese techniques with seasonal European produce. My cooking focuses on balanced flavors, precise execution, and a warm, relaxed dining experience. Favorites include my Yuzu mousse and a 5‑course Omakase curated to your preferences.",
+                text = "I blend traditional Japanese techniques with seasonal European produce. My cooking focuses on balanced flavors, precise execution, and a warm, relaxed dining experience. Favorites include my Honey Nut & Caramel dessert and a 5‑course Omakase curated to your preferences.",
                 style = typography.bodySmall,
                 color = colors.textPrimary
             )
@@ -355,7 +355,7 @@ private fun ReviewsCarousel(
             author = "Marco",
             rating = 5.0f,
             date = "Nov 2025",
-            text = "Fantastic seasonal menu and great attention to dietary preferences. The Yuzu mousse was a standout."
+            text = "Fantastic seasonal menu and great attention to dietary preferences. The Honey Nut & Caramel dessert was a standout."
         ),
         Review(
             author = "Elena",

@@ -88,8 +88,8 @@ private fun MenuContent(
                 defaultNumber = 2
             ),
             MenuItem(
-                title = "Yuzu Mousse (Dessert)",
-                description = "Light citrus mousse with candied peel.",
+                title = "Honey Nut & Caramel",
+                description = "Roasted nuts with salted caramel glaze.",
                 serves = "6",
                 prepTime = "30 min prep",
                 imageColor = colors.imagePlaceholder2, // Light orange/peach

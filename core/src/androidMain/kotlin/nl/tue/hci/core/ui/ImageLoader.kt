@@ -28,6 +28,7 @@ actual fun rememberImagePainter(imageName: String): Painter {
         "wagyu_beef_steak" -> "wagyu_beef_steak"
         "sushi_platter" -> "sushi_platter"
         "caesar_salad" -> "caesar_salad"
+        "honey_nut_caramel" -> "honey_nut_caramel"
         "ichiraku_menu_cover" -> "ichiraku_menu_cover"
         "ichiraku_menu_cover_2" -> "ichiraku_menu_cover_2"
         "ichiraku_menu_cover_3" -> "ichiraku_menu_cover_3"

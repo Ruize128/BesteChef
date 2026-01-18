@@ -31,6 +31,7 @@ actual fun rememberImagePainter(imageName: String): Painter {
             "wagyu_beef_steak" -> "images/wagyu_beef_steak.webp"
             "sushi_platter" -> "images/sushi_platter.webp"
             "caesar_salad" -> "images/caesar_salad.jpg"
+            "honey_nut_caramel" -> "images/honey_nut_caramel.jpg"
             "ichiraku_menu_cover" -> "images/ichiraku_menu_cover.png"
             "ichiraku_menu_cover_2" -> "images/ichiraku_menu_cover_2.png"
             "ichiraku_menu_cover_3" -> "images/ichiraku_menu_cover_3.png"

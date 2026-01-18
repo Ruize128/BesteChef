@@ -76,18 +76,34 @@ fun EditOrderScreen(
         listOf(
             OfferMenuItem(
                 id = "1",
-                title = "Yuzu mousse",
-                description = "nut-free (substitute)",
-                price = "€8",
+                title = "Grilled Mackerel with Miso",
+                description = "Sea salt, spring onion, yuzu dressing.",
+                price = "€45",
                 imageColor = colors.imagePlaceholder1, // Light green
-                quantity = 2
+                quantity = 1
             ),
             OfferMenuItem(
                 id = "2",
-                title = "Seared seabass",
-                description = "miso glaze",
-                price = "€14",
+                title = "Honey Nut & Caramel",
+                description = "Roasted nuts, salted caramel glaze.",
+                price = "€52",
                 imageColor = colors.imagePlaceholder2, // Light orange-beige
+                quantity = 1
+            ),
+            OfferMenuItem(
+                id = "3",
+                title = "Wagyu Beef Steak",
+                description = "Premium wagyu with truffle butter.",
+                price = "€90",
+                imageColor = colors.imagePlaceholder4,
+                quantity = 1
+            ),
+            OfferMenuItem(
+                id = "4",
+                title = "Sushi Platter",
+                description = "Assorted fresh sushi with wasabi and ginger.",
+                price = "€70",
+                imageColor = colors.imagePlaceholder1,
                 quantity = 1
             )
         )
