@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,6 +39,7 @@ import nl.tue.hci.feature.chef.model.OfferMenuItem
 import nl.tue.hci.feature.chef.model.PriceSummary
 import nl.tue.hci.feature.chef.model.SelectedMenuItem
 import nl.tue.hci.feature.chef.notification.sendBookingConfirmedNotification
+import kotlinx.coroutines.launch
 
 @Composable
 fun EditOrderScreen(
@@ -48,10 +50,15 @@ fun EditOrderScreen(
     onAddDishClick: () -> Unit = {},
     itemsToAdd: List<SelectedMenuItem>? = null,
     onItemsAdded: () -> Unit = {},
-    onSendOfferClick: (OrderDetails, List<OfferMenuItem>) -> Unit = { _, _ -> }
+    onSendOfferClick: (OrderDetails, List<OfferMenuItem>) -> Unit = { _, _ -> },
+    onCancelClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
+    
+    var showCancelDialog by rememberSaveable { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     
     // Hardcoded booking details
     val orderDetails = remember {
@@ -188,8 +195,32 @@ fun EditOrderScreen(
                 Text(
                     text = "Compose Offer",
                     style = typography.sectionTitle,
-                    color = colors.textPrimary
+                    color = colors.textPrimary,
+                    modifier = Modifier.weight(1f)
                 )
+                
+                // Cancel button (only for DRAFT and SENT orders)
+                if (orderStatus == OrderStatus.DRAFT || orderStatus == OrderStatus.SENT) {
+                    Button(
+                        onClick = { showCancelDialog = true },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.alert,
+                            contentColor = colors.onAlert
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        modifier = Modifier.height(32.dp)
+                    ) {
+                        Text(
+                            text = "Cancel",
+                            style = typography.bodyMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                } else {
+                    // Spacer for other order statuses
+                    Spacer(modifier = Modifier.width(40.dp))
+                }
             }
         }
         
@@ -308,6 +339,79 @@ fun EditOrderScreen(
                 }
             }
         }
+    }
+    
+    // Cancel booking dialog
+    if (showCancelDialog) {
+        AlertDialog(
+            onDismissRequest = { showCancelDialog = false },
+            title = {
+                Text(
+                    text = "Cancel booking?",
+                    style = typography.sectionTitle,
+                    color = colors.textPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = "Are you sure you want to cancel this booking? This action cannot be undone.",
+                    style = typography.bodyMedium,
+                    color = colors.textSecondary
+                )
+            },
+            confirmButton = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Button(
+                        onClick = { showCancelDialog = false },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.surfaceVariant,
+                            contentColor = colors.textPrimary
+                        ),
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+                        Text(
+                            text = "Keep booking",
+                            style = typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                    
+                    Button(
+                        onClick = {
+                            showCancelDialog = false
+                            // Write CANCELLED status to database
+                            nl.tue.hci.core.data.GlobalDatabase.writeString("ichiraku_order_status", "CANCELLED")
+                            scope.launch {
+                                snackbarHostState.showSnackbar("Delete order complete")
+                            }
+                            onCancelClick()
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.alert,
+                            contentColor = colors.onAlert
+                        ),
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+                        Text(
+                            text = "Confirm cancel",
+                            style = typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                }
+            }
+        )
     }
 }
 

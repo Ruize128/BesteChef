@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +31,19 @@ fun ChefOrdersListScreen(
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
     
+    // Read order status from database for order 1
+    val order1Status = remember(sentOrderId) {
+        val dbStatus = nl.tue.hci.core.data.GlobalDatabase.readString("ichiraku_order_status")
+        when (dbStatus) {
+            "CANCELLED" -> OrderStatus.CANCELLED
+            "COMPLETED" -> OrderStatus.COMPLETED
+            "CONFIRMED" -> OrderStatus.CONFIRMED
+            "ON_GOING" -> OrderStatus.CONFIRMED
+            "PENDING" -> OrderStatus.CONFIRMED
+            else -> if (sentOrderId == "1") OrderStatus.SENT else OrderStatus.DRAFT
+        }
+    }
+    
     // Hardcoded orders with default mock data
     // When sentOrderId matches an order, that order's status becomes SENT
     val orders = listOf(
@@ -37,7 +51,7 @@ fun ChefOrdersListScreen(
             id = "1",
             customerName = "Sophie",
             orderDate = "Dec 12, 2025",
-            status = if (sentOrderId == "1") OrderStatus.SENT else OrderStatus.DRAFT,
+            status = order1Status,
             totalPrice = "€22",
             itemCount = 2,
             timeAgo = "2h ago"
@@ -178,14 +192,14 @@ private fun OrderCard(
                         OrderStatus.SENT -> colors.statusOngoingBackground
                         OrderStatus.CONFIRMED -> colors.statusConfirmedBackground
                         OrderStatus.COMPLETED -> colors.statusConfirmedBackground
-                        OrderStatus.CANCELLED -> Color(0xFFEF5350) // Red
+                        OrderStatus.CANCELLED -> colors.buttonBackground
                     },
                     textColor = when (order.status) {
                         OrderStatus.DRAFT -> colors.statusNewText
                         OrderStatus.SENT -> colors.statusOngoingText
                         OrderStatus.CONFIRMED -> colors.statusConfirmedText
                         OrderStatus.COMPLETED -> colors.statusConfirmedText
-                        OrderStatus.CANCELLED -> Color.White
+                        OrderStatus.CANCELLED -> colors.textPrimary
                     }
                 )
                 Text(

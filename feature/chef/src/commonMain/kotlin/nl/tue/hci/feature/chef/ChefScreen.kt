@@ -269,13 +269,26 @@ fun ChefOrdersScreen(
     var pendingItemsToAdd by remember { mutableStateOf<List<nl.tue.hci.feature.chef.model.SelectedMenuItem>?>(null) }
     
     // Mock orders list (same as in ChefOrdersListScreen)
-    val orders = remember(sentOrderId) {
+    // Read order status from database for order 1
+    val order1Status = remember(sentOrderId, showEditOrder) {
+        val dbStatus = nl.tue.hci.core.data.GlobalDatabase.readString("ichiraku_order_status")
+        when (dbStatus) {
+            "CANCELLED" -> nl.tue.hci.feature.chef.model.OrderStatus.CANCELLED
+            "COMPLETED" -> nl.tue.hci.feature.chef.model.OrderStatus.COMPLETED
+            "CONFIRMED" -> nl.tue.hci.feature.chef.model.OrderStatus.CONFIRMED
+            "ON_GOING" -> nl.tue.hci.feature.chef.model.OrderStatus.CONFIRMED
+            "PENDING" -> nl.tue.hci.feature.chef.model.OrderStatus.CONFIRMED
+            else -> if (sentOrderId == "1") nl.tue.hci.feature.chef.model.OrderStatus.SENT else nl.tue.hci.feature.chef.model.OrderStatus.DRAFT
+        }
+    }
+    
+    val orders = remember(sentOrderId, showEditOrder, order1Status) {
         listOf(
             nl.tue.hci.feature.chef.model.Order(
                 id = "1",
                 customerName = "Sophie",
                 orderDate = "Dec 12, 2025",
-                status = if (sentOrderId == "1") nl.tue.hci.feature.chef.model.OrderStatus.SENT else nl.tue.hci.feature.chef.model.OrderStatus.DRAFT,
+                status = order1Status,
                 totalPrice = "€22",
                 itemCount = 2,
                 timeAgo = "2h ago"
@@ -349,7 +362,14 @@ fun ChefOrdersScreen(
             onItemsAdded = {
                 pendingItemsToAdd = null
             },
-            onSendOfferClick = onSendOfferClick
+            onSendOfferClick = onSendOfferClick,
+            onCancelClick = {
+                showEditOrder = false
+                selectedOrderId = null
+                pendingItemsToAdd = null
+                onOrderClick("") // Clear the order selection
+                onBackFromEditOrder(editOrderSource) // Notify parent about the source to return
+            }
         )
     } else {
         nl.tue.hci.feature.chef.pages.ChefOrdersListScreen(
