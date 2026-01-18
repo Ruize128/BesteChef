@@ -64,8 +64,8 @@ private fun MenuListContent(
                 id = "menu1",
                 name = "Classic Japanese",
                 description = "Traditional Japanese cuisine with fresh ingredients",
-                dishCount = 5,
-                priceRange = "€25-€45",
+                dishCount = 4,
+                priceRange = "€95-€125",
                 imageColor = colors.imagePlaceholder1 // Light mint green
             ),
             ChefMenu(
@@ -73,7 +73,7 @@ private fun MenuListContent(
                 name = "Fusion Delights",
                 description = "East meets West in creative dishes",
                 dishCount = 6,
-                priceRange = "€30-€55",
+                priceRange = "€60-€95",
                 imageColor = colors.imagePlaceholder2 // Light orange/peach
             ),
             ChefMenu(
@@ -89,7 +89,7 @@ private fun MenuListContent(
                 name = "Seasonal Specials",
                 description = "Fresh seasonal ingredients",
                 dishCount = 7,
-                priceRange = "€20-€40",
+                priceRange = "€30-€50",
                 imageColor = colors.imagePlaceholder4 // Light beige
             )
         )

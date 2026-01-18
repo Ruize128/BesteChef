@@ -85,7 +85,8 @@ private fun MenuContent(
                 serves = "2-3",
                 prepTime = "45 min prep",
                 imageColor = colors.imagePlaceholder1, // Light green
-                defaultNumber = 2
+                defaultNumber = 2,
+                price = "€45"
             ),
             MenuItem(
                 title = "Honey Nut & Caramel",
@@ -93,7 +94,8 @@ private fun MenuContent(
                 serves = "6",
                 prepTime = "30 min prep",
                 imageColor = colors.imagePlaceholder2, // Light orange/peach
-                defaultNumber = 1
+                defaultNumber = 1,
+                price = "€12"
             ),
             MenuItem(
                 title = "Wagyu Beef Steak",
@@ -101,7 +103,8 @@ private fun MenuContent(
                 serves = "2",
                 prepTime = "60 min prep",
                 imageColor = colors.imagePlaceholder4, // Light beige
-                defaultNumber = 2
+                defaultNumber = 2,
+                price = "€24"
             ),
             MenuItem(
                 title = "Sushi Platter",
@@ -109,7 +112,8 @@ private fun MenuContent(
                 serves = "4-5",
                 prepTime = "90 min prep",
                 imageColor = colors.imagePlaceholder1, // Light green
-                defaultNumber = 1
+                defaultNumber = 1,
+                price = "€40"
             )
         )
     }
@@ -313,19 +317,115 @@ private fun MenuContent(
                                 }
                             }
 
-                            QuantitySelector(
-                                quantity = qty,
-                                onDecrease = {
-                                    val current = cartItems[title] ?: 1
-                                    if (current > 0) {
-                                        cartItems = cartItems.toMutableMap().apply { this[title] = current - 1 }
+                            Column(
+                                horizontalAlignment = Alignment.End,
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                menuItem?.let {
+                                    if (it.price.isNotEmpty()) {
+                                        Text(
+                                            text = it.price,
+                                            style = typography.bodyMedium,
+                                            color = colors.textPrimary,
+                                            fontWeight = FontWeight.SemiBold,
+                                            modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
+                                        )
                                     }
-                                },
-                                onIncrease = {
-                                    val current = cartItems[title] ?: 1
-                                    cartItems = cartItems.toMutableMap().apply { this[title] = current + 1 }
                                 }
+                                
+                                QuantitySelector(
+                                    quantity = qty,
+                                    onDecrease = {
+                                        val current = cartItems[title] ?: 1
+                                        if (current > 0) {
+                                            cartItems = cartItems.toMutableMap().apply { this[title] = current - 1 }
+                                        }
+                                    },
+                                    onIncrease = {
+                                        val current = cartItems[title] ?: 1
+                                        cartItems = cartItems.toMutableMap().apply { this[title] = current + 1 }
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    // Price summary bar
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = colors.surfaceVariant,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            val subtotal = cartItems.entries.sumOf { (title, qty) ->
+                                val menuItem = menuItems.find { it.title == title }
+                                val priceValue = menuItem?.price?.replace("€", "")?.toDoubleOrNull() ?: 0.0
+                                priceValue * qty
+                            }
+                            val serviceFee = 15.0
+                            val total = subtotal + serviceFee
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Price",
+                                    style = typography.bodyMedium,
+                                    color = colors.textSecondary
+                                )
+                                Text(
+                                    text = "€${String.format("%.0f", subtotal)}",
+                                    style = typography.bodyMedium,
+                                    color = colors.textPrimary,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Service Fee",
+                                    style = typography.bodyMedium,
+                                    color = colors.textSecondary
+                                )
+                                Text(
+                                    text = "€${String.format("%.0f", serviceFee)}",
+                                    style = typography.bodyMedium,
+                                    color = colors.textPrimary,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                            
+                            Divider(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                color = colors.textSecondary.copy(alpha = 0.2f)
                             )
+                            
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Total",
+                                    style = typography.cardTitle,
+                                    color = colors.textPrimary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "€${String.format("%.0f", total)}",
+                                    style = typography.cardTitle,
+                                    color = colors.dinerPrimary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
 
@@ -578,13 +678,29 @@ fun MenuItemCard(
                     modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
                 )
                 
-                // Serves and prep time
-                Text(
-                    text = "Serves ${menuItem.serves} · ${menuItem.prepTime}",
-                    style = typography.bodySmall,
-                    color = colors.textSecondary,
-                    modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
-                )
+                // Serves and prep time with price on right
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Text(
+                        text = "Serves ${menuItem.serves} · ${menuItem.prepTime}",
+                        style = typography.bodySmall,
+                        color = colors.textSecondary,
+                        modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
+                    )
+                    
+                    if (menuItem.price.isNotEmpty()) {
+                        Text(
+                            text = menuItem.price,
+                            style = typography.bodyMedium,
+                            color = colors.textPrimary,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
+                        )
+                    }
+                }
                 
                 Spacer(modifier = Modifier.height(8.dp))
                 

@@ -86,7 +86,7 @@ fun EditOrderScreen(
                 id = "2",
                 title = "Honey Nut & Caramel",
                 description = "Roasted nuts, salted caramel glaze.",
-                price = "€52",
+                price = "€12",
                 imageColor = colors.imagePlaceholder2, // Light orange-beige
                 quantity = 1
             ),
@@ -94,7 +94,7 @@ fun EditOrderScreen(
                 id = "3",
                 title = "Wagyu Beef Steak",
                 description = "Premium wagyu with truffle butter.",
-                price = "€90",
+                price = "€24",
                 imageColor = colors.imagePlaceholder4,
                 quantity = 1
             ),
@@ -102,7 +102,7 @@ fun EditOrderScreen(
                 id = "4",
                 title = "Sushi Platter",
                 description = "Assorted fresh sushi with wasabi and ginger.",
-                price = "€70",
+                price = "€40",
                 imageColor = colors.imagePlaceholder1,
                 quantity = 1
             )

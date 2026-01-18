@@ -72,7 +72,7 @@ fun MenuPickerScreen(
                 id = "1",
                 title = "Yuzu mousse",
                 description = "light citrus dessert.",
-                price = "€8",
+                price = "€12",
                 imageColor = colors.imagePlaceholder1, // Light green
                 dietaryTag = "Nut-free",
                 dietaryTagColor = colors.chefPrimary,
@@ -102,7 +102,7 @@ fun MenuPickerScreen(
                 id = "5",
                 title = "Wagyu Beef Steak",
                 description = "Premium wagyu with truffle butter.",
-                price = "€45",
+                price = "€24",
                 imageColor = colors.imagePlaceholder4,
                 dietaryTag = null,
                 dietaryTagColor = null,

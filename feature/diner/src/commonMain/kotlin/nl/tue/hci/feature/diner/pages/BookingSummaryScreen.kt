@@ -118,28 +118,32 @@ fun BookingSummaryScreen(
                 title = "Grilled Mackerel with Miso",
                 description = "Serves 2-3 • Contains: Fish",
                 price = "€45",
-                imageColor = colors.imagePlaceholder1 // Light green
+                imageColor = colors.imagePlaceholder1, // Light green
+                quantity = 2
             ),
             BookingSummaryMenuItem(
                 id = "2",
                 title = "Yuzu Mousse",
                 description = "Serves 6 • Can be nut-free",
-                price = "€48",
-                imageColor = colors.imagePlaceholder2 // Light orange
+                price = "€12",
+                imageColor = colors.imagePlaceholder2, // Light orange
+                quantity = 1
             ),
             BookingSummaryMenuItem(
                 id = "3",
                 title = "Wagyu Beef Steak",
                 description = "Serves 2 • Premium cut with truffle butter",
-                price = "€90",
-                imageColor = colors.imagePlaceholder4 // Light beige
+                price = "€24",
+                imageColor = colors.imagePlaceholder4, // Light beige
+                quantity = 2
             ),
             BookingSummaryMenuItem(
                 id = "4",
                 title = "Sushi Platter",
                 description = "Serves 4-5 • Assorted fresh nigiri and maki",
-                price = "€70",
-                imageColor = colors.imagePlaceholder1 // Light green
+                price = "€40",
+                imageColor = colors.imagePlaceholder1, // Light green
+                quantity = 1
             )
         )
     }
@@ -626,11 +630,33 @@ private fun MenuItemCard(item: BookingSummaryMenuItem) {
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = item.title,
-                    style = typography.cardTitle.copy(fontSize = 14.sp),
-                    color = colors.textPrimary
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (item.quantity > 1) {
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = colors.textPrimary.copy(alpha = 0.1f),
+                                    shape = RoundedCornerShape(6.dp)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "${item.quantity}x",
+                                style = typography.bodySmall.copy(fontSize = 12.sp),
+                                color = colors.textPrimary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                    Text(
+                        text = item.title,
+                        style = typography.cardTitle.copy(fontSize = 14.sp),
+                        color = colors.textPrimary
+                    )
+                }
                 Text(
                     text = item.description,
                     style = typography.bodySmall,
