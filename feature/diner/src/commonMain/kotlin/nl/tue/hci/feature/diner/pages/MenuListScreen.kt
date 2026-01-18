@@ -8,15 +8,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
+// Outline star not available on all targets; use filled stars with tints
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.feature.diner.ChefMenu
@@ -137,9 +142,7 @@ private fun MenuListContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Menu list
+        // Unified scroll: chef info, reviews, and menu list in one LazyColumn
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -147,6 +150,39 @@ private fun MenuListContent(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
+            // Top spacing below header
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+
+            // Chef info header as a list item
+            item {
+                ChefInfoHeader(
+                    chefName = chefName,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+
+            // Reviews carousel as a list item
+            item {
+                ReviewsCarousel(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+
+            // Menu section header
+            item {
+                val colors = BesteChefThemeColors.current()
+                val typography = BesteChefThemeTypography.current()
+                Text(
+                    text = "Menu",
+                    style = typography.sectionTitle,
+                    color = colors.textPrimary
+                )
+            }
+            item { Spacer(modifier = Modifier.height(4.dp)) }
+
+            // Menu items
             items(menus, key = { it.id }) { menu ->
                 val demoCoverImages = mapOf(
                     "menu1" to "omakase_5_course",
@@ -165,6 +201,224 @@ private fun MenuListContent(
                     imageName = imageName,
                     onClick = { onMenuClick(menu.name) }
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChefInfoHeader(
+    chefName: String,
+    modifier: Modifier = Modifier
+) {
+    val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
+
+    Surface(
+        modifier = modifier.clip(RoundedCornerShape(16.dp)),
+        color = colors.surface,
+        shadowElevation = 2.dp,
+        tonalElevation = 0.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // Top row: avatar + basic info
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Avatar
+                Image(
+                    painter = rememberImagePainter("ichiraku"),
+                    contentDescription = "$chefName avatar",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = chefName,
+                        style = typography.cardTitle,
+                        color = colors.textPrimary
+                    )
+                    Text(
+                        text = "Seasonal Japanese Fusion • Omakase",
+                        style = typography.bodySmall,
+                        color = colors.textSecondary
+                    )
+                }
+            }
+
+            // Ratings row
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                RatingStars(rating = 4.7f)
+                Text(
+                    text = "5.0 (7 reviews)",
+                    style = typography.labelSmall,
+                    color = colors.textSecondary
+                )
+//                Divider(
+//                    modifier = Modifier.height(12.dp).width(1.dp),
+//                    color = colors.outline
+//                )
+//                Text(
+//                    text = "42 events • 100% reliability",
+//                    style = typography.labelSmall,
+//                    color = colors.textSecondary
+//                )
+            }
+
+            // Introduction paragraph
+            Text(
+                text = "I blend traditional Japanese techniques with seasonal European produce. My cooking focuses on balanced flavors, precise execution, and a warm, relaxed dining experience. Favorites include my Yuzu mousse and a 5‑course Omakase curated to your preferences.",
+                style = typography.bodySmall,
+                color = colors.textPrimary
+            )
+        }
+    }
+}
+
+@Composable
+private fun RatingStars(
+    rating: Float,
+    modifier: Modifier = Modifier,
+    max: Int = 5
+) {
+    val colors = BesteChefThemeColors.current()
+    Row(modifier = modifier) {
+        val fullStars = rating.toInt().coerceIn(0, max)
+        val hasHalf = (rating - fullStars) >= 0.5f
+        val emptyStars = max - fullStars - (if (hasHalf) 1 else 0)
+
+        repeat(fullStars) {
+            Icon(
+                imageVector = Icons.Filled.Star,
+                contentDescription = null,
+                tint = colors.dinerPrimary,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+        if (hasHalf) {
+            Icon(
+                imageVector = Icons.Filled.Star,
+                contentDescription = null,
+                tint = colors.dinerPrimary.copy(alpha = 0.5f),
+                modifier = Modifier.size(16.dp)
+            )
+        }
+        repeat(emptyStars) {
+            Icon(
+                imageVector = Icons.Filled.Star,
+                contentDescription = null,
+                tint = colors.textTertiary,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
+
+private data class Review(
+    val author: String,
+    val rating: Float,
+    val date: String,
+    val text: String
+)
+
+@Composable
+private fun ReviewsCarousel(
+    modifier: Modifier = Modifier
+) {
+    val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
+
+    val reviews = listOf(
+        Review(
+            author = "Sophie",
+            rating = 5.0f,
+            date = "Dec 2025",
+            text = "Absolutely loved the Omakase course. Every dish was thoughtful and perfectly balanced. Highly recommended!"
+        ),
+        Review(
+            author = "Marco",
+            rating = 5.0f,
+            date = "Nov 2025",
+            text = "Fantastic seasonal menu and great attention to dietary preferences. The Yuzu mousse was a standout."
+        ),
+        Review(
+            author = "Elena",
+            rating = 5.0f,
+            date = "Oct 2025",
+            text = "Chef Ichiraku’s fusion approach is refreshing. Presentation and flavors were top-notch."
+        )
+    )
+
+    Column(
+        modifier = modifier
+    ) {
+        Text(
+            text = "Reviews",
+            style = typography.sectionTitle,
+            color = colors.textPrimary,
+            modifier = Modifier.padding(horizontal = 0.dp)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        LazyRow(
+            contentPadding = PaddingValues(0.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(reviews) { review ->
+                Surface(
+                    modifier = Modifier
+                        .width(280.dp)
+                        .clip(RoundedCornerShape(16.dp)),
+                    color = colors.surface,
+                    shadowElevation = 2.dp,
+                    tonalElevation = 0.dp
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = review.author,
+                                style = typography.cardTitle,
+                                color = colors.textPrimary
+                            )
+                            RatingStars(rating = review.rating)
+                            Text(
+                                text = review.date,
+                                style = typography.labelSmall,
+                                color = colors.textSecondary
+                            )
+                        }
+                        Text(
+                            text = review.text,
+                            style = typography.bodySmall,
+                            color = colors.textPrimary,
+                            maxLines = 4,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
             }
         }
     }
@@ -251,6 +505,27 @@ private fun MenuCard(
                         maxLines = 1
                     )
                 }
+            }
+            
+            Spacer(modifier = Modifier.width(12.dp))
+            
+            // View Menu button
+            Button(
+                onClick = onClick,
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colors.dinerPrimary,
+                    contentColor = colors.textOnPrimary,
+                ),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = "View Menu",
+                    style = typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = colors.textPrimary
+                )
             }
         }
     }
