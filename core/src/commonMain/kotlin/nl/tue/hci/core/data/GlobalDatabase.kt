@@ -3,26 +3,22 @@ package nl.tue.hci.core.data
 /**
  * Global in-memory database that can be accessed from anywhere in the app.
  * Data is automatically cleared when the application starts.
- * Thread-safe operations for concurrent access.
+ * Uses immutable maps for simple, multiplatform-compatible storage.
  */
 object GlobalDatabase {
     
-    private val stringData = mutableMapOf<String, String>()
-    private val intData = mutableMapOf<String, Int>()
-    private val booleanData = mutableMapOf<String, Boolean>()
-    private val anyData = mutableMapOf<String, Any>()
+    private var stringData = mapOf<String, String>()
+    private var intData = mapOf<String, Int>()
+    private var booleanData = mapOf<String, Boolean>()
+    private var anyData = mapOf<String, Any>()
     
     // String operations
     fun writeString(key: String, value: String) {
-        synchronized(stringData) {
-            stringData[key] = value
-        }
+        stringData = stringData.toMutableMap().apply { this[key] = value }
     }
     
     fun readString(key: String): String? {
-        return synchronized(stringData) {
-            stringData[key]
-        }
+        return stringData[key]
     }
     
     fun readString(key: String, defaultValue: String): String {
@@ -31,15 +27,11 @@ object GlobalDatabase {
     
     // Int operations
     fun writeInt(key: String, value: Int) {
-        synchronized(intData) {
-            intData[key] = value
-        }
+        intData = intData.toMutableMap().apply { this[key] = value }
     }
     
     fun readInt(key: String): Int? {
-        return synchronized(intData) {
-            intData[key]
-        }
+        return intData[key]
     }
     
     fun readInt(key: String, defaultValue: Int): Int {
@@ -48,15 +40,11 @@ object GlobalDatabase {
     
     // Boolean operations
     fun writeBoolean(key: String, value: Boolean) {
-        synchronized(booleanData) {
-            booleanData[key] = value
-        }
+        booleanData = booleanData.toMutableMap().apply { this[key] = value }
     }
     
     fun readBoolean(key: String): Boolean? {
-        return synchronized(booleanData) {
-            booleanData[key]
-        }
+        return booleanData[key]
     }
     
     fun readBoolean(key: String, defaultValue: Boolean): Boolean {
@@ -65,96 +53,53 @@ object GlobalDatabase {
     
     // Generic object operations
     fun <T : Any> writeObject(key: String, value: T) {
-        synchronized(anyData) {
-            anyData[key] = value
-        }
+        anyData = anyData.toMutableMap().apply { this[key] = value }
     }
     
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> readObject(key: String): T? {
-        return synchronized(anyData) {
-            anyData[key] as? T
-        }
+        return anyData[key] as? T
     }
     
     // Check if key exists
     fun containsKey(key: String): Boolean {
-        return synchronized(stringData) {
-            stringData.containsKey(key)
-        } || synchronized(intData) {
-            intData.containsKey(key)
-        } || synchronized(booleanData) {
-            booleanData.containsKey(key)
-        } || synchronized(anyData) {
-            anyData.containsKey(key)
-        }
+        return stringData.containsKey(key) ||
+                intData.containsKey(key) ||
+                booleanData.containsKey(key) ||
+                anyData.containsKey(key)
     }
     
     // Remove operations
     fun remove(key: String) {
-        synchronized(stringData) {
-            stringData.remove(key)
-        }
-        synchronized(intData) {
-            intData.remove(key)
-        }
-        synchronized(booleanData) {
-            booleanData.remove(key)
-        }
-        synchronized(anyData) {
-            anyData.remove(key)
-        }
+        stringData = stringData.toMutableMap().apply { remove(key) }
+        intData = intData.toMutableMap().apply { remove(key) }
+        booleanData = booleanData.toMutableMap().apply { remove(key) }
+        anyData = anyData.toMutableMap().apply { remove(key) }
     }
     
     // Clear all data (called on app start)
     fun clear() {
-        synchronized(stringData) {
-            stringData.clear()
-        }
-        synchronized(intData) {
-            intData.clear()
-        }
-        synchronized(booleanData) {
-            booleanData.clear()
-        }
-        synchronized(anyData) {
-            anyData.clear()
-        }
+        stringData = emptyMap()
+        intData = emptyMap()
+        booleanData = emptyMap()
+        anyData = emptyMap()
     }
     
     // Get all keys
     fun getAllKeys(): Set<String> {
         val keys = mutableSetOf<String>()
-        synchronized(stringData) {
-            keys.addAll(stringData.keys)
-        }
-        synchronized(intData) {
-            keys.addAll(intData.keys)
-        }
-        synchronized(booleanData) {
-            keys.addAll(booleanData.keys)
-        }
-        synchronized(anyData) {
-            keys.addAll(anyData.keys)
-        }
+        keys.addAll(stringData.keys)
+        keys.addAll(intData.keys)
+        keys.addAll(booleanData.keys)
+        keys.addAll(anyData.keys)
         return keys
     }
     
     // Get data counts
     fun size(): Int {
-        var count = 0
-        synchronized(stringData) {
-            count += stringData.size
-        }
-        synchronized(intData) {
-            count += intData.size
-        }
-        synchronized(booleanData) {
-            count += booleanData.size
-        }
-        synchronized(anyData) {
-            count += anyData.size
-        }
-        return count
+        return stringData.size +
+                intData.size +
+                booleanData.size +
+                anyData.size
     }
 }
