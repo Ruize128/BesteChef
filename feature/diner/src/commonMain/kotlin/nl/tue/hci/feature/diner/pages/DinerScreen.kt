@@ -66,31 +66,32 @@ fun DinerScreen(
         var selectedSearchCuisine by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedOrderId by rememberSaveable { mutableStateOf(if (initialNavigateToBookingSummary) "ichiraku_offer" else "") }
         
-        // Hardcoded orders list (initial source) - Ichiraku order removed, will come from database
-        val initialOrders = listOf(
-            DinerOrder(
-                id = "2",
-                chefName = "Chef Marco",
-                orderDate = "Dec 11, 2025",
-                status = DinerOrderStatus.COMPLETED,
-                totalPrice = "€85",
-                itemCount = 2,
-                timeAgo = "1d ago"
-            ),
-            DinerOrder(
-                id = "3",
-                chefName = "Chef Elena",
-                orderDate = "Dec 10, 2025",
-                status = DinerOrderStatus.COMPLETED,
-                totalPrice = "€120",
-                itemCount = 4,
-                timeAgo = "2d ago"
-            )
-        )
+//        // Hardcoded orders list (initial source) - Ichiraku order removed, will come from database
+//        val initialOrders = listOf(
+//            DinerOrder(
+//                id = "2",
+//                chefName = "Chef Marco",
+//                orderDate = "Dec 11, 2025",
+//                status = DinerOrderStatus.COMPLETED,
+//                totalPrice = "€85",
+//                itemCount = 2,
+//                timeAgo = "1d ago"
+//            ),
+//            DinerOrder(
+//                id = "3",
+//                chefName = "Chef Elena",
+//                orderDate = "Dec 10, 2025",
+//                status = DinerOrderStatus.COMPLETED,
+//                totalPrice = "€120",
+//                itemCount = 4,
+//                timeAgo = "2d ago"
+//            )
+//        )
 
         // Load orders from database and merge with initial orders
         fun loadOrders(): List<DinerOrder> {
-            val ordersList = initialOrders.toMutableList()
+//            val ordersList = initialOrders.toMutableList()
+            val ordersList = mutableListOf<DinerOrder>()
             
             // Check if Ichiraku order exists in database
             val ichirakuStatus = GlobalDatabase.readString("ichiraku_order_status")

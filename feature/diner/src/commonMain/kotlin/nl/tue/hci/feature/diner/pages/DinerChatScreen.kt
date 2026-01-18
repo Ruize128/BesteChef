@@ -100,6 +100,16 @@ fun DinerChatScreen(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     
+    // Initialize chat in database when screen opens for the first time
+    LaunchedEffect(Unit) {
+        // Mark that this chat has been opened (add a marker message if no messages exist)
+        val existingMessages = GlobalDatabase.readString("ichiraku_chat_messages")
+        if (existingMessages == null || existingMessages.isEmpty()) {
+            // Initialize with a marker message so the chat appears in the list
+            GlobalDatabase.writeString("ichiraku_chat_messages", "INIT")
+        }
+    }
+    
     // Scroll to bottom when new message is added
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
@@ -201,6 +211,9 @@ fun DinerChatScreen(
                         autoDismissMillis = 5000
                     )
                 }
+                
+                // Create a new order in the database when booking offer is sent
+                GlobalDatabase.writeString("ichiraku_order_status", "PENDING")
                 
                 // Update state after second auto-reply
                 conversationState = 2

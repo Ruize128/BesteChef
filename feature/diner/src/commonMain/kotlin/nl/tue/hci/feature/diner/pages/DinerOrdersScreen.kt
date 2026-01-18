@@ -117,21 +117,47 @@ fun DinerOrdersScreen(
             }
         }
         
-        // Orders list
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(orders) { order ->
-                OrderCard(
-                    order = order,
-                    onClick = {
-                        selectedOrderId = order.id
-                        showBookingSummary = true
-                        onOrderClick(order.id)
-                    }
-                )
+        // Orders list or empty state
+        if (orders.isEmpty()) {
+            // Empty state
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "No orders yet",
+                        style = typography.cardTitle,
+                        color = colors.textPrimary
+                    )
+                    Text(
+                        text = "Book a chef to create your first order",
+                        style = typography.bodySmall,
+                        color = colors.textSecondary
+                    )
+                }
+            }
+        } else {
+            // Orders list
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(orders) { order ->
+                    OrderCard(
+                        order = order,
+                        onClick = {
+                            selectedOrderId = order.id
+                            showBookingSummary = true
+                            onOrderClick(order.id)
+                        }
+                    )
+                }
             }
         }
     }

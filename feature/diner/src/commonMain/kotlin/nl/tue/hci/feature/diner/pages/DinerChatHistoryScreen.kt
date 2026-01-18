@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.Avatar
+import nl.tue.hci.core.data.GlobalDatabase
 import nl.tue.hci.feature.diner.DinerChatHistoryItem
 
 @Composable
@@ -28,23 +30,26 @@ fun DinerChatHistoryScreen(
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
     
-    // Hardcoded chat history data (chefs the diner has chatted with)
-    val chatHistory = listOf(
-        DinerChatHistoryItem(
-            id = "2",
-            chefName = "Chef Ichiraku",
-            lastMessage = "[Image]",
-            timestamp = "Yesterday",
-            unreadCount = 2
-        ),
-        DinerChatHistoryItem(
-            id = "3",
-            chefName = "Chef Elena",
-            lastMessage = "I can accommodate all your dietary restrictions.",
-            timestamp = "2 days ago",
-            unreadCount = 0
-        )
-    )
+    // Load chat history from database - only shows chefs that have been chatted with
+    val chatHistory = remember {
+        val history = mutableListOf<DinerChatHistoryItem>()
+        
+        // Check if Ichiraku chef has been chatted with (has a conversation in database)
+        val ichirakuMessages = GlobalDatabase.readString("ichiraku_chat_messages")
+        if (ichirakuMessages != null && ichirakuMessages.isNotEmpty()) {
+            history.add(
+                DinerChatHistoryItem(
+                    id = "2",
+                    chefName = "Chef Ichiraku",
+                    lastMessage = "[Image]",
+                    timestamp = "Now",
+                    unreadCount = 0
+                )
+            )
+        }
+        
+        history
+    }
     
     Column(
         modifier = modifier
@@ -73,19 +78,46 @@ fun DinerChatHistoryScreen(
             }
         }
         
-        // Chat list
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(chatHistory) { chatItem ->
-                ChatHistoryItemCard(
-                    chatItem = chatItem,
-                    onClick = { onChatClick(chatItem.chefName) }
-                )
+        // Chat list or empty state
+        if (chatHistory.isEmpty()) {
+            // Empty state
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "No chats yet",
+                        style = typography.cardTitle,
+                        color = colors.textPrimary
+                    )
+                    Text(
+                        text = "Start a chat by clicking the menu icon on a chef's menu",
+                        style = typography.bodySmall,
+                        color = colors.textSecondary
+                    )
+                }
+            }
+        } else {
+            // Chat list
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(chatHistory) { chatItem ->
+                    ChatHistoryItemCard(
+                        chatItem = chatItem,
+                        onClick = { onChatClick(chatItem.chefName) }
+                    )
+                }
             }
         }
     }
