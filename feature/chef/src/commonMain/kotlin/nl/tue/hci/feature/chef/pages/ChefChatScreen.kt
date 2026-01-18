@@ -84,9 +84,18 @@ fun ChefChatScreen(
     var isAutoReplying by remember { mutableStateOf(false) }
     var showImageBubble by rememberSaveable { mutableStateOf(false) } // Show image bubble after first message sent
     
-    // Initialize message text with default response
+    // Check if automatic messages have been shown (customer has already replied)
+    val hasAutoMessagesShown = messages.any { !it.isFromMe && it.text.contains("Thanks") }
+    
+    // Initialize message text with default response only if auto messages haven't been shown
     var messageText by rememberSaveable { 
-        mutableStateOf("Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo.")
+        mutableStateOf(
+            if (hasAutoMessagesShown) {
+                "" // Empty if conversation has progressed
+            } else {
+                "Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo."
+            }
+        )
     }
     
     val listState = rememberLazyListState()

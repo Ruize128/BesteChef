@@ -68,13 +68,20 @@ fun DinerChatScreen(
     var conversationState by rememberSaveable { mutableStateOf(0) } // 0=initial, 1=after first message, 2=after second
     var isAutoReplying by remember { mutableStateOf(false) }
     
-    // Initialize message text with default message based on conversation state
+    // Check if automatic messages have been shown (chef has already replied)
+    val hasAutoMessagesShown = messages.any { !it.isFromMe && it.text.contains("Yes! I can") }
+    
+    // Initialize message text with default message only if auto messages haven't been shown
     var messageText by rememberSaveable { 
         mutableStateOf(
-            when (conversationState) {
-                0 -> "Can desserts on the menu be replaced with sugar-free options?"
-                1 -> "Thanks — yes please, that would help."
-                else -> ""
+            if (hasAutoMessagesShown) {
+                "" // Empty if conversation has progressed
+            } else {
+                when (conversationState) {
+                    0 -> "Can desserts on the menu be replaced with sugar-free options?"
+                    1 -> "Thanks — yes please, that would help."
+                    else -> ""
+                }
             }
         )
     }
