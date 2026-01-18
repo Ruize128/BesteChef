@@ -52,79 +52,109 @@ fun DinerChatScreen(
     var showImagePreview by rememberSaveable { mutableStateOf(false) }
     var previewImageName by rememberSaveable { mutableStateOf<String?>(null) }
     
-    // Load messages from database or use default initial messages
+    // Load messages from database or start with empty list
     // For diner chat: isFromMe=false = chef, isFromMe=true = diner
     val messages = remember(colors) {
         mutableStateListOf<ChatMessage>().apply {
             val loadedMessages = loadChatMessagesFromDatabase(colors)
             if (loadedMessages.isNotEmpty()) {
                 addAll(loadedMessages)
-            } else {
-                // Default initial messages if database is empty
-                addAll(
-                    listOf(
-                        ChatMessage(
-                            text = "Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo.",
-                            timestamp = "10:12",
-                            isFromMe = false,
-                            avatarText = "DH",
-                            avatarImageName = "ichiraku",
-                            avatarColor = colors.chefSecondary,
-                            bubbleColor = colors.chefPrimary,
-                        ),
-                        ChatMessage(
-                            text = "",
-                            timestamp = "10:13",
-                            isFromMe = false,
-                            imagePreview = "Yuzu mousse (preview)",
-                            avatarText = "DH",
-                            avatarImageName = "ichiraku",
-                            avatarColor = colors.chefSecondary,
-                            bubbleColor = colors.chefPrimary,
-                        ),
-                        ChatMessage(
-                            text = "Thanks — yes please, that would help.",
-                            timestamp = "10:16",
-                            isFromMe = true,
-                            avatarText = "ME",
-                            avatarImageName = "sophie",
-                            avatarColor = colors.dinerSecondary,
-                            bubbleColor = colors.dinerPrimary,
-                        ),
-                        ChatMessage(
-                            text = "Here's my offer for your event:",
-                            timestamp = "10:20",
-                            isFromMe = false,
-                            bookingOffer = nl.tue.hci.core.model.BookingOfferData(
-                                date = "Dec 12, 2025",
-                                time = "18:30",
-                                guests = "6 guests",
-                                venue = "Private Dining Room",
-                                price = "€250"
-                            ),
-                            avatarText = "DH",
-                            avatarImageName = "ichiraku",
-                            avatarColor = colors.chefSecondary,
-                            bubbleColor = colors.chefPrimary,
-                        )
-                    )
-                )
-                // Save initial messages to database
-                saveChatMessagesToDatabase(this)
             }
+            // Start with empty messages for demo
         }
     }
-    var messageText by rememberSaveable { mutableStateOf("") }
+    
+    // Track conversation state for auto-replies
+    var conversationState by rememberSaveable { mutableStateOf(0) } // 0=initial, 1=after first message, 2=after second
+    var isAutoReplying by remember { mutableStateOf(false) }
+    
+    // Initialize message text with default message based on conversation state
+    var messageText by rememberSaveable { 
+        mutableStateOf(
+            when (conversationState) {
+                0 -> "Can desserts on the menu be replaced with sugar-free options?"
+                1 -> "Thanks — yes please, that would help."
+                else -> ""
+            }
+        )
+    }
     val listState = rememberLazyListState()
     
     // Scroll to bottom when new message is added
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
-            // Use immediate scroll (non-suspending) to avoid entering suspend/animation code paths
-            // on wasm targets (these can cause the compiled wasm to require Wasm GC / Exception-Handling
-            // proposals which are not available in all browsers). Using scrollToItem keeps behavior
-            // compatible while providing a safe fallback.
             listState.scrollToItem(messages.size - 1)
+        }
+    }
+    
+    // Auto-reply logic based on conversation state
+    LaunchedEffect(isAutoReplying, conversationState) {
+        if (isAutoReplying) {
+            kotlinx.coroutines.delay(2000) // Wait 2 seconds
+            
+            if (conversationState == 0) {
+                // First auto-reply: chef's text response
+                messages.add(
+                    ChatMessage(
+                        text = "Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo.",
+                        timestamp = "Now",
+                        isFromMe = false,
+                        avatarText = "DH",
+                        avatarImageName = "ichiraku",
+                        avatarColor = colors.chefSecondary,
+                        bubbleColor = colors.chefPrimary,
+                    )
+                )
+                saveChatMessagesToDatabase(messages)
+                
+                kotlinx.coroutines.delay(1000) // Short delay before image
+                
+                // Then the image message
+                messages.add(
+                    ChatMessage(
+                        text = "",
+                        timestamp = "Now",
+                        isFromMe = false,
+                        imagePreview = "Yuzu mousse (preview)",
+                        avatarText = "DH",
+                        avatarImageName = "ichiraku",
+                        avatarColor = colors.chefSecondary,
+                        bubbleColor = colors.chefPrimary,
+                    )
+                )
+                saveChatMessagesToDatabase(messages)
+                
+                // Only now change the placeholder after auto-reply is complete
+                conversationState = 1
+                messageText = "Thanks — yes please, that would help."
+                
+            } else if (conversationState == 1) {
+                // Second auto-reply: booking offer card
+                messages.add(
+                    ChatMessage(
+                        text = "Here's my offer for your event:",
+                        timestamp = "Now",
+                        isFromMe = false,
+                        bookingOffer = nl.tue.hci.core.model.BookingOfferData(
+                            date = "Dec 12, 2025",
+                            time = "18:30",
+                            guests = "6 guests",
+                            venue = "Private Dining Room",
+                            price = "€250"
+                        ),
+                        avatarText = "DH",
+                        avatarImageName = "ichiraku",
+                        avatarColor = colors.chefSecondary,
+                        bubbleColor = colors.chefPrimary,
+                    )
+                )
+                saveChatMessagesToDatabase(messages)
+                
+                // Update state after second auto-reply
+                conversationState = 2
+            }
+            
+            isAutoReplying = false
         }
     }
     
@@ -261,7 +291,7 @@ fun DinerChatScreen(
                         focusedContainerColor = colors.surfaceVariant,
                         unfocusedContainerColor = colors.surfaceVariant
                     ),
-                    singleLine = true
+                    maxLines = 5 // Allow up to 5 lines with word wrapping
                 )
                 
                 // Send button
@@ -278,9 +308,14 @@ fun DinerChatScreen(
                                 bubbleColor = colors.dinerPrimary, // Diner's bubble color
                             )
                             messages.add(newMessage)
-                            // Save messages to database
                             saveChatMessagesToDatabase(messages)
                             messageText = ""
+                            
+                            // Trigger auto-reply based on conversation state
+                            // Don't increment conversationState here - it will be done after auto-reply completes
+                            if (conversationState < 2) {
+                                isAutoReplying = true
+                            }
                         }
                     },
                     modifier = Modifier
