@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -31,10 +32,12 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.ui.text.style.TextAlign
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
+import nl.tue.hci.core.ui.BesteChefColors
 import nl.tue.hci.core.ui.components.ChatBubble
 import nl.tue.hci.core.ui.components.ImagePreviewOverlay
 import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.model.ChatMessage
+import nl.tue.hci.core.data.GlobalDatabase
 
 @Composable
 fun ChefChatScreen(
@@ -51,77 +54,84 @@ fun ChefChatScreen(
     var showImagePreview by rememberSaveable { mutableStateOf(false) }
     var previewImageName by rememberSaveable { mutableStateOf<String?>(null) }
     
-    // Hardcoded initial messages
+    // Load messages from database or start with Sophie's initial message
     // For chef chat: isFromMe=true = chef, isFromMe=false = customer
-    val initialMessages = remember(colors) {
-        listOf(
-            ChatMessage(
-                text = "Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo.",
-                timestamp = "10:12",
-                isFromMe = true, // From chef
-                avatarText = "ME",
-                avatarImageName = "ichiraku", // Chef's avatar
-                avatarColor = colors.chefSecondary,
-                bubbleColor = colors.chefPrimary, // Chef's bubble color
-            ),
-            ChatMessage(
-                text = "",
-                timestamp = "10:13",
-                isFromMe = true, // From chef
-                imagePreview = "Yuzu mousse (preview)",
-                avatarText = "ME",
-                avatarImageName = "ichiraku", // Chef's avatar
-                avatarColor = colors.chefSecondary,
-                bubbleColor = colors.chefPrimary, // Chef's bubble color
-            ),
-            ChatMessage(
-                text = "Thanks — yes please, that would help.",
-                timestamp = "10:16",
-                isFromMe = false, // From customer
-                avatarText = "DH",
-                avatarImageName = "sophie", // Customer's avatar
-                avatarColor = colors.dinerSecondary,
-                bubbleColor = colors.dinerPrimary, // Customer's bubble color
-            ),
-            ChatMessage(
-                text = "Here's my offer for your event:",
-                timestamp = "10:20",
-                isFromMe = true, // From chef
-                bookingOffer = nl.tue.hci.core.model.BookingOfferData(
-                    date = "Dec 12, 2025",
-                    time = "18:30",
-                    guests = "6 guests",
-                    venue = "Private Dining Room",
-                    price = "€250"
-                ),
-                avatarText = "ME",
-                avatarImageName = "ichiraku", // Chef's avatar
-                avatarColor = colors.chefSecondary,
-                bubbleColor = colors.chefPrimary, // Chef's bubble color
-            )
-        )
+    val messages = remember(colors) {
+        mutableStateListOf<ChatMessage>().apply {
+            val loadedMessages = loadChefChatMessagesFromDatabase(colors)
+            if (loadedMessages.isNotEmpty()) {
+                addAll(loadedMessages)
+            } else {
+                // Show Sophie's initial message
+                add(
+                    ChatMessage(
+                        text = "Can desserts on the menu be replaced with sugar-free options?",
+                        timestamp = "10:10",
+                        isFromMe = false, // From customer
+                        avatarText = "DH",
+                        avatarImageName = "sophie",
+                        avatarColor = colors.dinerSecondary,
+                        bubbleColor = colors.dinerPrimary,
+                    )
+                )
+                saveChatMessagesToDatabase(this)
+            }
+        }
     }
     
-    val messages = remember { mutableStateListOf<ChatMessage>().apply { addAll(initialMessages) } }
-    var messageText by rememberSaveable { mutableStateOf("") }
+    // Track conversation state for auto-replies
+    var conversationState by rememberSaveable { mutableStateOf(0) } // 0=initial, 1=after image sent
+    var isAutoReplying by remember { mutableStateOf(false) }
+    var showImageBubble by rememberSaveable { mutableStateOf(false) } // Show image bubble after first message sent
+    
+    // Initialize message text with default response
+    var messageText by rememberSaveable { 
+        mutableStateOf("Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo.")
+    }
+    
     val listState = rememberLazyListState()
     
     // Scroll to bottom when new message is added
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
-            // Use immediate scroll (non-suspending) to avoid entering suspend/animation code paths
-            // on wasm targets (these can cause the compiled wasm to require Wasm GC / Exception-Handling
-            // proposals which are not available in all browsers). Using scrollToItem keeps behavior
-            // compatible while providing a safe fallback.
             listState.scrollToItem(messages.size - 1)
         }
     }
     
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(colors.surfaceVariant)
+    // Auto-reply logic for customer responses
+    LaunchedEffect(isAutoReplying) {
+        if (isAutoReplying) {
+            kotlinx.coroutines.delay(2000) // Wait 2 seconds
+            
+            if (conversationState == 1) {
+                // Sophie replies after receiving image
+                messages.add(
+                    ChatMessage(
+                        text = "Thanks — yes please, that would help.",
+                        timestamp = "Now",
+                        isFromMe = false, // From customer
+                        avatarText = "DH",
+                        avatarImageName = "sophie",
+                        avatarColor = colors.dinerSecondary,
+                        bubbleColor = colors.dinerPrimary,
+                    )
+                )
+                saveChatMessagesToDatabase(messages)
+                conversationState = 2
+            }
+            
+            isAutoReplying = false
+        }
+    }
+    
+    Box(
+        modifier = modifier.fillMaxSize()
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colors.surfaceVariant)
+        ) {
         // Header with status bar padding
         Surface(
             modifier = Modifier
@@ -225,7 +235,7 @@ fun ChefChatScreen(
                 ) {
                     // Dish image
                     Image(
-                        painter = nl.tue.hci.core.ui.rememberImagePainter("omakase_5_course"),
+                        painter = rememberImagePainter("omakase_5_course"),
                         contentDescription = "5-course Omakase",
                         modifier = Modifier
                             .size(48.dp)
@@ -271,6 +281,99 @@ fun ChefChatScreen(
                             style = typography.buttonText,
                         )
                     }
+                }
+            }
+
+
+            // Floating image bubble above the + button
+            if (showImageBubble) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(start = 16.dp, bottom = 16.dp)
+                ) {
+                    // Main bubble
+                    Surface(
+                        modifier = Modifier
+                            .size(width = 160.dp, height = 120.dp)
+                            .clickable {
+                                messages.add(
+                                    ChatMessage(
+                                        text = "",
+                                        timestamp = "Now",
+                                        isFromMe = true,
+                                        imagePreview = "Yuzu mousse (preview)",
+                                        avatarText = "ME",
+                                        avatarImageName = "ichiraku",
+                                        avatarColor = colors.chefSecondary,
+                                        bubbleColor = colors.chefPrimary,
+                                    )
+                                )
+                                saveChatMessagesToDatabase(messages)
+                                showImageBubble = false
+                                conversationState = 1
+                                isAutoReplying = true
+                            },
+                        color = colors.surface,
+                        shape = RoundedCornerShape(20.dp),
+                        shadowElevation = 3.dp,
+                        tonalElevation = 0.dp
+                    ) {
+                        Image(
+                            painter = rememberImagePainter("yuzu_mousse"),
+                            contentDescription = "Yuzu mousse preview",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(4.dp)
+                                .clip(RoundedCornerShape(16.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    
+                    // Triangle tail pointing to bottom left
+                    Box(
+                        modifier = Modifier
+                            .width(12.dp)
+                            .height(10.dp)
+                            .align(Alignment.BottomStart)
+                            .offset(y = 9.dp, x = 16.dp)
+                            .shadow(
+                                elevation = 3.dp,
+                                shape = object : androidx.compose.ui.graphics.Shape {
+                                    override fun createOutline(
+                                        size: androidx.compose.ui.geometry.Size,
+                                        layoutDirection: androidx.compose.ui.unit.LayoutDirection,
+                                        density: androidx.compose.ui.unit.Density
+                                    ): androidx.compose.ui.graphics.Outline {
+                                        val trianglePath = androidx.compose.ui.graphics.Path().apply {
+                                            moveTo(size.width, 0f) // Top right
+                                            lineTo(0f, 0f) // Top left
+                                            lineTo(size.width / 2, size.height) // Bottom center
+                                            close()
+                                        }
+                                        return androidx.compose.ui.graphics.Outline.Generic(trianglePath)
+                                    }
+                                }
+                            )
+                            .background(
+                                color = colors.surface,
+                                shape = object : androidx.compose.ui.graphics.Shape {
+                                    override fun createOutline(
+                                        size: androidx.compose.ui.geometry.Size,
+                                        layoutDirection: androidx.compose.ui.unit.LayoutDirection,
+                                        density: androidx.compose.ui.unit.Density
+                                    ): androidx.compose.ui.graphics.Outline {
+                                        val trianglePath = androidx.compose.ui.graphics.Path().apply {
+                                            moveTo(size.width, 0f) // Top right
+                                            lineTo(0f, 0f) // Top left
+                                            lineTo(size.width / 2, size.height) // Bottom center
+                                            close()
+                                        }
+                                        return androidx.compose.ui.graphics.Outline.Generic(trianglePath)
+                                    }
+                                }
+                            ),
+                    )
                 }
             }
         }
@@ -323,13 +426,32 @@ fun ChefChatScreen(
                         focusedContainerColor = colors.surfaceVariant,
                         unfocusedContainerColor = colors.surfaceVariant
                     ),
-                    singleLine = true
+                    maxLines = 5
                 )
                 
                 // Send button
                 IconButton(
                     onClick = {
-                        if (messageText.isNotBlank()) {
+                        // If image bubble is showing, send the image
+                        if (showImageBubble) {
+                            messages.add(
+                                ChatMessage(
+                                    text = "",
+                                    timestamp = "Now",
+                                    isFromMe = true,
+                                    imagePreview = "Yuzu mousse (preview)",
+                                    avatarText = "ME",
+                                    avatarImageName = "ichiraku",
+                                    avatarColor = colors.chefSecondary,
+                                    bubbleColor = colors.chefPrimary,
+                                )
+                            )
+                            saveChatMessagesToDatabase(messages)
+                            showImageBubble = false
+                            conversationState = 1
+                            isAutoReplying = true
+                        } else if (messageText.isNotBlank()) {
+                            // Otherwise send text message
                             val newMessage = ChatMessage(
                                 text = messageText,
                                 timestamp = "Now",
@@ -340,14 +462,19 @@ fun ChefChatScreen(
                                 bubbleColor = colors.chefPrimary, // Chef's bubble color
                             )
                             messages.add(newMessage)
+                            saveChatMessagesToDatabase(messages)
                             messageText = ""
+                            
+                            // Show image bubble after sending first text message
+                            showImageBubble = true
+                            conversationState = 0
                         }
                     },
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
                         .background(colors.chefPrimary),
-                    enabled = messageText.isNotBlank()
+                    enabled = messageText.isNotBlank() || showImageBubble
                 ) {
                     Icon(
                         imageVector = Icons.Default.Send,
@@ -358,6 +485,9 @@ fun ChefChatScreen(
                 }
             }
         }
+        } // End Column
+        
+
     }
 
     // Full-screen image preview overlay
@@ -394,3 +524,101 @@ fun DateSeparator(dateText: String) {
     }
 }
 
+/**
+ * Save chef chat messages to database using a simplified encoding format.
+ */
+fun saveChatMessagesToDatabase(messages: List<ChatMessage>) {
+    val encodedMessages = messages.map { message ->
+        when {
+            // Image message: "IMAGE|timestamp|isFromMe"
+            message.imagePreview != null -> {
+                "IMAGE|${message.timestamp}|${message.isFromMe}"
+            }
+            // Booking offer message: "BOOKING|timestamp|isFromMe"
+            message.bookingOffer != null -> {
+                "BOOKING|${message.timestamp}|${message.isFromMe}"
+            }
+            // Text message: "TEXT|timestamp|isFromMe|messageText"
+            else -> {
+                "TEXT|${message.timestamp}|${message.isFromMe}|${message.text}"
+            }
+        }
+    }
+    
+    // Store as pipe-separated string
+    GlobalDatabase.writeString(
+        "chef_chat_messages",
+        encodedMessages.joinToString("||")
+    )
+}
+
+/**
+ * Load chef chat messages from database and reconstruct ChatMessage objects.
+ */
+fun loadChefChatMessagesFromDatabase(
+    colors: BesteChefColors
+): List<ChatMessage> {
+    val storedData = GlobalDatabase.readString("chef_chat_messages") ?: return emptyList()
+    
+    if (storedData.isBlank()) return emptyList()
+    
+    return storedData.split("||").mapNotNull { encodedMessage ->
+        val parts = encodedMessage.split("|")
+        if (parts.size < 3) return@mapNotNull null
+        
+        val type = parts[0]
+        val timestamp = parts[1]
+        val isFromMe = parts[2].toBoolean()
+        
+        when (type) {
+            "IMAGE" -> {
+                // Reconstruct image message with fixed demo content
+                ChatMessage(
+                    text = "",
+                    timestamp = timestamp,
+                    isFromMe = isFromMe,
+                    imagePreview = "Yuzu mousse (preview)",
+                    avatarText = if (isFromMe) "ME" else "DH",
+                    avatarImageName = if (isFromMe) "ichiraku" else "sophie",
+                    avatarColor = if (isFromMe) colors.chefSecondary else colors.dinerSecondary,
+                    bubbleColor = if (isFromMe) colors.chefPrimary else colors.dinerPrimary,
+                )
+            }
+            "BOOKING" -> {
+                // Reconstruct booking offer message with fixed demo content
+                ChatMessage(
+                    text = "Here's my offer for your event:",
+                    timestamp = timestamp,
+                    isFromMe = isFromMe,
+                    bookingOffer = nl.tue.hci.core.model.BookingOfferData(
+                        date = "Dec 12, 2025",
+                        time = "18:30",
+                        guests = "6 guests",
+                        venue = "Private Dining Room",
+                        price = "€250"
+                    ),
+                    avatarText = if (isFromMe) "ME" else "DH",
+                    avatarImageName = if (isFromMe) "ichiraku" else "sophie",
+                    avatarColor = if (isFromMe) colors.chefSecondary else colors.dinerSecondary,
+                    bubbleColor = if (isFromMe) colors.chefPrimary else colors.dinerPrimary,
+                )
+            }
+            "TEXT" -> {
+                // Reconstruct text message
+                if (parts.size < 4) return@mapNotNull null
+                val text = parts.drop(3).joinToString("|") // Handle pipe characters in message text
+                
+                ChatMessage(
+                    text = text,
+                    timestamp = timestamp,
+                    isFromMe = isFromMe,
+                    avatarText = if (isFromMe) "ME" else "DH",
+                    avatarImageName = if (isFromMe) "ichiraku" else "sophie",
+                    avatarColor = if (isFromMe) colors.chefSecondary else colors.dinerSecondary,
+                    bubbleColor = if (isFromMe) colors.chefPrimary else colors.dinerPrimary,
+                )
+            }
+            else -> null
+        }
+    }
+}
