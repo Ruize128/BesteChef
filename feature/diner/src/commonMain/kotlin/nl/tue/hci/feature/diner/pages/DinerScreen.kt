@@ -20,6 +20,7 @@ import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.rememberAppExitHandler
 import nl.tue.hci.core.ui.components.InAppNotificationOverlay
+import nl.tue.hci.core.data.GlobalDatabase
 import nl.tue.hci.feature.diner.DinerOrder
 import nl.tue.hci.feature.diner.DinerOrderStatus
 
@@ -65,17 +66,8 @@ fun DinerScreen(
         var selectedSearchCuisine by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedOrderId by rememberSaveable { mutableStateOf(if (initialNavigateToBookingSummary) "ichiraku_offer" else "") }
         
-        // Hardcoded orders list (initial source)
+        // Hardcoded orders list (initial source) - Ichiraku order removed, will come from database
         val initialOrders = listOf(
-            DinerOrder(
-                id = "1",
-                chefName = "Chef Ichiraku",
-                orderDate = "Dec 12, 2025",
-                status = DinerOrderStatus.PENDING,
-                totalPrice = "€102",
-                itemCount = 3,
-                timeAgo = "1h ago"
-            ),
             DinerOrder(
                 id = "2",
                 chefName = "Chef Marco",
@@ -96,12 +88,44 @@ fun DinerScreen(
             )
         )
 
-        var orders by remember { mutableStateOf(initialOrders) }
+        // Load orders from database and merge with initial orders
+        fun loadOrders(): List<DinerOrder> {
+            val ordersList = initialOrders.toMutableList()
+            
+            // Check if Ichiraku order exists in database
+            val ichirakuStatus = GlobalDatabase.readString("ichiraku_order_status")
+            if (ichirakuStatus != null) {
+                val orderStatus = when (ichirakuStatus) {
+                    "PENDING" -> DinerOrderStatus.PENDING
+                    "ONGOING" -> DinerOrderStatus.IN_PROGRESS
+                    "COMPLETED" -> DinerOrderStatus.COMPLETED
+                    "CANCELLED" -> DinerOrderStatus.CANCELLED
+                    else -> DinerOrderStatus.PENDING
+                }
+                
+                ordersList.add(
+                    0, // Add at beginning
+                    DinerOrder(
+                        id = "ichiraku_1",
+                        chefName = "Chef Ichiraku",
+                        orderDate = "Dec 12, 2025",
+                        status = orderStatus,
+                        totalPrice = "€102",
+                        itemCount = 3,
+                        timeAgo = "1h ago"
+                    )
+                )
+            }
+            
+            return ordersList
+        }
+
+        var orders by remember { mutableStateOf(loadOrders()) }
 
         // Refresh orders whenever the user navigates to the Orders tab
         androidx.compose.runtime.LaunchedEffect(currentDestination) {
             if (currentDestination == DinerDestinations.ORDERS) {
-                orders = initialOrders
+                orders = loadOrders()
             }
         }
         

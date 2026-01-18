@@ -2,6 +2,7 @@ package nl.tue.hci.feature.diner.pages
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.ImagePreviewOverlay
+import nl.tue.hci.core.data.GlobalDatabase
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -412,6 +413,8 @@ private fun MenuContent(
                             onClick = {
                                 showBookConfirmDialog = false
                                 showCartSheet = false
+                                // Write to database when booking
+                                GlobalDatabase.writeString("ichiraku_order_status", "PENDING")
                                 onBookClick()
                             },
                             modifier = Modifier

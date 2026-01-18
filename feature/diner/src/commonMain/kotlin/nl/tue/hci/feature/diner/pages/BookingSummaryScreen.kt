@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import nl.tue.hci.core.data.GlobalDatabase
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -79,10 +80,19 @@ fun BookingSummaryScreen(
     LaunchedEffect(isProcessing) {
         if (isProcessing) {
             kotlinx.coroutines.delay(1000) // 1 second delay
-            // Check which button was clicked based on orderStatus
+            
+            // Update database based on order status
             when (orderStatus) {
-                "PENDING" -> onBookAndPayClick() // Book & Pay clicked
-                "ON_GOING" -> onPayRemainingClick?.invoke() // Pay remaining clicked
+                "PENDING" -> {
+                    // Book & Pay clicked - change from PENDING to ONGOING
+                    GlobalDatabase.writeString("ichiraku_order_status", "ONGOING")
+                    onBookAndPayClick()
+                }
+                "ON_GOING" -> {
+                    // Pay remaining clicked - change from ONGOING to COMPLETED
+                    GlobalDatabase.writeString("ichiraku_order_status", "COMPLETED")
+                    onPayRemainingClick?.invoke()
+                }
                 else -> onBookAndPayClick()
             }
             isProcessing = false
@@ -381,6 +391,8 @@ fun BookingSummaryScreen(
                     Button(
                         onClick = {
                             showCancelDialog = false
+                            // Write CANCELLED status to database
+                            GlobalDatabase.writeString("ichiraku_order_status", "CANCELLED")
                             scope.launch {
                                 snackbarHostState.showSnackbar("Delete order complete")
                             }
