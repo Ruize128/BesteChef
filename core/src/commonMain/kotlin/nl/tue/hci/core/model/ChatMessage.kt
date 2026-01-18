@@ -12,6 +12,7 @@ data class ChatMessage(
     val avatarImageName: String? = null, // Image name for avatar (e.g., "sophie", "ichiraku")
     val avatarColor: Color, // Should be provided from theme
     val bubbleColor: Color, // Should be provided from theme
+    val isTyping: Boolean = false, // Whether this is a typing indicator message
 )
 
 data class BookingOfferData(

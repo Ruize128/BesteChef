@@ -1,9 +1,13 @@
 package nl.tue.hci.core.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -17,15 +21,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import nl.tue.hci.core.model.ChatMessage
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
@@ -58,7 +69,10 @@ fun ChatBubble(
             modifier = Modifier.weight(1f, false),
             horizontalAlignment = if (message.isFromMe) Alignment.End else Alignment.Start
         ) {
-            if (message.bookingOffer != null) {
+            if (message.isTyping) {
+                // Typing indicator bubble
+                TypingIndicatorBubble(bubbleColor = message.bubbleColor)
+            } else if (message.bookingOffer != null) {
                 // Booking offer message - Card design
                 val typography = BesteChefThemeTypography.current()
                 Card(
@@ -234,14 +248,16 @@ fun ChatBubble(
                 }
             }
             
-            // Timestamp
-            Text(
-                text = message.timestamp,
-                modifier = Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp),
-                style = MaterialTheme.typography.bodySmall,
-                color = colors.textSecondary,
-                textAlign = if (message.isFromMe) TextAlign.End else TextAlign.Start
-            )
+            // Timestamp - don't show for typing indicator
+            if (!message.isTyping) {
+                Text(
+                    text = message.timestamp,
+                    modifier = Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.textSecondary,
+                    textAlign = if (message.isFromMe) TextAlign.End else TextAlign.Start
+                )
+            }
         }
         
         if (message.isFromMe) {
@@ -258,3 +274,45 @@ fun ChatBubble(
     }
 }
 
+@Composable
+private fun TypingIndicatorBubble(bubbleColor: Color) {
+    val colors = BesteChefThemeColors.current()
+
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = bubbleColor,
+        modifier = Modifier
+            .height(32.dp)
+            .padding(horizontal = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Animated typing dots
+            repeat(3) { index ->
+                var dotScale by remember { mutableStateOf(0.8f) }
+
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        delay((index * 150).toLong())
+                        dotScale = 1.2f
+                        delay(500)
+                        dotScale = 0.8f
+                        delay((3 - index) * 150.toLong())
+                    }
+                }
+
+                Surface(
+                    modifier = Modifier
+                        .size(4.dp)
+                        .scale(dotScale),
+                    shape = CircleShape,
+                    color = colors.textTertiary,
+                    tonalElevation = 0.dp
+                ) {}
+            }
+        }
+    }
+}

@@ -110,7 +110,22 @@ fun ChefChatScreen(
     // Auto-reply logic for customer responses
     LaunchedEffect(isAutoReplying) {
         if (isAutoReplying) {
+            kotlinx.coroutines.delay(500)
+            // Show typing indicator for 2 seconds
+            val typingMessage = ChatMessage(
+                text = "",
+                timestamp = "Now",
+                isFromMe = false,
+                isTyping = true,
+                avatarText = "DH",
+                avatarImageName = "sophie",
+                avatarColor = colors.dinerSecondary,
+                bubbleColor = colors.dinerPrimary,
+            )
+            messages.add(typingMessage)
             kotlinx.coroutines.delay(2000) // Wait 2 seconds
+            // Remove typing indicator message
+            messages.removeAt(messages.size - 1)
             
             if (conversationState == 1) {
                 // Sophie replies after receiving image

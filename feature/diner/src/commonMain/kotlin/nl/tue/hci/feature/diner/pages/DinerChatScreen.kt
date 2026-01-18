@@ -23,9 +23,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.statusBarsPadding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -104,7 +110,25 @@ fun DinerChatScreen(
     // Auto-reply logic based on conversation state
     LaunchedEffect(isAutoReplying, conversationState) {
         if (isAutoReplying) {
-            kotlinx.coroutines.delay(2000) // Wait 2 seconds
+            delay(500)
+            // Show typing indicator message for 2 seconds
+            val typingMessage = ChatMessage(
+                text = "",
+                timestamp = "Now",
+                isFromMe = false,
+                isTyping = true,
+                avatarText = "DH",
+                avatarImageName = "ichiraku",
+                avatarColor = colors.chefSecondary,
+                bubbleColor = colors.chefPrimary,
+            )
+            messages.add(typingMessage)
+            delay(2000)
+            // Remove typing indicator message
+            messages.removeAt(messages.size - 1)
+            
+            // Then add the message after typing indicator disappears
+            delay(100) // Small delay for smooth transition
             
             if (conversationState == 0) {
                 // First auto-reply: chef's text response
@@ -121,7 +145,7 @@ fun DinerChatScreen(
                 )
                 saveChatMessagesToDatabase(messages)
                 
-                kotlinx.coroutines.delay(1000) // Short delay before image
+                delay(1000) // Short delay before next item
                 
                 // Then the image message
                 messages.add(
