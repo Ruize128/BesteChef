@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -26,15 +27,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.statusBarsPadding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.BesteChefColors
 import nl.tue.hci.core.ui.components.ChatBubble
 import nl.tue.hci.core.ui.components.ImagePreviewOverlay
+import nl.tue.hci.core.ui.components.InAppNotificationOverlay
 import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.model.ChatMessage
 import nl.tue.hci.core.data.GlobalDatabase
+import nl.tue.hci.core.notification.NotificationState
+import nl.tue.hci.core.notification.NotificationType
 
 
 
@@ -86,6 +92,7 @@ fun DinerChatScreen(
         )
     }
     val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     
     // Scroll to bottom when new message is added
     LaunchedEffect(messages.size) {
@@ -156,6 +163,20 @@ fun DinerChatScreen(
                     )
                 )
                 saveChatMessagesToDatabase(messages)
+                
+                // Show in-app notification for the new booking offer with a small delay
+                scope.launch {
+                    delay(200) // Small delay to ensure UI is ready
+                    NotificationState.showNotification(
+                        title = "New Booking Offer",
+                        message = "Chef $chefName sent you a booking offer",
+                        type = NotificationType.OFFER,
+                        onAction = {
+                            onBookingOfferClick()
+                        },
+                        autoDismissMillis = 5000
+                    )
+                }
                 
                 // Update state after second auto-reply
                 conversationState = 2
@@ -355,6 +376,9 @@ fun DinerChatScreen(
             previewImageName = null
         }
     )
+    
+    // In-app notification overlay - displayed on top of everything
+    InAppNotificationOverlay()
 }
 
 @Composable
