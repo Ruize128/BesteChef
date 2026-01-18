@@ -380,7 +380,7 @@ private fun MenuContent(
                                     color = colors.textSecondary
                                 )
                                 Text(
-                                    text = "€${String.format("%.0f", subtotal)}",
+                                    text = "€${subtotal.toInt()}",
                                     style = typography.bodyMedium,
                                     color = colors.textPrimary,
                                     fontWeight = FontWeight.SemiBold
@@ -397,7 +397,7 @@ private fun MenuContent(
                                     color = colors.textSecondary
                                 )
                                 Text(
-                                    text = "€${String.format("%.0f", serviceFee)}",
+                                    text = "€${serviceFee.toInt()}",
                                     style = typography.bodyMedium,
                                     color = colors.textPrimary,
                                     fontWeight = FontWeight.SemiBold
@@ -420,7 +420,7 @@ private fun MenuContent(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "€${String.format("%.0f", total)}",
+                                    text = "€${total.toInt()}",
                                     style = typography.cardTitle,
                                     color = colors.dinerPrimary,
                                     fontWeight = FontWeight.Bold
