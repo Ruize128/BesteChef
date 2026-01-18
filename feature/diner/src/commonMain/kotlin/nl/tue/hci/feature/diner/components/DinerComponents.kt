@@ -325,7 +325,7 @@ fun ChefResultCard(
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                 ) {
                     Text(
-                        text = "View Menu",
+                        text = "View Detail",
                         style = typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
                         color = colors.textPrimary,
