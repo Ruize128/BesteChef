@@ -101,7 +101,7 @@ fun ChefOrdersListScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Orders",
+                    text = "Bookings",
                     style = typography.sectionTitle,
                     color = colors.textPrimary
                 )

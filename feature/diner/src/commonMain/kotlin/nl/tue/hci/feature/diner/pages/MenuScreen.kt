@@ -1,6 +1,7 @@
 package nl.tue.hci.feature.diner.pages
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
+import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.ui.components.ImagePreviewOverlay
 import nl.tue.hci.core.data.GlobalDatabase
 
@@ -255,7 +256,7 @@ private fun MenuContent(
                         onClick = onChatClick,
                         modifier = Modifier.size(40.dp)
                     ) {
-                        val chatIconPainter = rememberIconPainter("chat_icon")
+                        val chatIconPainter = rememberImagePainter("comments_light")
                         Icon(
                             painter = chatIconPainter,
                             contentDescription = "Chat",

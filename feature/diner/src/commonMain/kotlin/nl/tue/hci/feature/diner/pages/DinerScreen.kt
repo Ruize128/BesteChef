@@ -17,6 +17,7 @@ import kotlinx.datetime.LocalDate
 // Preview removed for multiplatform
 import nl.tue.hci.core.ui.BesteChefTheme
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.rememberAppExitHandler
 import nl.tue.hci.core.ui.components.InAppNotificationOverlay
@@ -33,11 +34,12 @@ private val LocalDateSaver = Saver<LocalDate?, String>(
 enum class DinerDestinations(
     val label: String,
     val icon: ImageVector,
+    val iconName: String,
 ) {
-    HOME("Home", Icons.Default.Home),
-    CHAT("Chat", Icons.Default.Email),
-    ORDERS("Orders", Icons.Default.Favorite),
-    PROFILE("Profile", Icons.Default.AccountBox),
+    HOME("Home", Icons.Default.Home, "home"),
+    CHAT("Chat", Icons.Default.Email, "comments"),
+    ORDERS("Booking", Icons.Default.Favorite, "booking"),
+    PROFILE("Profile", Icons.Default.AccountBox, "profile"),
 }
 
 @Composable
@@ -277,8 +279,9 @@ fun DinerScreen(
                         DinerDestinations.entries.forEach { destination ->
                             NavigationBarItem(
                                 icon = {
+                                    val painter = rememberImagePainter(destination.iconName)
                                     Icon(
-                                        destination.icon,
+                                        painter = painter,
                                         contentDescription = destination.label
                                     )
                                 },

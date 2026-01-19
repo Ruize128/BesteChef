@@ -110,7 +110,7 @@ fun DinerOrdersScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Orders",
+                    text = "Bookings",
                     style = typography.sectionTitle,
                     color = colors.textPrimary
                 )
@@ -130,12 +130,12 @@ fun DinerOrdersScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = "No orders yet",
+                        text = "No bookings yet",
                         style = typography.cardTitle,
                         color = colors.textPrimary
                     )
                     Text(
-                        text = "Book a chef to create your first order",
+                        text = "Book a chef to create your first booking",
                         style = typography.bodySmall,
                         color = colors.textSecondary
                     )

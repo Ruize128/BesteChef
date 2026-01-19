@@ -354,7 +354,7 @@ fun LoginScreen(
             SocialLoginButton(
                 onClick = { loginStateHolder.onAppleLoginClick() },
                 text = "Continue with Apple",
-                iconPainter = appleLogoPainter(),
+                iconPainter = rememberImagePainter("apple_logo"),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
@@ -407,16 +407,19 @@ fun SocialLoginButton(
             // Draw Google or Apple logo based on the text
             if (text.contains("Google")) {
                 // Google circle icon
-                Image(
+                Icon(
                     painter = rememberImagePainter("google_circle"),
                     contentDescription = "Google",
-                    modifier = Modifier.size(20.dp)
+//                    modifier = Modifier.size(20.dp),
+                    tint = colors.textSecondary,
                 )
             } else if (text.contains("Apple")) {
                 // Apple logo
-                Text(
-                    text = "🍎",
-                    fontSize = 18.sp
+                Icon(
+                    painter = rememberImagePainter("apple_logo"),
+                    contentDescription = "Apple",
+//                    modifier = Modifier.size(20.dp),
+                    tint = colors.textSecondary,
                 )
             }
             Spacer(modifier = Modifier.width(12.dp))

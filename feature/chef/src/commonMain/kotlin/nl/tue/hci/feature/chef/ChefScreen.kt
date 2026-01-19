@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import nl.tue.hci.feature.chef.pages.ChefChatHistoryScreen
 import nl.tue.hci.core.ui.BesteChefTheme
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.rememberAppExitHandler
 import nl.tue.hci.core.ui.components.InAppNotificationOverlay
@@ -32,11 +33,12 @@ import nl.tue.hci.core.data.GlobalDatabase
 enum class ChefDestinations(
     val label: String,
     val icon: ImageVector,
+    val iconName: String,
 ) {
-    HOME("Home", Icons.Default.Home),
-    CHAT("Chat", Icons.Default.Email),
-    ORDERS("Orders", Icons.Default.Favorite),
-    PROFILE("Profile", Icons.Default.AccountBox),
+    HOME("Home", Icons.Default.Home, "home"),
+    CHAT("Chat", Icons.Default.Email, "comments_light"),
+    ORDERS("Booking", Icons.Default.Favorite, "booking"),
+    PROFILE("Profile", Icons.Default.AccountBox, "profile"),
 }
 
 @Composable
@@ -206,8 +208,9 @@ fun ChefScreen(
                             ChefDestinations.entries.forEach { destination ->
                                 NavigationBarItem(
                                     icon = {
+                                        val painter = rememberImagePainter(destination.iconName)
                                         Icon(
-                                            destination.icon,
+                                            painter = painter,
                                             contentDescription = destination.label
                                         )
                                     },

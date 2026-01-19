@@ -1,6 +1,7 @@
 package nl.tue.hci.feature.diner.pages
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
+import nl.tue.hci.core.ui.rememberImagePainter
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -501,7 +502,7 @@ private fun SearchResultsContent(
                     containerColor = colors.dinerPrimary,
                     contentColor = colors.textOnPrimary
                 ) {
-                    val filterIconPainter = rememberIconPainter("filter_icon")
+                    val filterIconPainter = rememberImagePainter("filter_list")
                     Icon(
                         painter = filterIconPainter,
                         contentDescription = "Sort and Filter",
