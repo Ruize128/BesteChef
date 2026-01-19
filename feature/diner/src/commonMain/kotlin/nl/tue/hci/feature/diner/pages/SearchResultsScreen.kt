@@ -33,21 +33,21 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
-import nl.tue.hci.feature.diner.components.ActionButton
-import nl.tue.hci.feature.diner.ChefResult
+import nl.tue.hci.feature.diner.components.SortFilterModal
+import nl.tue.hci.core.ui.components.ImagePreviewOverlay
+import nl.tue.hci.core.ui.PlatformBackHandler
+import nl.tue.hci.feature.diner.components.AllergensSelectionModal
+import nl.tue.hci.feature.diner.components.CuisineSelectionModal
 import nl.tue.hci.feature.diner.components.ChefResultCard
 import nl.tue.hci.feature.diner.components.DateDropdownMenu
 import nl.tue.hci.feature.diner.components.FilterModal
 import nl.tue.hci.feature.diner.components.LocationDropdownMenu
 import nl.tue.hci.feature.diner.components.formatDate
-import nl.tue.hci.core.ui.components.ImagePreviewOverlay
-import nl.tue.hci.core.ui.PlatformBackHandler
-import nl.tue.hci.feature.diner.components.AllergensSelectionModal
-import nl.tue.hci.feature.diner.components.CuisineSelectionModal
 import nl.tue.hci.core.ui.icons.rememberIconPainter
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.clip
 import kotlinx.coroutines.delay
+import nl.tue.hci.feature.diner.ChefResult
 
 // Saver for LocalDate to make it work with rememberSaveable
 private val LocalDateSaver = Saver<LocalDate?, String>(
@@ -115,11 +115,13 @@ private fun SearchResultsContent(
     var selectedAllergens by rememberSaveable { mutableStateOf<Set<String>>(initialAllergens) }
     var selectedCuisine by rememberSaveable { mutableStateOf<String?>(initialCuisine) }
     
-    // Filter modal state
-    var isFilterModalOpen by rememberSaveable { mutableStateOf(false) }
-    // Sort menu state
-    var isSortMenuOpen by rememberSaveable { mutableStateOf(false) }
+    // Sort & Filter modal state
+    var isSortFilterModalOpen by rememberSaveable { mutableStateOf(false) }
     var selectedSortOption by rememberSaveable { mutableStateOf("Relevance") }
+    var selectedDistance by rememberSaveable { mutableStateOf(30f) } // Distance in km, default 30km
+    
+    // Track the sort option being displayed (updated only after loading completes)
+    var displayedSortOption by remember { mutableStateOf("Relevance") }
     
     // Sub-modals for filter selections
     var isAllergensSelectionOpen by rememberSaveable { mutableStateOf(false) }
@@ -152,16 +154,18 @@ private fun SearchResultsContent(
         }
     }
 
-    // Trigger mock refresh when sort option changes
-    LaunchedEffect(selectedSortOption) {
+    // Trigger mock refresh when sort/filter options change
+    LaunchedEffect(selectedSortOption, selectedDistance) {
         if (!isInitialLoading) {
             isTransientLoading = true
             delay(400)
             isTransientLoading = false
+            // Update displayed sort option AFTER loading completes
+            displayedSortOption = selectedSortOption
         }
     }
 
-    val chefs = listOf(
+    val chefsUnsorted = listOf(
             ChefResult(
                 name = "Chef Ichiraku",
                 rating = 5.0f,
@@ -194,6 +198,19 @@ private fun SearchResultsContent(
                 imageColor = colors.imagePlaceholder1,
             )
         )
+    
+    // Apply sorting logic based on displayedSortOption
+    val chefs = when (displayedSortOption) {
+        "Rating" -> chefsUnsorted.sortedByDescending { it.rating }
+        else -> {
+            // Default "Relevance" order: Ichiraku, Example Three, Verstappen
+            listOf(
+                chefsUnsorted.first { it.name == "Chef Ichiraku" },
+                chefsUnsorted.first { it.name == "Chef Example Three" },
+                chefsUnsorted.first { it.name == "Chef Verstappen" }
+            )
+        }
+    }
     
     Column(
         modifier = modifier
@@ -397,141 +414,21 @@ private fun SearchResultsContent(
             }
         }
         
-        // Action buttons row
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = 12.dp, bottom = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Filter button with active state
-            Surface(
-                modifier = Modifier
-                    .height(24.dp)
-                    .wrapContentWidth(),
-                shape = RoundedCornerShape(16.dp),
-                color = if (isFilterModalOpen || selectedAllergens.isNotEmpty() || selectedCuisine != null) {
-                    colors.dinerPrimary
-                } else {
-                    colors.surface
-                },
-                onClick = { isFilterModalOpen = true },
-                shadowElevation = 0.dp,
-                tonalElevation = 0.dp
-            ) {
-                Row(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(horizontal = 24.dp, vertical = 0.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val filterIconPainter = rememberIconPainter("filter_icon")
-                    Icon(
-                        painter = filterIconPainter,
-                        contentDescription = "Filter",
-                        modifier = Modifier.size(14.dp),
-                        tint = if (isFilterModalOpen || selectedAllergens.isNotEmpty() || selectedCuisine != null) {
-                            colors.textOnPrimary
-                        } else {
-                            colors.textPrimary
-                        }
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "Filter",
-                        style = typography.bodySmall.copy(fontSize = 12.sp),
-                        color = if (isFilterModalOpen || selectedAllergens.isNotEmpty() || selectedCuisine != null) {
-                            colors.textOnPrimary
-                        } else {
-                            colors.textPrimary
-                        }
-                    )
-                }
-            }
-
-            // Sort button with dropdown
-            Box(modifier = Modifier.wrapContentWidth()) {
-                Surface(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .height(24.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = if (selectedSortOption.contains("Price") || selectedSortOption.contains("Rating")) colors.dinerPrimary else colors.surface,
-                    onClick = { isSortMenuOpen = !isSortMenuOpen },
-                    shadowElevation = 0.dp,
-                    tonalElevation = 0.dp
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .padding(horizontal = 24.dp, vertical = 0.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        val sortIconPainter = rememberIconPainter("sort_icon")
-                        Icon(
-                            painter = sortIconPainter,
-                            contentDescription = "Sort",
-                            modifier = Modifier.size(14.dp),
-                            tint = if (selectedSortOption.contains("Price") || selectedSortOption.contains("Rating")) colors.textOnPrimary else colors.textPrimary
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = selectedSortOption,
-                            style = typography.bodySmall.copy(fontSize = 12.sp),
-                            color = if (selectedSortOption.contains("Price") || selectedSortOption.contains("Rating")) colors.textOnPrimary else colors.textPrimary
-                        )
-                    }
-                }
-
-                DropdownMenu(
-                expanded = isSortMenuOpen,
-                onDismissRequest = { isSortMenuOpen = false },
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(colors.surface),
-                shape = RoundedCornerShape(20.dp),
-                shadowElevation = 0.dp,
-                border = BorderStroke(1.dp, colors.outline)
-            ) {
-                    val sortOptions = listOf(
-                        "Relevance",
-                        "Rating (High → Low)",
-                        "Price (Low → High)",
-                        "Price (High → Low)"
-                    )
-                    sortOptions.forEach { option ->
-                        DropdownMenuItem(
-                            text = { Text(option, color = colors.textPrimary) },
-                            onClick = {
-                                selectedSortOption = option
-                                isSortMenuOpen = false
-                            }
-                        )
-                    }
-                }
-            }
-        }
-        
-        // Filter modal
-        if (isFilterModalOpen) {
-            FilterModal(
-                onDismiss = { isFilterModalOpen = false },
-                onConfirm = {
-                    isFilterModalOpen = false
-                    // Filter logic can be added here
-                },
-                selectedAllergens = selectedAllergens,
-                onAllergensSelected = { selectedAllergens = it },
-                onOpenAllergensSelection = { isAllergensSelectionOpen = true },
-                selectedCuisine = selectedCuisine,
-                onCuisineSelected = { selectedCuisine = it },
-                onOpenCuisineSelection = { isCuisineSelectionOpen = true }
-            )
-        }
+        // Sort & Filter modal
+        SortFilterModal(
+            isOpen = isSortFilterModalOpen,
+            onDismiss = { isSortFilterModalOpen = false },
+            selectedSortOption = selectedSortOption,
+            onSortOptionChange = { selectedSortOption = it },
+            selectedDistance = selectedDistance,
+            onDistanceChange = { selectedDistance = it },
+            selectedAllergens = selectedAllergens,
+            onAllergensSelected = { selectedAllergens = it },
+            onOpenAllergensSelection = { isAllergensSelectionOpen = true },
+            selectedCuisine = selectedCuisine,
+            onCuisineSelected = { selectedCuisine = it },
+            onOpenCuisineSelection = { isCuisineSelectionOpen = true }
+        )
         
         // Allergens selection modal
         if (isAllergensSelectionOpen) {
@@ -593,6 +490,23 @@ private fun SearchResultsContent(
                     ) {
                         CircularProgressIndicator(color = colors.dinerPrimary)
                     }
+                }
+                
+                // Floating Action Button for Sort & Filter
+                FloatingActionButton(
+                    onClick = { isSortFilterModalOpen = true },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp),
+                    containerColor = colors.dinerPrimary,
+                    contentColor = colors.textOnPrimary
+                ) {
+                    val filterIconPainter = rememberIconPainter("filter_icon")
+                    Icon(
+                        painter = filterIconPainter,
+                        contentDescription = "Sort and Filter",
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
             }
         }
