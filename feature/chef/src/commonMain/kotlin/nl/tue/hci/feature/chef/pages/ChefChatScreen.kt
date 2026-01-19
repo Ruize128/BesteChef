@@ -38,6 +38,15 @@ import nl.tue.hci.core.ui.components.ImagePreviewOverlay
 import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.model.ChatMessage
 import nl.tue.hci.core.data.GlobalDatabase
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.Animatable
+import androidx.compose.ui.graphics.graphicsLayer
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 @Composable
 fun ChefChatScreen(
@@ -90,6 +99,9 @@ fun ChefChatScreen(
         }
     }
     
+    // Track initial message count to only animate newly added messages
+    val initialMessageCount = remember { messages.size }
+    
     // Track conversation state for auto-replies
     var conversationState by rememberSaveable { mutableStateOf(0) } // 0=initial, 1=after image sent
     var isAutoReplying by remember { mutableStateOf(false) }
@@ -134,7 +146,7 @@ fun ChefChatScreen(
                 bubbleColor = colors.dinerPrimary,
             )
             messages.add(typingMessage)
-            kotlinx.coroutines.delay(2000) // Wait 2 seconds
+            kotlinx.coroutines.delay(1200) // Wait 2 seconds
             // Remove typing indicator message
             messages.removeAt(messages.size - 1)
             
@@ -238,15 +250,52 @@ fun ChefChatScreen(
                     DateSeparator(dateText = "Today • Dec 12, 2025")
                 }
                 
+                var currentIndex = 0
                 items(messages) { message ->
-                    ChatBubble(
-                        message = message,
-                        onBookingOfferClick = onBookingOfferClick,
-                        onImageClick = { imageName ->
-                            previewImageName = imageName
-                            showImagePreview = true
+                    val shouldAnimate = currentIndex >= initialMessageCount
+                    currentIndex++
+                    if (shouldAnimate) {
+                        val alpha = remember { Animatable(0f) }
+                        val offsetX = remember { Animatable(if (message.isFromMe) 120f else -120f) }
+                        val offsetY = remember { Animatable(80f) }
+                        LaunchedEffect(Unit) {
+                            coroutineScope {
+                                launch {
+                                    offsetY.animateTo(0f, tween(200))
+                                    alpha.animateTo(1f, tween(300))}
+                                launch {
+                                    delay(100) // Start horizontal and fade-in animations 80ms after vertical
+
+                                    offsetX.animateTo(0f, tween(200))
+                                }
+                            }
                         }
-                    )
+                        Box(
+                            modifier = Modifier.graphicsLayer(
+                                alpha = alpha.value,
+                                translationX = offsetX.value,
+                                translationY = offsetY.value
+                            )
+                        ) {
+                            ChatBubble(
+                                message = message,
+                                onBookingOfferClick = onBookingOfferClick,
+                                onImageClick = { imageName ->
+                                    previewImageName = imageName
+                                    showImagePreview = true
+                                }
+                            )
+                        }
+                    } else {
+                        ChatBubble(
+                            message = message,
+                            onBookingOfferClick = onBookingOfferClick,
+                            onImageClick = { imageName ->
+                                previewImageName = imageName
+                                showImagePreview = true
+                            }
+                        )
+                    }
                 }
             }
             

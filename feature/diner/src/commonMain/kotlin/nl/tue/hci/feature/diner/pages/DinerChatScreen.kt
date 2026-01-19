@@ -34,8 +34,15 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.core.Animatable
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.statusBarsPadding
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.launch
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
@@ -79,6 +86,9 @@ fun DinerChatScreen(
             // Start with empty messages for demo
         }
     }
+    
+    // Track initial message count to only animate newly added messages
+    val initialMessageCount = remember { messages.size }
     
     // Load conversation state from database
     val savedConversationState = GlobalDatabase.readString("ichiraku_conversation_state")?.toIntOrNull() ?: 0
@@ -152,7 +162,7 @@ fun DinerChatScreen(
                 bubbleColor = colors.chefPrimary,
             )
             messages.add(typingMessage)
-            delay(2000)
+            delay(1200)
             // Remove typing indicator message
             messages.removeAt(messages.size - 1)
             
@@ -347,15 +357,52 @@ fun DinerChatScreen(
                     DateSeparator(dateText = "Today • Dec 12, 2025")
                 }
 
+                var currentIndex = 0
                 items(messages) { message ->
-                    ChatBubble(
-                        message = message,
-                        onBookingOfferClick = { _ -> onBookingOfferClick() },
-                        onImageClick = { imageName ->
-                            previewImageName = imageName
-                            showImagePreview = true
+                    val shouldAnimate = currentIndex >= initialMessageCount
+                    currentIndex++
+                    if (shouldAnimate) {
+                        val alpha = remember { Animatable(0f) }
+                        val offsetX = remember { Animatable(if (message.isFromMe) 120f else -120f) }
+                        val offsetY = remember { Animatable(80f) }
+                        LaunchedEffect(Unit) {
+                            coroutineScope {
+                                launch {
+                                    offsetY.animateTo(0f, tween(200))
+                                    alpha.animateTo(1f, tween(300))
+                                }
+                                launch {
+                                    delay(100) // Start horizontal and fade-in animations 80ms after vertical
+                                    offsetX.animateTo(0f, tween(200))
+                                }
+                            }
                         }
-                    )
+                        Box(
+                            modifier = Modifier.graphicsLayer(
+                                alpha = alpha.value,
+                                translationX = offsetX.value,
+                                translationY = offsetY.value
+                            )
+                        ) {
+                            ChatBubble(
+                                message = message,
+                                onBookingOfferClick = { _ -> onBookingOfferClick() },
+                                onImageClick = { imageName ->
+                                    previewImageName = imageName
+                                    showImagePreview = true
+                                }
+                            )
+                        }
+                    } else {
+                        ChatBubble(
+                            message = message,
+                            onBookingOfferClick = { _ -> onBookingOfferClick() },
+                            onImageClick = { imageName ->
+                                previewImageName = imageName
+                                showImagePreview = true
+                            }
+                        )
+                    }
                 }
             }
 
