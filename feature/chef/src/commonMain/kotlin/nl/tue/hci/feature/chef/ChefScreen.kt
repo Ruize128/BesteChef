@@ -118,6 +118,8 @@ fun ChefScreen(
         var editOrderStatus by rememberSaveable { mutableStateOf<String?>(null) }
         var editOrderSource by rememberSaveable { mutableStateOf<String?>(null) } // Track if edit order came from chat or orders
         var orderDetailsForConfirmed by rememberSaveable(stateSaver = orderDetailsSaver) { mutableStateOf<OrderDetails?>(null) }
+        // Flag to ensure new message notification only shows once per app session
+        var hasShownNewMessageNotification by remember { mutableStateOf(false) }
         var menuItemsForConfirmed by rememberSaveable(stateSaver = offerMenuItemListSaver) { mutableStateOf<List<OfferMenuItem>>(emptyList()) }
         var sentOrderId by rememberSaveable { mutableStateOf<String?>(null) }
         
@@ -237,7 +239,11 @@ fun ChefScreen(
                                 editOrderId = bookingId
                                 editOrderStatus = status
                                 currentDestination = ChefDestinations.ORDERS
-                            }
+                            },
+                            onNotificationShown = {
+                                hasShownNewMessageNotification = true
+                            },
+                            hasShownNotification = hasShownNewMessageNotification
                         )
                         ChefDestinations.CHAT -> ChefChatHistoryScreen(
                             modifier = Modifier.padding(innerPadding),

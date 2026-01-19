@@ -33,18 +33,23 @@ import nl.tue.hci.feature.chef.notification.sendChatNotification
 fun ChefHomeScreen(
     modifier: Modifier = Modifier,
     onChatClick: (String) -> Unit = {}, // customerName
-    onOrderClick: (String, String) -> Unit = { _, _ -> } // bookingId, status
+    onOrderClick: (String, String) -> Unit = { _, _ -> }, // bookingId, status
+    hasShownNotification: Boolean = false,
+    onNotificationShown: () -> Unit = {}
 ) {
     val coroutineScope = rememberCoroutineScope()
     
-    // Send notification when screen appears
+    // Send notification only once per app session when home screen is first shown
     LaunchedEffect(Unit) {
-        kotlinx.coroutines.delay(1000) // Delay 1 second to ensure heads-up appears
-        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
-            sendChatNotification("Sophie", "Question about dessert...") {
-                // Navigate to chat with Sophie when notification is clicked
-                onChatClick("Sophie")
+        if (!hasShownNotification) {
+            kotlinx.coroutines.delay(1000) // Delay 1 second to ensure heads-up appears
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+                sendChatNotification("Sophie", "Question about dessert...") {
+                    // Navigate to chat with Sophie when notification is clicked
+                    onChatClick("Sophie")
+                }
             }
+            onNotificationShown()
         }
     }
     
