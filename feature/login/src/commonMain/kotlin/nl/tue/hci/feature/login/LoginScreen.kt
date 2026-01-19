@@ -20,6 +20,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -74,12 +76,17 @@ fun LoginScreen(
     val coroutineScope = rememberCoroutineScope()
     val loginStateHolder = stateHolder ?: remember { LoginStateHolder(coroutineScope) }
     val uiState by loginStateHolder.uiState.collectAsState()
+    var showProfileSetup by remember { mutableStateOf(false) }
 
     // Handle back button - go back to sign in mode when in register mode
     PlatformBackHandler(
-        enabled = uiState.isSigningUp,
+        enabled = uiState.isSigningUp || showProfileSetup,
         onBack = {
-            loginStateHolder.resetToSignIn()
+            if (showProfileSetup) {
+                showProfileSetup = false
+            } else {
+                loginStateHolder.resetToSignIn()
+            }
         }
     )
 
@@ -96,8 +103,13 @@ fun LoginScreen(
                 loginStateHolder.consumeNavigationEvent()
             }
             is LoginNavigationEvent.NavigateToChefMainPage -> {
-                // Jump to Diner Main Page directly (UI prototype - no validation)
+                // Jump to Chef Main Page directly (UI prototype - no validation)
                 onLogin(event.role)
+                loginStateHolder.consumeNavigationEvent()
+            }
+            is LoginNavigationEvent.NavigateToDinerProfileSetup -> {
+                // Show profile setup screen
+                showProfileSetup = true
                 loginStateHolder.consumeNavigationEvent()
             }
             is LoginNavigationEvent.NavigateWithGoogle -> {
@@ -264,7 +276,13 @@ fun LoginScreen(
         )
 
         Button(
-            onClick = { loginStateHolder.onContinueClick() },
+            onClick = { 
+                if (uiState.isSigningUp) {
+                    loginStateHolder.completeSignUp()
+                } else {
+                    loginStateHolder.onContinueClick()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(40.dp),
@@ -346,6 +364,15 @@ fun LoginScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 32.dp)
+        )
+    }
+    
+    // Show profile setup screen when navigating to it
+    if (showProfileSetup) {
+        DinerProfileSetupScreen(
+            onProfileComplete = {
+                onLogin(UserRole.DINER)
+            }
         )
     }
 }
@@ -603,6 +630,11 @@ fun ConfirmPasswordInput(
     Spacer(modifier = Modifier.height(1.dp))
 
     // Confirm password field
+    val passwordMismatch = uiState.validationAttempted &&
+                          uiState.password.isNotEmpty() && 
+                          uiState.confirmPassword.isNotEmpty() && 
+                          uiState.password != uiState.confirmPassword
+    
     OutlinedTextField(
         value = uiState.confirmPassword,
         onValueChange = { stateHolder.updateConfirmPassword(it) },
@@ -619,13 +651,13 @@ fun ConfirmPasswordInput(
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = colors.surface,
             unfocusedContainerColor = colors.surface,
-            focusedBorderColor = colors.outline,
-            unfocusedBorderColor = colors.outline,
+            focusedBorderColor = if (passwordMismatch) colors.error else colors.outline,
+            unfocusedBorderColor = if (passwordMismatch) colors.error else colors.outline,
             errorBorderColor = colors.error,
         ),
         singleLine = true,
         enabled = !uiState.isLoading,
-        isError = uiState.errorMessage != null,
+        isError = passwordMismatch || uiState.errorMessage != null,
         visualTransformation = if (uiState.confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             IconButton(onClick = { stateHolder.toggleConfirmPasswordVisibility() }) {
@@ -637,6 +669,17 @@ fun ConfirmPasswordInput(
             }
         }
     )
+    
+    // Password mismatch warning
+    if (passwordMismatch) {
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "Passwords do not match",
+            color = colors.error,
+            style = BesteChefThemeTypography.current().labelSmall,
+            modifier = Modifier.padding(start = 16.dp)
+        )
+    }
 }
 
 /**

@@ -17,6 +17,7 @@ data class LoginUiState(
     val navigationEvent: LoginNavigationEvent? = null,
     val isSigningUp: Boolean = false,
     val isSigningIn: Boolean = false,
+    val validationAttempted: Boolean = false,
 )
 
 /**
@@ -29,6 +30,7 @@ sealed class LoginNavigationEvent {
     data class NavigateWithApple(val email: String? = null) : LoginNavigationEvent()
     data class NavigateToDinerMainPage(val role: UserRole) : LoginNavigationEvent()
     data class NavigateToChefMainPage(val role: UserRole) : LoginNavigationEvent()
+    object NavigateToDinerProfileSetup : LoginNavigationEvent()
     
     // Clear the event after it's been handled
     object Consumed : LoginNavigationEvent()

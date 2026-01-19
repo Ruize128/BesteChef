@@ -30,28 +30,28 @@ class LoginStateHolder(
      * Update password value
      */
     fun updatePassword(password: String) {
-        _uiState.update { it.copy(password = password, errorMessage = null) }
+        _uiState.update { it.copy(password = password, errorMessage = null, validationAttempted = false) }
     }
 
     /**
      * Update confirm password value
      */
     fun updateConfirmPassword(confirmPassword: String) {
-        _uiState.update { it.copy(confirmPassword = confirmPassword, errorMessage = null) }
+        _uiState.update { it.copy(confirmPassword = confirmPassword, errorMessage = null, validationAttempted = false) }
     }
 
     /**
      * Toggle password visibility
      */
     fun togglePasswordVisibility() {
-        _uiState.update { it.copy(passwordVisible = !it.passwordVisible) }
+        _uiState.update { it.copy(passwordVisible = !it.passwordVisible, confirmPasswordVisible = !it.confirmPasswordVisible) }
     }
 
     /**
      * Toggle confirm password visibility
      */
     fun toggleConfirmPasswordVisibility() {
-        _uiState.update { it.copy(confirmPasswordVisible = !it.confirmPasswordVisible) }
+        _uiState.update { it.copy(passwordVisible = !it.passwordVisible, confirmPasswordVisible = !it.confirmPasswordVisible) }
     }
 
     /**
@@ -84,7 +84,8 @@ class LoginStateHolder(
                 errorMessage = null,
                 passwordVisible = false,
                 confirmPasswordVisible = false,
-                isLoading = false
+                isLoading = false,
+                validationAttempted = false
             )
         }
     }
@@ -166,6 +167,10 @@ class LoginStateHolder(
      */
     fun onContinueClick() {
         val email = _uiState.value.email.trim()
+        val currentState = _uiState.value
+        
+        // Mark that validation has been attempted
+        _uiState.update { it.copy(validationAttempted = true) }
         
         if (email.isEmpty()) {
             _uiState.update { 
@@ -177,6 +182,14 @@ class LoginStateHolder(
         if (!isValidEmail(email)) {
             _uiState.update { 
                 it.copy(errorMessage = "Please enter a valid email address") 
+            }
+            return
+        }
+        
+        // Check password match when signing up
+        if (currentState.isSigningUp && currentState.password != currentState.confirmPassword) {
+            _uiState.update { 
+                it.copy(errorMessage = "Passwords do not match") 
             }
             return
         }
@@ -253,6 +266,41 @@ class LoginStateHolder(
                         isLoading = false,
                         errorMessage = "An error occurred. Please try again."
                     ) 
+                }
+            }
+        }
+    }
+    
+    /**
+     * Handle sign up completion - navigate based on selected role
+     */
+    fun completeSignUp() {
+        val currentState = _uiState.value
+        
+        // Navigate based on role
+        when (currentState.selectedRole) {
+            UserRole.CHEF -> {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        navigationEvent = LoginNavigationEvent.NavigateToChefMainPage(UserRole.CHEF)
+                    )
+                }
+            }
+            UserRole.DINER -> {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        navigationEvent = LoginNavigationEvent.NavigateToDinerProfileSetup
+                    )
+                }
+            }
+            else -> {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "Please select a role"
+                    )
                 }
             }
         }
