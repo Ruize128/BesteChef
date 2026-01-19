@@ -352,10 +352,10 @@ private fun MenuContent(
                                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            QuantityBadge(
-                                                quantity = qty,
-                                                modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
-                                            )
+//                                            QuantityBadge(
+//                                                quantity = qty,
+//                                                modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
+//                                            )
                                             Text(
                                                 text = it.price,
                                                 style = typography.bodyMedium,
@@ -740,10 +740,10 @@ fun MenuItemCard(
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            QuantityBadge(
-                                quantity = quantity,
-                                modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
-                            )
+//                            QuantityBadge(
+//                                quantity = quantity,
+//                                modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
+//                            )
                             Text(
                                 text = menuItem.price,
                                 style = typography.bodyMedium,
