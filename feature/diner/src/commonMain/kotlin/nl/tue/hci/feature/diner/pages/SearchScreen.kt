@@ -291,54 +291,55 @@ fun SearchScreen(
         }
         
         Spacer(modifier = Modifier.height(16.dp))
-        
-        // Allergens field
-        val allergenShape = RoundedCornerShape(16.dp)
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(allergenShape)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = ripple()
-                ) { isAllergensSelectionOpen = true },
-            shape = allergenShape,
-            color = colors.surface,
-            shadowElevation = 0.dp,
-            tonalElevation = 0.dp
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    if (selectedAllergens.isNotEmpty()) {
-                        Text(
-                            text = selectedAllergens.joinToString(", "),
-                            style = typography.bodyMedium,
-                            color = colors.textPrimary
-                        )
-                    } else {
-                        Text(
-                            text = allergensPlaceholder,
-                            style = typography.bodyMedium,
-                            color = colors.textSecondary.copy(alpha = 0.6f)
-                        )
-                    }
-                }
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = "Dropdown",
-                    tint = colors.textSecondary,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(12.dp))
+
+        // remove it here, since we can not apply "Allergens" on chef search result
+//        // Allergens field
+//        val allergenShape = RoundedCornerShape(16.dp)
+//        Surface(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .clip(allergenShape)
+//                .clickable(
+//                    interactionSource = remember { MutableInteractionSource() },
+//                    indication = ripple()
+//                ) { isAllergensSelectionOpen = true },
+//            shape = allergenShape,
+//            color = colors.surface,
+//            shadowElevation = 0.dp,
+//            tonalElevation = 0.dp
+//        ) {
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(16.dp),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Column(modifier = Modifier.weight(1f)) {
+//                    if (selectedAllergens.isNotEmpty()) {
+//                        Text(
+//                            text = selectedAllergens.joinToString(", "),
+//                            style = typography.bodyMedium,
+//                            color = colors.textPrimary
+//                        )
+//                    } else {
+//                        Text(
+//                            text = allergensPlaceholder,
+//                            style = typography.bodyMedium,
+//                            color = colors.textSecondary.copy(alpha = 0.6f)
+//                        )
+//                    }
+//                }
+//                Icon(
+//                    imageVector = Icons.Default.KeyboardArrowDown,
+//                    contentDescription = "Dropdown",
+//                    tint = colors.textSecondary,
+//                    modifier = Modifier.size(20.dp)
+//                )
+//            }
+//        }
+//
+//        Spacer(modifier = Modifier.height(12.dp))
         
         // Cuisine field
         val cuisineShape = RoundedCornerShape(16.dp)

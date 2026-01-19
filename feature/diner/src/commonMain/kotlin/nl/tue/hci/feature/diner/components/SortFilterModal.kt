@@ -84,63 +84,64 @@ fun SortFilterModal(
                     )
                 }
 
-                // Allergens filter section
-                item {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val allergenShape = RoundedCornerShape(20.dp)
-                        Surface(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(allergenShape)
-                                .clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication = ripple()
-                                ) { onOpenAllergensSelection() },
-                            shape = allergenShape,
-                            color = colors.surface,
-                            shadowElevation = 0.dp,
-                            tonalElevation = 0.dp
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = "Allergens (optional)",
-                                        style = typography.bodyMedium,
-                                        color = colors.textSecondary,
-                                        fontSize = 12.sp
-                                    )
-                                    if (tempAllergens.isNotEmpty()) {
-                                        Text(
-                                            text = tempAllergens.joinToString(", "),
-                                            style = typography.bodyMedium,
-                                            color = colors.textPrimary,
-                                            fontSize = 14.sp
-                                        )
-                                    } else {
-                                        Text(
-                                            text = "Select allergens to avoid...",
-                                            style = typography.bodyMedium,
-                                            color = colors.textSecondary,
-                                            fontSize = 14.sp
-                                        )
-                                    }
-                                }
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowDown,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                    tint = colors.textSecondary
-                                )
-                            }
-                        }
-                    }
-                }
+                // remove it here, since we can not apply "Allergens" on chef search result
+//                // Allergens filter section
+//                item {
+//                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+//                        val allergenShape = RoundedCornerShape(20.dp)
+//                        Surface(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .clip(allergenShape)
+//                                .clickable(
+//                                    interactionSource = remember { MutableInteractionSource() },
+//                                    indication = ripple()
+//                                ) { onOpenAllergensSelection() },
+//                            shape = allergenShape,
+//                            color = colors.surface,
+//                            shadowElevation = 0.dp,
+//                            tonalElevation = 0.dp
+//                        ) {
+//                            Row(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .padding(16.dp),
+//                                horizontalArrangement = Arrangement.SpaceBetween,
+//                                verticalAlignment = Alignment.CenterVertically
+//                            ) {
+//                                Column(modifier = Modifier.weight(1f)) {
+//                                    Text(
+//                                        text = "Allergens (optional)",
+//                                        style = typography.bodyMedium,
+//                                        color = colors.textSecondary,
+//                                        fontSize = 12.sp
+//                                    )
+//                                    if (tempAllergens.isNotEmpty()) {
+//                                        Text(
+//                                            text = tempAllergens.joinToString(", "),
+//                                            style = typography.bodyMedium,
+//                                            color = colors.textPrimary,
+//                                            fontSize = 14.sp
+//                                        )
+//                                    } else {
+//                                        Text(
+//                                            text = "Select allergens to avoid...",
+//                                            style = typography.bodyMedium,
+//                                            color = colors.textSecondary,
+//                                            fontSize = 14.sp
+//                                        )
+//                                    }
+//                                }
+//                                Icon(
+//                                    imageVector = Icons.Default.KeyboardArrowDown,
+//                                    contentDescription = null,
+//                                    modifier = Modifier.size(20.dp),
+//                                    tint = colors.textSecondary
+//                                )
+//                            }
+//                        }
+//                    }
+//                }
 
                 // Cuisine filter section
                 item {
