@@ -547,8 +547,18 @@ private fun MenuContent(
                             onClick = {
                                 showBookConfirmDialog = false
                                 showCartSheet = false
-                                // Write to database when booking
+                                // Write order status and items to database
                                 GlobalDatabase.writeString("ichiraku_order_status", "PENDING")
+                                
+                                // Encode and save menu items with quantities
+                                val itemsData = menuItems.mapNotNull { item ->
+                                    val qty = cartItems[item.title] ?: 0
+                                    if (qty > 0) {
+                                        "${item.title}|${item.description}|${item.price}|${item.serves}|$qty"
+                                    } else null
+                                }.joinToString("||")
+                                GlobalDatabase.writeString("diner_order_menu_items", itemsData)
+                                
                                 onBookClick()
                             },
                             modifier = Modifier

@@ -60,7 +60,7 @@ fun BookingSummaryScreen(
     var showCancelDialog by rememberSaveable { mutableStateOf(false) }
     var showPaymentConfirmDialog by rememberSaveable { mutableStateOf(false) }
     
-    // Determine order status based on order object or fallback to orderId mapping
+    // Determine order status based on order object or fallback to database
     val orderStatus = if (order != null) {
         when (order.status) {
             DinerOrderStatus.PENDING -> "PENDING"
@@ -70,12 +70,8 @@ fun BookingSummaryScreen(
             DinerOrderStatus.CANCELLED -> "CANCELLED"
         }
     } else {
-        // Fallback for when order is not provided
-        when (orderId) {
-            // Offer coming from chat should show as pending by default
-            "ichiraku_offer" -> "PENDING"
-            else -> "ON_GOING"
-        }
+        // Read status from database if order is not provided
+        GlobalDatabase.readString("ichiraku_order_status") ?: "PENDING"
     }
     
     // Handle processing delay
@@ -113,40 +109,69 @@ fun BookingSummaryScreen(
     }
     
     val menuItems = remember(colors) {
-        listOf(
-            BookingSummaryMenuItem(
-                id = "1",
-                title = "Grilled Mackerel with Miso",
-                description = "Serves 2-3 • Contains: Fish",
-                price = "€45",
-                imageColor = colors.imagePlaceholder1, // Light green
-                quantity = 2
-            ),
-            BookingSummaryMenuItem(
-                id = "2",
-                title = "Yuzu Mousse",
-                description = "Serves 6 • Can be nut-free",
-                price = "€12",
-                imageColor = colors.imagePlaceholder2, // Light orange
-                quantity = 1
-            ),
-            BookingSummaryMenuItem(
-                id = "3",
-                title = "Wagyu Beef Steak",
-                description = "Serves 2 • Premium cut with truffle butter",
-                price = "€24",
-                imageColor = colors.imagePlaceholder4, // Light beige
-                quantity = 2
-            ),
-            BookingSummaryMenuItem(
-                id = "4",
-                title = "Sushi Platter",
-                description = "Serves 4-5 • Assorted fresh nigiri and maki",
-                price = "€40",
-                imageColor = colors.imagePlaceholder1, // Light green
-                quantity = 1
+        // Read menu items from database
+        val stored = GlobalDatabase.readString("diner_order_menu_items")
+        if (stored.isNullOrBlank()) {
+            // Default fallback items if nothing in database
+            listOf(
+                BookingSummaryMenuItem(
+                    id = "1",
+                    title = "Grilled Mackerel with Miso",
+                    description = "Serves 2-3 • Contains: Fish",
+                    price = "€45",
+                    imageColor = colors.imagePlaceholder1,
+                    quantity = 2
+                ),
+                BookingSummaryMenuItem(
+                    id = "2",
+                    title = "Yuzu Mousse",
+                    description = "Serves 6 • Can be nut-free",
+                    price = "€12",
+                    imageColor = colors.imagePlaceholder2,
+                    quantity = 1
+                ),
+                BookingSummaryMenuItem(
+                    id = "3",
+                    title = "Wagyu Beef Steak",
+                    description = "Serves 2 • Premium cut with truffle butter",
+                    price = "€24",
+                    imageColor = colors.imagePlaceholder4,
+                    quantity = 2
+                ),
+                BookingSummaryMenuItem(
+                    id = "4",
+                    title = "Sushi Platter",
+                    description = "Serves 4-5 • Assorted fresh nigiri and maki",
+                    price = "€40",
+                    imageColor = colors.imagePlaceholder1,
+                    quantity = 1
+                )
             )
-        )
+        } else {
+            // Decode items from database
+            stored.split("||").mapIndexed { index, encoded ->
+                val parts = encoded.split("|")
+                if (parts.size >= 5) {
+                    val colorIndex = index % 4
+                    val itemColor = when (colorIndex) {
+                        0 -> colors.imagePlaceholder1
+                        1 -> colors.imagePlaceholder2
+                        2 -> colors.imagePlaceholder4
+                        else -> colors.imagePlaceholder1
+                    }
+                    BookingSummaryMenuItem(
+                        id = (index + 1).toString(),
+                        title = parts[0],
+                        description = "Serves ${parts[3]} • ${parts[1]}",
+                        price = parts[2],
+                        imageColor = itemColor,
+                        quantity = parts[4].toIntOrNull() ?: 1
+                    )
+                } else {
+                    null
+                }
+            }.filterNotNull()
+        }
     }
     
     val priceSummary = remember(orderStatus, menuItems) {
@@ -252,31 +277,32 @@ fun BookingSummaryScreen(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Overview card
-            item {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    color = colors.surface, // Light grey
-                    shadowElevation = 0.dp,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 12.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "${bookingDetails.location} • ${bookingDetails.date} • ${bookingDetails.guests} guests",
-                            style = typography.bodyMedium,
-                            color = colors.textSecondary,
-                            textAlign = TextAlign.Start,
-                        )
-                    }
-                }
-            }
+            // redundant infomation
+//            // Overview card
+//            item {
+//                Surface(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(40.dp),
+//                    shape = RoundedCornerShape(20.dp),
+//                    color = colors.surface, // Light grey
+//                    shadowElevation = 0.dp,
+//                ) {
+//                    Box(
+//                        modifier = Modifier
+//                            .fillMaxSize()
+//                            .padding(horizontal = 12.dp),
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Text(
+//                            text = "${bookingDetails.location} • ${bookingDetails.date} • ${bookingDetails.guests} guests",
+//                            style = typography.bodyMedium,
+//                            color = colors.textSecondary,
+//                            textAlign = TextAlign.Start,
+//                        )
+//                    }
+//                }
+//            }
             
             // Date & Time and Guests section (combined in one card)
             item {
