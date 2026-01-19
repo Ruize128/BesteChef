@@ -82,7 +82,7 @@ fun EditOrderScreen(
                 description = "Sea salt, spring onion, yuzu dressing.",
                 price = "€45",
                 imageColor = colors.imagePlaceholder1, // Light green
-                quantity = 1
+                quantity = 2
             ),
             OfferMenuItem(
                 id = "2",
@@ -98,7 +98,7 @@ fun EditOrderScreen(
                 description = "Premium wagyu with truffle butter.",
                 price = "€24",
                 imageColor = colors.imagePlaceholder4,
-                quantity = 1
+                quantity = 2
             ),
             OfferMenuItem(
                 id = "4",

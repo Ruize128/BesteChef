@@ -589,10 +589,10 @@ fun saveChatMessagesToDatabase(messages: List<ChatMessage>) {
 
 /**
  * Calculate order price and item count from database.
- * Includes €15 service fee. Returns default values (€136, 4 items) if no items in database.
+ * Includes €15 service fee. Returns default values (€205, 4 items) if no items in database.
  */
 private fun calculateOrderPriceAndCount(): Pair<String, Int> {
-    val stored = GlobalDatabase.readString("chef_order_menu_items") ?: return Pair("€136", 4)
+    val stored = GlobalDatabase.readString("chef_order_menu_items") ?: return Pair("€205", 4)
     if (stored.isBlank()) return Pair("€136", 4)
     
     val items = stored.split("||").mapNotNull { encoded ->
