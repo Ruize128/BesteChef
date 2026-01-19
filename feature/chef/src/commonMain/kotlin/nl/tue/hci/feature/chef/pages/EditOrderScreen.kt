@@ -59,6 +59,7 @@ fun EditOrderScreen(
     val typography = BesteChefThemeTypography.current()
     
     var showCancelDialog by rememberSaveable { mutableStateOf(false) }
+    var showSendOfferDialog by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     
@@ -338,7 +339,7 @@ fun EditOrderScreen(
         if (isEditable) {
             Button(
                 onClick = {
-                    onSendOfferClick(orderDetails, menuItems.toList())
+                    showSendOfferDialog = true
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -443,6 +444,77 @@ fun EditOrderScreen(
                     }
                 }
             }
+        )
+    }
+    
+    // Send Offer confirmation dialog
+    if (showSendOfferDialog) {
+        AlertDialog(
+            onDismissRequest = { showSendOfferDialog = false },
+            title = {
+                Text(
+                    text = "Send order?",
+                    style = typography.sectionTitle,
+                    color = colors.textPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = "Please ensure that you have carefully checked the order before sending it",
+                    style = typography.bodyMedium,
+                    color = colors.textSecondary
+                )
+            },
+            confirmButton = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Button(
+                        onClick = { showSendOfferDialog = false },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.surfaceVariant,
+                            contentColor = colors.textPrimary
+                        ),
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+                        Text(
+                            text = "Keep editing",
+                            style = typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                    
+                    Button(
+                        onClick = {
+                            showSendOfferDialog = false
+                            onSendOfferClick(orderDetails, menuItems.toList())
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.chefPrimary,
+                            contentColor = colors.textPrimary
+                        ),
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+                        Text(
+                            text = "Send \norder",
+                            style = typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                }
+            },
+            containerColor = colors.surface,
+            titleContentColor = colors.textPrimary,
+            textContentColor = colors.textSecondary
         )
     }
 }
