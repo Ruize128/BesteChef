@@ -163,6 +163,42 @@ private fun MenuContent(
     var showBookConfirmDialog by rememberSaveable { mutableStateOf(false) }
     var cartItems by remember { mutableStateOf(menuItems.associate { it.title to it.defaultNumber }.toMutableMap()) }
 
+    // Load cart from database on open
+    LaunchedEffect(Unit) {
+        val storedCart = GlobalDatabase.readString("diner_order_menu_items")
+        if (!storedCart.isNullOrBlank()) {
+            val loadedCart = mutableMapOf<String, Int>()
+            storedCart.split("||").forEach { itemStr ->
+                val parts = itemStr.split("|")
+                if (parts.size >= 5) {
+                    val title = parts[0]
+                    val qty = parts[4].toIntOrNull() ?: 0
+                    if (qty > 0) {
+                        loadedCart[title] = qty
+                    }
+                }
+            }
+            if (loadedCart.isNotEmpty()) {
+                cartItems = loadedCart
+            }
+        }
+
+        // Auto-open cart if flag is set
+        if (GlobalDatabase.readString("diner_open_cart") == "true") {
+            showCartSheet = true
+            GlobalDatabase.writeString("diner_open_cart", "false")
+        }
+    }
+
+    // Save cart to database whenever it changes
+    LaunchedEffect(cartItems) {
+        val itemsData = cartItems.entries.filter { it.value > 0 }.joinToString("||") { (title, qty) ->
+            val item = menuItems.find { it.title == title }
+            "$title|${item?.description ?: ""}|${item?.price ?: ""}|${item?.serves ?: ""}|$qty"
+        }
+        GlobalDatabase.writeString("diner_order_menu_items", itemsData)
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()

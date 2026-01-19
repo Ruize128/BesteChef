@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -55,7 +57,9 @@ fun DinerChatScreen(
     chefName: String,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onBookingOfferClick: () -> Unit = {}
+    onBookingOfferClick: () -> Unit = {},
+    onViewCartClick: () -> Unit = {},
+    onViewOrderClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
@@ -215,6 +219,27 @@ fun DinerChatScreen(
                 // Create a new order in the database when booking offer is sent
                 GlobalDatabase.writeString("ichiraku_order_status", "PENDING")
                 
+                // Replace "Honey Nut & Caramel" with "Yuzu mousse" in cart
+                val storedCart = GlobalDatabase.readString("diner_order_menu_items")
+                if (!storedCart.isNullOrBlank()) {
+                    val updatedCart = storedCart.split("||").joinToString("||") { itemStr ->
+                        val parts = itemStr.split("|")
+                        if (parts.isNotEmpty() && parts[0] == "Honey Nut & Caramel") {
+                            // Replace title with "Yuzu mousse"
+                            val updatedParts = parts.toMutableList()
+                            updatedParts[0] = "Yuzu mousse"
+                            // Update description if needed
+                            if (updatedParts.size > 1) {
+                                updatedParts[1] = "Light, citrusy yuzu mousse (sugar-free)"
+                            }
+                            updatedParts.joinToString("|")
+                        } else {
+                            itemStr
+                        }
+                    }
+                    GlobalDatabase.writeString("diner_order_menu_items", updatedCart)
+                }
+                
                 // Update state after second auto-reply
                 conversationState = 2
             }
@@ -283,30 +308,119 @@ fun DinerChatScreen(
                 Spacer(modifier = Modifier.size(40.dp))
             }
         }
-        
-        // Chat messages
-        LazyColumn(
-            state = listState,
+
+        Box(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // Date separator
-            item {
-                DateSeparator(dateText = "Today • Dec 12, 2025")
+                .fillMaxWidth()
+        ){// Chat messages
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+//                    .weight(1f)
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 88.dp,
+                    bottom = 16.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Date separator
+                item {
+                    DateSeparator(dateText = "Today • Dec 12, 2025")
+                }
+
+                items(messages) { message ->
+                    ChatBubble(
+                        message = message,
+                        onBookingOfferClick = { _ -> onBookingOfferClick() },
+                        onImageClick = { imageName ->
+                            previewImageName = imageName
+                            showImagePreview = true
+                        }
+                    )
+                }
             }
+
+            // Floating Cart bar (on top)
+            val (orderPrice, _) = calculateDinerCartPriceAndCount()
+            // Check if a booking offer has been sent
+            val hasBookingOffer = messages.any { it.bookingOffer != null }
             
-            items(messages) { message ->
-                ChatBubble(
-                    message = message,
-                    onBookingOfferClick = { _ -> onBookingOfferClick() },
-                    onImageClick = { imageName ->
-                        previewImageName = imageName
-                        showImagePreview = true
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp)
+                    .align(Alignment.TopCenter),
+                color = colors.surface,
+                shape = RoundedCornerShape(20.dp),
+                shadowElevation = 3.dp,
+                tonalElevation = 0.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Image
+                    Image(
+                        painter = rememberImagePainter("omakase_5_course"),
+                        contentDescription = "Selected Menu",
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    // Name and price
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "5-course Omakase",
+                            style = typography.cardTitle,
+                            color = colors.textPrimary
+                        )
+                        Text(
+                            text = orderPrice,
+                            style = typography.bodyMedium,
+                            color = colors.textSecondary
+                        )
                     }
-                )
+
+                    // View Cart/Order button - changes based on whether booking offer was sent
+                    Button(
+                        onClick = { 
+                            if (hasBookingOffer) {
+                                onViewOrderClick()
+                            } else {
+                                onViewCartClick()
+                            }
+                        },
+                        modifier = Modifier
+                            .height(32.dp)
+                            .widthIn(min = 60.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.dinerPrimary,
+                            contentColor = colors.textOnPrimary
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 0.dp
+                        )
+                    ) {
+                        Text(
+                            text = if (hasBookingOffer) "View Order" else "View Cart",
+                            style = typography.buttonText,
+                        )
+                    }
+                }
             }
         }
         
@@ -539,6 +653,30 @@ private fun loadChatMessagesFromDatabase(
             else -> null
         }
     }
+}
+
+/**
+ * Calculate cart price and item count from diner database.
+ * Includes €15 service fee. Returns defaults if none.
+ */
+fun calculateDinerCartPriceAndCount(): Pair<String, Int> {
+    val stored = GlobalDatabase.readString("diner_order_menu_items") ?: return Pair("€205", 4)
+    if (stored.isBlank()) return Pair("€136", 4)
+
+    val items = stored.split("||").mapNotNull { encoded ->
+        val parts = encoded.split("|")
+        if (parts.size < 5) return@mapNotNull null
+        val price = parts[2].removePrefix("€").toDoubleOrNull() ?: 0.0
+        val quantity = parts[4].toIntOrNull() ?: 1
+        price to quantity
+    }
+
+    val subtotal = items.sumOf { it.first * it.second }
+    val serviceFee = 15.0
+    val totalPrice = subtotal + serviceFee
+    val totalItems = items.sumOf { it.second }
+
+    return Pair("€${totalPrice.toInt()}", totalItems)
 }
 
 

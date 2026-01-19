@@ -248,6 +248,19 @@ fun DinerScreen(
                     showChatScreen = false
                     selectedOrderId = "ichiraku_offer"
                     currentDestination = DinerDestinations.ORDERS
+                },
+                onViewCartClick = {
+                    // Navigate to menu and open cart
+                    GlobalDatabase.writeString("diner_open_cart", "true")
+                    showChatScreen = false
+                    homeScreenState = HomeScreenState.MENU
+                    currentDestination = DinerDestinations.HOME
+                },
+                onViewOrderClick = {
+                    // Navigate to order page
+                    showChatScreen = false
+                    selectedOrderId = "ichiraku_offer"
+                    currentDestination = DinerDestinations.ORDERS
                 }
             )
         } else {
