@@ -12,11 +12,15 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Star
 // Outline star not available on all targets; use filled stars with tints
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +34,8 @@ import nl.tue.hci.core.ui.getChefCarouselImageNames
 import nl.tue.hci.core.ui.rememberImagePainter
 import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 
 
 @Composable
@@ -343,6 +349,7 @@ private fun ReviewsCarousel(
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
+    var expandedReview by remember { mutableStateOf<Review?>(null) }
 
     val reviews = listOf(
         Review(
@@ -383,8 +390,9 @@ private fun ReviewsCarousel(
             items(reviews) { review ->
                 Surface(
                     modifier = Modifier
-                        .width(280.dp)
-                        .clip(RoundedCornerShape(16.dp)),
+                        .width(240.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable { expandedReview = review },
                     color = colors.surface,
                     shadowElevation = 2.dp,
                     tonalElevation = 0.dp
@@ -413,10 +421,79 @@ private fun ReviewsCarousel(
                         Text(
                             text = review.text,
                             style = typography.bodySmall,
-                            color = colors.textPrimary,
-                            maxLines = 4,
+                            color = colors.textSecondary,
+                            maxLines = 3,
                             overflow = TextOverflow.Ellipsis
                         )
+                    }
+                }
+            }
+        }
+
+        expandedReview?.let { review ->
+            Dialog(onDismissRequest = { expandedReview = null }) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 24.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    color = colors.surface,
+                    tonalElevation = 4.dp,
+                    shadowElevation = 8.dp
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                    ) {
+                        IconButton(
+                            onClick = { expandedReview = null },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(4.dp)
+                        ) {
+//                            Icon(
+//                                imageVector = Icons.Filled.Close,
+//                                contentDescription = "Close review",
+//                                tint = colors.textSecondary
+//                            )
+                            Text(
+                                text = "x",
+                                fontSize = 20.sp,
+                                color = colors.textSecondary,
+                            )
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = review.author,
+                                    style = typography.cardTitle,
+                                    color = colors.textPrimary
+                                )
+                                RatingStars(rating = review.rating)
+                                Text(
+                                    text = review.date,
+                                    style = typography.labelSmall,
+                                    color = colors.textSecondary
+                                )
+                            }
+                            Text(
+                                text = review.text,
+                                style = typography.bodyMedium,
+                                color = colors.textPrimary
+                            )
+                        }
                     }
                 }
             }
