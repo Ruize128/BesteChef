@@ -58,6 +58,7 @@ fun BookingSummaryScreen(
     
     var isProcessing by rememberSaveable { mutableStateOf(false) }
     var showCancelDialog by rememberSaveable { mutableStateOf(false) }
+    var showPaymentConfirmDialog by rememberSaveable { mutableStateOf(false) }
     
     // Determine order status based on order object or fallback to orderId mapping
     val orderStatus = if (order != null) {
@@ -148,8 +149,12 @@ fun BookingSummaryScreen(
         )
     }
     
-    val priceSummary = remember(orderStatus) {
-        val subtotal = 257.0 // Sum of menu item prices
+    val priceSummary = remember(orderStatus, menuItems) {
+        // Calculate subtotal from menu items
+        val subtotal = menuItems.sumOf { item ->
+            val priceStr = item.price.replace("€", "").replace(",", ".")
+            (priceStr.toDoubleOrNull() ?: 0.0) * item.quantity
+        }
         val serviceFee = 15.0
         val total = subtotal + serviceFee
         
@@ -316,7 +321,13 @@ fun BookingSummaryScreen(
         // Payment button - different text based on status
         if (orderStatus == "PENDING" || orderStatus == "ON_GOING") {
             Button(
-                onClick = { isProcessing = true },
+                onClick = {
+                    if (orderStatus == "ON_GOING") {
+                        showPaymentConfirmDialog = true
+                    } else {
+                        isProcessing = true
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
@@ -436,6 +447,77 @@ fun BookingSummaryScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 textAlign = TextAlign.Center
                             )
+                    }
+                }
+            },
+            containerColor = colors.surface,
+            titleContentColor = colors.textPrimary,
+            textContentColor = colors.textSecondary
+        )
+    }
+    
+    // Payment confirmation dialog for remaining balance
+    if (showPaymentConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showPaymentConfirmDialog = false },
+            title = {
+                Text(
+                    text = "Pay remaining balance?",
+                    style = typography.sectionTitle,
+                    color = colors.textPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = "Please make sure the service has finished before proceeding with the payment.",
+                    style = typography.bodyMedium,
+                    color = colors.textSecondary
+                )
+            },
+            confirmButton = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Button(
+                        onClick = { showPaymentConfirmDialog = false },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.surfaceVariant,
+                            contentColor = colors.textPrimary
+                        ),
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+                        Text(
+                            text = "Not\nyet",
+                            style = typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    
+                    Button(
+                        onClick = {
+                            showPaymentConfirmDialog = false
+                            isProcessing = true
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.dinerPrimary,
+                            contentColor = colors.textPrimary
+                        ),
+                        shape = RoundedCornerShape(20.dp)
+                    ) {
+                        Text(
+                            text = "Confirm payment",
+                            style = typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             },
