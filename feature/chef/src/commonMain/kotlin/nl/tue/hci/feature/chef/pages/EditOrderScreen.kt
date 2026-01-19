@@ -221,9 +221,9 @@ fun EditOrderScreen(
                 }
                 
                 Spacer(modifier = Modifier.width(8.dp))
-                
+
                 Text(
-                    text = "Compose Offer",
+                    text = if (orderStatus == OrderStatus.DRAFT) "Edit Booking" else "Booking Summary",
                     style = typography.sectionTitle,
                     color = colors.textPrimary,
                     modifier = Modifier.weight(1f)
@@ -332,7 +332,7 @@ fun EditOrderScreen(
             }
         }
         
-        // Send Offer button (only show for DRAFT status)
+        // Send Booking button (only show for DRAFT status)
         if (isEditable) {
             Button(
                 onClick = {
@@ -357,7 +357,7 @@ fun EditOrderScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Send Offer",
+                        text = "Send Proposal",
                         style = typography.cardTitle,
                         color = colors.textPrimary,
                     )
@@ -377,7 +377,7 @@ fun EditOrderScreen(
             onDismissRequest = { showCancelDialog = false },
             title = {
                 Text(
-                    text = "Cancel booking?",
+                    text = "Cancel Booking?",
                     style = typography.sectionTitle,
                     color = colors.textPrimary
                 )
@@ -406,7 +406,7 @@ fun EditOrderScreen(
                         shape = RoundedCornerShape(20.dp)
                     ) {
                         Text(
-                            text = "Keep booking",
+                            text = "Keep editing",
                             style = typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.fillMaxWidth(),
@@ -444,20 +444,20 @@ fun EditOrderScreen(
         )
     }
     
-    // Send Offer confirmation dialog
+    // Send Booking confirmation dialog
     if (showSendOfferDialog) {
         AlertDialog(
             onDismissRequest = { showSendOfferDialog = false },
             title = {
                 Text(
-                    text = "Send order?",
+                    text = "Send Proposal?",
                     style = typography.sectionTitle,
                     color = colors.textPrimary
                 )
             },
             text = {
                 Text(
-                    text = "Please ensure that you have carefully checked the order before sending it",
+                    text = "Please ensure that you have carefully checked the booking before sending it",
                     style = typography.bodyMedium,
                     color = colors.textSecondary
                 )
@@ -500,7 +500,7 @@ fun EditOrderScreen(
                         shape = RoundedCornerShape(20.dp)
                     ) {
                         Text(
-                            text = "Send \norder",
+                            text = "Send \nproposal",
                             style = typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.fillMaxWidth(),

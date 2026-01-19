@@ -344,7 +344,7 @@ fun ChefChatScreen(
                         )
                     }
                     
-                    // Edit Offer / View Order button
+                    // Edit Booking / View Booking button
                     Button(
                         onClick = { onEditOrderClick("1") },
                         modifier = Modifier
@@ -361,7 +361,7 @@ fun ChefChatScreen(
                         )
                     ) {
                         Text(
-                            text = if (isSent) "View Order" else "Edit Offer",
+                            text = if (isSent) "View Booking" else "Edit Booking",
                             style = typography.buttonText,
                         )
                     }

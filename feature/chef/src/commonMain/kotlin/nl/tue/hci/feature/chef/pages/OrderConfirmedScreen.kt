@@ -94,7 +94,7 @@ fun OrderConfirmedScreen(
                 
                 // Confirmation text
                 Text(
-                    text = "Booking confirmed",
+                    text = "Booking Proposal Sent",
                     style = typography.sectionTitle,
                     color = colors.textPrimary
                 )
@@ -136,15 +136,15 @@ fun OrderConfirmedScreen(
                             color = colors.textSecondary
                         )
                         
-                        // Deposit received badge
-                        StatusBadge(
-                            text = "Deposit received",
-                            backgroundColor = colors.statusConfirmedBackground, // Light green
-                            textColor = colors.statusConfirmedText // Dark green
-                        )
+//                        // Deposit received badge
+//                        StatusBadge(
+//                            text = "Deposit received",
+//                            backgroundColor = colors.statusConfirmedBackground, // Light green
+//                            textColor = colors.statusConfirmedText // Dark green
+//                        )
                         
                         Text(
-                            text = "Venue: ${orderDetails.address}",
+                            text = "Service address: ${orderDetails.address}",
                             style = typography.bodySmall,
                             color = colors.textSecondary
                         )

@@ -478,7 +478,7 @@ fun DinerChatScreen(
                         )
                     ) {
                         Text(
-                            text = if (hasBookingOffer) "View Order" else "View Cart",
+                            text = if (hasBookingOffer) "View Booking" else "View Cart",
                             style = typography.buttonText,
                         )
                     }

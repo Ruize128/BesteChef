@@ -152,7 +152,7 @@ fun LoginScreen(
         )
         
         Text(
-            text = "Match your ... (TODO)",
+            text = "Great meals, right at home.",
             style = typography.bodyLarge,
                 modifier = Modifier.padding(bottom = 32.dp),
                 color = colors.textPrimary,
