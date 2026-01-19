@@ -64,8 +64,8 @@ fun BookingSummaryScreen(
     val orderStatus = if (order != null) {
         when (order.status) {
             DinerOrderStatus.PENDING -> "PENDING"
-            DinerOrderStatus.CONFIRMED -> "ON_GOING"
-            DinerOrderStatus.IN_PROGRESS -> "ON_GOING"
+            DinerOrderStatus.CONFIRMED -> "ONGOING"
+            DinerOrderStatus.IN_PROGRESS -> "ONGOING"
             DinerOrderStatus.COMPLETED -> "COMPLETED"
             DinerOrderStatus.CANCELLED -> "CANCELLED"
         }
@@ -86,7 +86,7 @@ fun BookingSummaryScreen(
                     GlobalDatabase.writeString("ichiraku_order_status", "ONGOING")
                     onBookAndPayClick()
                 }
-                "ON_GOING" -> {
+                "ONGOING" -> {
                     // Pay remaining clicked - change from ONGOING to COMPLETED
                     GlobalDatabase.writeString("ichiraku_order_status", "COMPLETED")
                     onPayRemainingClick?.invoke()
@@ -365,10 +365,10 @@ fun BookingSummaryScreen(
         }
         
         // Payment button - different text based on status
-        if (orderStatus == "PENDING" || orderStatus == "ON_GOING") {
+        if (orderStatus == "PENDING" || orderStatus == "ONGOING") {
             Button(
                 onClick = {
-                    if (orderStatus == "ON_GOING") {
+                    if (orderStatus == "ONGOING") {
                         showPaymentConfirmDialog = true
                     } else {
                         isProcessing = true
@@ -403,7 +403,7 @@ fun BookingSummaryScreen(
                 } else {
                     val buttonText = when (orderStatus) {
                         "PENDING" -> "Book & Pay ${priceSummary.depositAmount} deposit (${priceSummary.depositPercentage}%)"
-                        "ON_GOING" -> "Pay remaining balance ${priceSummary.depositAmount}"
+                        "ONGOING" -> "Pay remaining balance ${priceSummary.depositAmount}"
                         else -> "Book & Pay ${priceSummary.depositAmount}"
                     }
                     Text(

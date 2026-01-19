@@ -219,6 +219,8 @@ fun DinerScreen(
                     // Clear selected order and navigate to Orders list
                     selectedOrderId = ""
                     currentDestination = DinerDestinations.ORDERS
+                    // Ensure orders reflect latest status even if destination didn't change
+                    orders = loadOrders()
                 }
             )
         } else if (showChatScreen) {
