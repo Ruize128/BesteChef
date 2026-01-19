@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import kotlinx.coroutines.launch
 import nl.tue.hci.core.ui.BesteChefTheme
 import nl.tue.hci.core.data.createUserSessionRepository
+import nl.tue.hci.core.data.GlobalDatabase
 import nl.tue.hci.core.model.UserRole
 import nl.tue.hci.feature.chef.ChefScreen
 import nl.tue.hci.feature.diner.pages.DinerScreen
@@ -49,6 +51,15 @@ fun BesteChefApp(
                     )
                 }
                 UserRole.CHEF -> {
+                    // Initialize unread message count on first chef login
+                    LaunchedEffect(Unit) {
+                        val existingCount = GlobalDatabase.readString("chef_unread_count")
+                        if (existingCount == null) {
+                            // First time opening chef side, set 1 unread message from Sophie
+                            GlobalDatabase.writeString("chef_unread_count", "1")
+                        }
+                    }
+                    
                     ChefScreen(
                         initialNavigateToOrders = initialNavigateToOrders,
                         initialNavigateToChat = initialNavigateToChat,

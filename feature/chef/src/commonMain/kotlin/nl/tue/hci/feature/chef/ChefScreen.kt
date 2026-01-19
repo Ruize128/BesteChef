@@ -14,8 +14,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.Saver
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 // Preview removed for multiplatform
 import nl.tue.hci.feature.chef.pages.ChefChatHistoryScreen
 import nl.tue.hci.core.ui.BesteChefTheme
@@ -36,7 +38,7 @@ enum class ChefDestinations(
     val iconName: String,
 ) {
     HOME("Home", Icons.Default.Home, "home"),
-    CHAT("Chat", Icons.Default.Email, "comments_light"),
+    CHAT("Chat", Icons.Default.Email, "comments"),
     ORDERS("Booking", Icons.Default.Favorite, "booking"),
     PROFILE("Profile", Icons.Default.AccountBox, "profile"),
 }
@@ -124,6 +126,11 @@ fun ChefScreen(
         var menuItemsForConfirmed by rememberSaveable(stateSaver = offerMenuItemListSaver) { mutableStateOf<List<OfferMenuItem>>(emptyList()) }
         var sentOrderId by rememberSaveable { mutableStateOf<String?>(null) }
         
+        // Track unread message count from database
+        var unreadMessageCount by remember { 
+            mutableStateOf(GlobalDatabase.readString("chef_unread_count")?.toIntOrNull() ?: 1) 
+        }
+        
         val exitApp = rememberAppExitHandler()
 
         // Handle back button
@@ -208,11 +215,25 @@ fun ChefScreen(
                             ChefDestinations.entries.forEach { destination ->
                                 NavigationBarItem(
                                     icon = {
-                                        val painter = rememberImagePainter(destination.iconName)
-                                        Icon(
-                                            painter = painter,
-                                            contentDescription = destination.label
-                                        )
+                                        Box {
+                                            val painter = rememberImagePainter(destination.iconName)
+                                            Icon(
+                                                painter = painter,
+                                                contentDescription = destination.label
+                                            )
+                                            // Show badge on Chat icon when there are unread messages
+                                            if (destination == ChefDestinations.CHAT && unreadMessageCount > 0) {
+                                                Badge(
+                                                    modifier = Modifier
+                                                        .align(Alignment.TopEnd)
+                                                        .offset(x = 8.dp, y = (-4).dp),
+                                                    containerColor = colors.alert,
+                                                    contentColor = colors.textOnPrimary
+                                                ) {
+                                                    Text(text = unreadMessageCount.toString())
+                                                }
+                                            }
+                                        }
                                     },
                                     label = { Text(destination.label) },
                                     selected = destination == currentDestination,
@@ -245,13 +266,19 @@ fun ChefScreen(
                             onNotificationShown = {
                                 hasShownNewMessageNotification = true
                             },
-                            hasShownNotification = hasShownNewMessageNotification
+                            hasShownNotification = hasShownNewMessageNotification,
+                            unreadMessageCount = unreadMessageCount
                         )
                         ChefDestinations.CHAT -> ChefChatHistoryScreen(
                             modifier = Modifier.padding(innerPadding),
                             onChatClick = { customerName ->
                                 chatCustomerName = customerName
                                 showChatScreen = true
+                                // Clear unread count when opening Sophie's chat
+                                if (customerName == "Sophie") {
+                                    unreadMessageCount = 0
+                                    GlobalDatabase.writeString("chef_unread_count", "0")
+                                }
                             }
                         )
                         ChefDestinations.ORDERS -> ChefOrdersScreen(

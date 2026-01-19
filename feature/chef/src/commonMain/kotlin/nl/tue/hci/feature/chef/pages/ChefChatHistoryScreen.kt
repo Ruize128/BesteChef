@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.Modifier
@@ -19,6 +20,7 @@ import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.components.Avatar
 import nl.tue.hci.feature.chef.model.ChatHistoryItem
+import nl.tue.hci.core.data.GlobalDatabase
 
 @Composable
 fun ChefChatHistoryScreen(
@@ -28,14 +30,41 @@ fun ChefChatHistoryScreen(
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
     
+    // Read last message from database for Sophie's chat
+    val sophieLastMessage = remember {
+        val chatMessages = GlobalDatabase.readString("chef_chat_messages").orEmpty()
+        if (chatMessages.isNotBlank()) {
+            // Get the last message from the chat
+            val messages = chatMessages.split("||")
+            if (messages.isNotEmpty()) {
+                val lastMsg = messages.last()
+                val parts = lastMsg.split("|")
+                if (parts.size >= 4 && parts[0] == "TEXT") {
+                    parts[3] // The text content
+                } else {
+                    "Can desserts on the menu be replaced with sugar-free options?"
+                }
+            } else {
+                "Can desserts on the menu be replaced with sugar-free options?"
+            }
+        } else {
+            "Can desserts on the menu be replaced with sugar-free options?"
+        }
+    }
+    
+    // Read unread count from database
+    val unreadCount = remember {
+        GlobalDatabase.readString("chef_unread_count")?.toIntOrNull() ?: 1
+    }
+    
     // Hardcoded chat history data
     val chatHistory = listOf(
         ChatHistoryItem(
             id = "1",
             customerName = "Sophie",
-            lastMessage = "Thanks — yes please, that would help.",
+            lastMessage = sophieLastMessage,
             timestamp = "10:16",
-            unreadCount = 1
+            unreadCount = unreadCount
         ),
         ChatHistoryItem(
             id = "2",

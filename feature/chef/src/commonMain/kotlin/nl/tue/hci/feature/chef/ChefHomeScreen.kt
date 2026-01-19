@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import nl.tue.hci.core.ui.BesteChefThemeColors
@@ -35,7 +37,8 @@ fun ChefHomeScreen(
     onChatClick: (String) -> Unit = {}, // customerName
     onOrderClick: (String, String) -> Unit = { _, _ -> }, // bookingId, status
     hasShownNotification: Boolean = false,
-    onNotificationShown: () -> Unit = {}
+    onNotificationShown: () -> Unit = {},
+    unreadMessageCount: Int = 0
 ) {
     val coroutineScope = rememberCoroutineScope()
     
@@ -215,6 +218,7 @@ fun ChefHomeScreen(
             items(bookingsList) { booking ->
                 BookingInquiryCard(
                     booking = booking,
+                    hasUnreadMessage = booking.customerName == "Sophie" && unreadMessageCount > 0,
                     onClick = { onChatClick(booking.customerName) }
                 )
             }
@@ -268,6 +272,7 @@ fun ChefHomeScreen(
 @Composable
 private fun BookingInquiryCard(
     booking: BookingInquiry,
+    hasUnreadMessage: Boolean = false,
     onClick: () -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
@@ -306,11 +311,25 @@ private fun BookingInquiryCard(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = booking.customerName,
-                    style = typography.cardTitle,
-                    color = colors.textPrimary
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    // Red dot indicator for unread messages
+                    if (hasUnreadMessage) {
+                        Surface(
+                            modifier = Modifier.size(6.dp),
+                            shape = CircleShape,
+                            color = colors.alert,
+                        ) {}
+                    }
+                    
+                    Text(
+                        text = booking.customerName,
+                        style = typography.cardTitle,
+                        color = colors.textPrimary
+                    )
+                }
                 
                 Text(
                     text = booking.message,
