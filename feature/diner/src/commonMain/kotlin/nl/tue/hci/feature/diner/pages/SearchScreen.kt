@@ -60,7 +60,7 @@ fun SearchScreen(
     val cuisinePlaceholder = "Cuisine (optional) — e.g. Japanese"
     
     // Location state
-    var selectedLocation by rememberSaveable { mutableStateOf<String?>("Eindhoven") }
+    var selectedLocation by rememberSaveable { mutableStateOf<String?>("Amsterdam") }
     var isLocationDropdownOpen by rememberSaveable { mutableStateOf(false) }
     var locationSearchQuery by rememberSaveable { mutableStateOf("") }
     

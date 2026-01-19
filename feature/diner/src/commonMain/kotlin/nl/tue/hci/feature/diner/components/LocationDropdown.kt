@@ -45,7 +45,7 @@ fun LocationDropdownMenu(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onLocationSelected: (String) -> Unit,
-    currentPositionCity: String = "Eindhoven",
+    currentPositionCity: String = "Amsterdam",
     cities: List<String> = defaultCities,
     modifier: Modifier = Modifier
 ) {

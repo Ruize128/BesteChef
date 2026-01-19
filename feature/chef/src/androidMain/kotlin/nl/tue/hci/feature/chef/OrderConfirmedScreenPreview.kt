@@ -19,7 +19,7 @@ fun OrderConfirmedScreenPreview() {
             date = "Dec 12, 2025",
             time = "7:00 PM",
             guests = 6,
-            venue = "xxxxxx",
+            address = "xxxxxx",
             status = OrderStatus.DRAFT // Provide default status
         )
         

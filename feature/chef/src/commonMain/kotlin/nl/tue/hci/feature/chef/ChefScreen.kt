@@ -17,7 +17,6 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 // Preview removed for multiplatform
-import androidx.compose.ui.unit.dp
 import nl.tue.hci.feature.chef.pages.ChefChatHistoryScreen
 import nl.tue.hci.core.ui.BesteChefTheme
 import nl.tue.hci.core.ui.BesteChefThemeColors
@@ -59,7 +58,7 @@ fun ChefScreen(
         val orderDetailsSaver = Saver<OrderDetails?, List<Any?>>(
             save = { details ->
                 details?.let {
-                    listOf(it.date, it.time, it.guests, it.venue, it.status.name)
+                    listOf(it.date, it.time, it.guests, it.address, it.status.name)
                 }
             },
             restore = { saved ->
@@ -68,7 +67,7 @@ fun ChefScreen(
                         date = it.getOrNull(0) as? String ?: "",
                         time = it.getOrNull(1) as? String ?: "",
                         guests = (it.getOrNull(2) as? Int) ?: 0,
-                        venue = it.getOrNull(3) as? String ?: "",
+                        address = it.getOrNull(3) as? String ?: "",
                         status = (it.getOrNull(4) as? String)?.let(OrderStatus::valueOf) ?: OrderStatus.DRAFT
                     )
                 }

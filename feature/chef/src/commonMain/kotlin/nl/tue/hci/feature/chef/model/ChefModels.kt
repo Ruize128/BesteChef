@@ -91,7 +91,7 @@ data class OrderDetails(
     val date: String,
     val time: String,
     val guests: Int,
-    val venue: String,
+    val address: String,
     var status: OrderStatus // Changed to var to allow reassignment
 )
 

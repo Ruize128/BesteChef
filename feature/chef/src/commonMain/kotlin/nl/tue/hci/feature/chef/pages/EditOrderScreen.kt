@@ -19,8 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
@@ -40,7 +38,6 @@ import nl.tue.hci.feature.chef.model.OrderStatus
 import nl.tue.hci.feature.chef.model.OfferMenuItem
 import nl.tue.hci.feature.chef.model.PriceSummary
 import nl.tue.hci.feature.chef.model.SelectedMenuItem
-import nl.tue.hci.feature.chef.notification.sendBookingConfirmedNotification
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,7 +66,7 @@ fun EditOrderScreen(
             date = "Dec 12, 2025",
             time = "7:00 PM",
             guests = 6,
-            venue = "xxxxxx",
+            address = "Keizersgracht 123, 1015 CJ Amsterdam",
             status = orderStatus
         )
     }
@@ -608,7 +605,7 @@ private fun BookingSection(
             )
             
             Text(
-                text = "Venue: ${orderDetails.venue}",
+                text = "Service Address: ${orderDetails.address}",
                 style = typography.bodyMedium,
                 color = colors.textPrimary
             )

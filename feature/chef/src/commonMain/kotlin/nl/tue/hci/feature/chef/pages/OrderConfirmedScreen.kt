@@ -15,8 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -30,7 +28,6 @@ import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.feature.chef.model.OrderDetails
 import nl.tue.hci.feature.chef.model.OfferMenuItem
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalDensity
 
 @Composable
@@ -147,7 +144,7 @@ fun OrderConfirmedScreen(
                         )
                         
                         Text(
-                            text = "Venue: ${orderDetails.venue}",
+                            text = "Venue: ${orderDetails.address}",
                             style = typography.bodySmall,
                             color = colors.textSecondary
                         )
