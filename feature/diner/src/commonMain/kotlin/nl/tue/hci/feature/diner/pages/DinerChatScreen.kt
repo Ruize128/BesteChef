@@ -80,27 +80,26 @@ fun DinerChatScreen(
         }
     }
     
+    // Load conversation state from database
+    val savedConversationState = GlobalDatabase.readString("ichiraku_conversation_state")?.toIntOrNull() ?: 0
+    
     // Track conversation state for auto-replies
-    var conversationState by rememberSaveable { mutableStateOf(0) } // 0=initial, 1=after first message, 2=after second
+    var conversationState by rememberSaveable { mutableStateOf(savedConversationState) } // 0=initial, 1=after first message, 2=after second
     var isAutoReplying by remember { mutableStateOf(false) }
     
     // Check if automatic messages have been shown (chef has already replied)
-    val hasAutoMessagesShown = messages.any { !it.isFromMe && it.text.contains("Yes! I can") }
+    val hasFirstAutoReply = messages.any { !it.isFromMe && it.text.contains("Yes! I can") }
+    val hasSecondAutoReply = messages.any { it.bookingOffer != null }
     
-    // Initialize message text with default message only if auto messages haven't been shown
-    var messageText by rememberSaveable { 
-        mutableStateOf(
-            if (hasAutoMessagesShown) {
-                "" // Empty if conversation has progressed
-            } else {
-                when (conversationState) {
-                    0 -> "Can desserts on the menu be replaced with sugar-free options?"
-                    1 -> "Thanks — yes please, that would help."
-                    else -> ""
-                }
-            }
-        )
+    // Determine the correct initial message text based on conversation state
+    val initialMessageText = when {
+        hasSecondAutoReply -> "" // Booking offer already sent
+        hasFirstAutoReply -> "Thanks — yes please, that would help." // First reply received, waiting for second message
+        else -> "Can desserts on the menu be replaced with sugar-free options?" // Initial state
     }
+    
+    // Initialize message text with default message
+    var messageText by rememberSaveable { mutableStateOf(initialMessageText) }
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     
@@ -112,6 +111,22 @@ fun DinerChatScreen(
             // Initialize with a marker message so the chat appears in the list
             GlobalDatabase.writeString("ichiraku_chat_messages", "INIT")
         }
+        
+        // Sync conversation state based on actual messages on initial load
+        val hasFirstReply = messages.any { !it.isFromMe && it.text.contains("Yes! I can") }
+        val hasBookingOffer = messages.any { it.bookingOffer != null }
+        
+        conversationState = when {
+            hasBookingOffer -> 2
+            hasFirstReply -> 1
+            else -> 0
+        }
+        GlobalDatabase.writeString("ichiraku_conversation_state", conversationState.toString())
+    }
+    
+    // Save conversation state to database whenever it changes
+    LaunchedEffect(conversationState) {
+        GlobalDatabase.writeString("ichiraku_conversation_state", conversationState.toString())
     }
     
     // Scroll to bottom when new message is added
