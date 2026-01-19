@@ -43,6 +43,7 @@ import nl.tue.hci.core.model.UserRole
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.icons.rememberIconPainter
+import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.ui.PlatformBackHandler
 
 
@@ -405,30 +406,12 @@ fun SocialLoginButton(
         ) {
             // Draw Google or Apple logo based on the text
             if (text.contains("Google")) {
-                // Google logo - colorful "G"
-                Box(
-                    modifier = Modifier
-                        .size(20.dp)
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color(0xFF4285F4), // Blue
-                                    Color(0xFF34A853), // Green
-                                    Color(0xFFFBBC05), // Yellow
-                                    Color(0xFFEA4335)  // Red
-                                )
-                            ),
-                            shape = RoundedCornerShape(3.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "G",
-                        color = Color.White,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                // Google circle icon
+                Image(
+                    painter = rememberImagePainter("google_circle"),
+                    contentDescription = "Google",
+                    modifier = Modifier.size(20.dp)
+                )
             } else if (text.contains("Apple")) {
                 // Apple logo
                 Text(

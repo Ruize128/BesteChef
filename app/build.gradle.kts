@@ -282,7 +282,7 @@ compose.desktop {
             macOS {
                 bundleID = "nl.tue.hci.bestechef"
                 // Icon is optional; uncomment if you provide icon.icns
-                // iconFile.set(project.file("src/desktopMain/resources/icon.icns"))
+                iconFile.set(project.file("src/desktopMain/resources/icon.icns"))
             }
         }
     }
