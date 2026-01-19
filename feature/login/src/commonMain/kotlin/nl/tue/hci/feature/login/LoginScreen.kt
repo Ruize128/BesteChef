@@ -276,9 +276,9 @@ fun LoginScreen(
         )
 
         Button(
-            onClick = { 
+            onClick = {
                 if (uiState.isSigningUp) {
-                    loginStateHolder.completeSignUp()
+                    loginStateHolder.submitSignUp()
                 } else {
                     loginStateHolder.onContinueClick()
                 }

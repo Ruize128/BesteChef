@@ -307,6 +307,34 @@ class LoginStateHolder(
     }
 
     /**
+     * Validate passwords and complete sign up if valid.
+     * Shows an error message when passwords do not match or are empty.
+     */
+    fun submitSignUp() {
+        val currentState = _uiState.value
+
+        // mark that validation was attempted
+        _uiState.update { it.copy(validationAttempted = true, errorMessage = null) }
+
+        if (currentState.password.isEmpty() || currentState.confirmPassword.isEmpty()) {
+            _uiState.update { it.copy(errorMessage = "Please enter a password and confirm it") }
+            return
+        }
+
+        if (currentState.password != currentState.confirmPassword) {
+            _uiState.update { it.copy(errorMessage = "Passwords do not match") }
+            return
+        }
+
+        // Passwords match -> proceed with mock processing
+        _uiState.update { it.copy(isLoading = true) }
+        coroutineScope.launch {
+            delay(500) // Mock processing delay
+            completeSignUp()
+        }
+    }
+
+    /**
      * Handle Google login button click
      */
     fun onGoogleLoginClick() {
