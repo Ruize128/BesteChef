@@ -317,11 +317,13 @@ private fun MenuContent(
                 onDismissRequest = { showCartSheet = false },
                 sheetState = sheetState,
                 containerColor = colors.surface,
-                tonalElevation = 4.dp
+                contentColor = colors.surface,
+                tonalElevation = 0.dp
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(color = colors.surface)
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -440,7 +442,7 @@ private fun MenuContent(
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         color = colors.surfaceVariant,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(20.dp)
                     ) {
                         Column(
                             modifier = Modifier
