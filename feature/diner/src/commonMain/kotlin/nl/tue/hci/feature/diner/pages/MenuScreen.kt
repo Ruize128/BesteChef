@@ -28,6 +28,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.Image
 import nl.tue.hci.core.ui.PlatformBackHandler
 import androidx.compose.ui.layout.ContentScale
@@ -58,6 +60,29 @@ fun MenuScreen(
         },
         onBookClick = onBookClick
     )
+}
+
+@Composable
+private fun QuantityBadge(quantity: Int, modifier: Modifier = Modifier) {
+    val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
+    val fontSize = with(LocalDensity.current) { 12.dp.toSp() }
+
+    Box(
+        modifier = modifier
+            .background(
+                color = colors.textPrimary.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(6.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = "${quantity}x",
+            style = typography.bodySmall.copy(fontSize = fontSize),
+            color = colors.textPrimary,
+            fontWeight = FontWeight.SemiBold
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -323,13 +348,22 @@ private fun MenuContent(
                             ) {
                                 menuItem?.let {
                                     if (it.price.isNotEmpty()) {
-                                        Text(
-                                            text = it.price,
-                                            style = typography.bodyMedium,
-                                            color = colors.textPrimary,
-                                            fontWeight = FontWeight.SemiBold,
-                                            modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
-                                        )
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            QuantityBadge(
+                                                quantity = qty,
+                                                modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
+                                            )
+                                            Text(
+                                                text = it.price,
+                                                style = typography.bodyMedium,
+                                                color = colors.textPrimary,
+                                                fontWeight = FontWeight.SemiBold,
+                                                modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
+                                            )
+                                        }
                                     }
                                 }
                                 
@@ -692,13 +726,22 @@ fun MenuItemCard(
                     )
                     
                     if (menuItem.price.isNotEmpty()) {
-                        Text(
-                            text = menuItem.price,
-                            style = typography.bodyMedium,
-                            color = colors.textPrimary,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            QuantityBadge(
+                                quantity = quantity,
+                                modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
+                            )
+                            Text(
+                                text = menuItem.price,
+                                style = typography.bodyMedium,
+                                color = colors.textPrimary,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier.alpha(if (isZero) 0.5f else 1f)
+                            )
+                        }
                     }
                 }
                 

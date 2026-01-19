@@ -45,7 +45,7 @@ import nl.tue.hci.core.ui.rememberImagePainter
 @Composable
 fun ChatBubble(
     message: ChatMessage,
-    onBookingOfferClick: () -> Unit = {},
+    onBookingOfferClick: (String) -> Unit = {},
     onImageClick: (String) -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
@@ -79,7 +79,7 @@ fun ChatBubble(
                     modifier = Modifier
                         .width(280.dp)
                         .clip(RoundedCornerShape(20.dp))
-                        .clickable(onClick = onBookingOfferClick),
+                        .clickable { onBookingOfferClick("1") },
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     colors = CardDefaults.cardColors(containerColor = colors.surface)
                 ) {

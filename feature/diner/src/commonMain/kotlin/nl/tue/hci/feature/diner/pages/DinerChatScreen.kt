@@ -301,7 +301,7 @@ fun DinerChatScreen(
             items(messages) { message ->
                 ChatBubble(
                     message = message,
-                    onBookingOfferClick = onBookingOfferClick,
+                    onBookingOfferClick = { _ -> onBookingOfferClick() },
                     onImageClick = { imageName ->
                         previewImageName = imageName
                         showImagePreview = true

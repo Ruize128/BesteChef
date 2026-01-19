@@ -44,16 +44,20 @@ fun ChefOrdersListScreen(
         }
     }
     
-    // Hardcoded orders with default mock data
-    // When sentOrderId matches an order, that order's status becomes SENT
+    // Read order price and item count from database
+    val (order1Price, order1ItemCount) = remember(sentOrderId) {
+        calculateOrderPriceAndCountForOrdersList()
+    }
+    
+    // Orders list with Sophie's data from database
     val orders = listOf(
         Order(
             id = "1",
             customerName = "Sophie",
             orderDate = "Dec 12, 2025",
             status = order1Status,
-            totalPrice = "€22",
-            itemCount = 2,
+            totalPrice = order1Price,
+            itemCount = order1ItemCount,
             timeAgo = "2h ago"
         ),
         Order(
@@ -215,5 +219,29 @@ private fun OrderCard(
             }
         }
     }
+}
+
+/**
+ * Calculate order price and item count from database for orders list.
+ * Includes €15 service fee. Returns default values (€136, 4 items) if no items in database.
+ */
+private fun calculateOrderPriceAndCountForOrdersList(): Pair<String, Int> {
+    val stored = nl.tue.hci.core.data.GlobalDatabase.readString("chef_order_menu_items") ?: return Pair("€136", 4)
+    if (stored.isBlank()) return Pair("€136", 4)
+    
+    val items = stored.split("||").mapNotNull { encoded ->
+        val parts = encoded.split("|")
+        if (parts.size < 5) return@mapNotNull null
+        val price = parts[3].removePrefix("€").toDoubleOrNull() ?: 0.0
+        val quantity = parts[4].toIntOrNull() ?: 1
+        Pair(price, quantity)
+    }
+    
+    val subtotal = items.sumOf { it.first * it.second }
+    val serviceFee = 15.0
+    val totalPrice = subtotal + serviceFee
+    val totalItems = items.sumOf { it.second }
+    
+    return Pair("€${totalPrice.toInt()}", totalItems)
 }
 

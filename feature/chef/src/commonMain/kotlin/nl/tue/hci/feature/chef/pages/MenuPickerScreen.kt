@@ -35,6 +35,9 @@ import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.feature.chef.model.MenuPickerItem
 import nl.tue.hci.feature.chef.model.SelectedMenuItem
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalDensity
 
 @Composable
 fun MenuPickerScreen(
@@ -49,7 +52,7 @@ fun MenuPickerScreen(
     val allMenuItems = remember(colors) {
         listOf(
             MenuPickerItem(
-                id = "1",
+                id = "2", // Match existing Honey Nut item in edit screen
                 title = "Honey Nut & Caramel",
                 description = "Roasted nuts, salted caramel glaze.",
                 price = "€12",
@@ -59,7 +62,7 @@ fun MenuPickerScreen(
                 category = "Desserts"
             ),
             MenuPickerItem(
-                id = "2",
+                id = "5", // Unique id for seabass
                 title = "Seared seabass",
                 description = "miso glaze, seasonal veg.",
                 price = "€14",
@@ -69,7 +72,7 @@ fun MenuPickerScreen(
                 category = "Mains"
             ),
             MenuPickerItem(
-                id = "1",
+                id = "6", // Unique id for yuzu mousse
                 title = "Yuzu mousse",
                 description = "light citrus dessert.",
                 price = "€12",
@@ -79,7 +82,7 @@ fun MenuPickerScreen(
                 category = "Desserts"
             ),
             MenuPickerItem(
-                id = "3",
+                id = "7", // Unique id for omakase
                 title = "5-course Omakase",
                 description = "chef's selection (per guest).",
                 price = "€65",
@@ -89,17 +92,17 @@ fun MenuPickerScreen(
                 category = "Mains"
             ),
             MenuPickerItem(
-                id = "4",
+                id = "1", // Match existing mackerel item in edit screen
                 title = "Grilled Mackerel with Miso",
                 description = "Sea salt, spring onion, yuzu dressing.",
-                price = "€12",
+                price = "€45",
                 imageColor = colors.imagePlaceholder1,
                 dietaryTag = "Fish",
                 dietaryTagColor = colors.dinerPrimary,
                 category = "Mains"
             ),
             MenuPickerItem(
-                id = "5",
+                id = "3", // Match existing Wagyu item in edit screen
                 title = "Wagyu Beef Steak",
                 description = "Premium wagyu with truffle butter.",
                 price = "€24",
@@ -109,7 +112,7 @@ fun MenuPickerScreen(
                 category = "Mains"
             ),
             MenuPickerItem(
-                id = "6",
+                id = "8", // Unique id for caesar salad
                 title = "Caesar Salad",
                 description = "Fresh romaine, parmesan, croutons.",
                 price = "€9",
@@ -241,8 +244,10 @@ fun MenuPickerScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(filteredItems) { item ->
+                val quantity = selectedItems.find { it.menuItem.id == item.id }?.quantity ?: 0
                 MenuPickerItemCard(
                     item = item,
+                    quantity = quantity,
                     onAddClick = {
                         val existing = selectedItems.find { it.menuItem.id == item.id }
                         if (existing != null) {
@@ -307,6 +312,7 @@ fun MenuPickerScreen(
 @Composable
 private fun MenuPickerItemCard(
     item: MenuPickerItem,
+    quantity: Int,
     onAddClick: () -> Unit
 ) {
     val colors = BesteChefThemeColors.current()
@@ -390,12 +396,18 @@ private fun MenuPickerItemCard(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(
-                    text = item.price,
-                    style = typography.cardTitle,
-                    fontWeight = FontWeight.Bold,
-                    color = colors.textPrimary
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    QuantityBadge(quantity = quantity)
+                    Text(
+                        text = item.price,
+                        style = typography.cardTitle,
+                        fontWeight = FontWeight.Bold,
+                        color = colors.textPrimary
+                    )
+                }
                 Button(
                     onClick = onAddClick,
                     modifier = Modifier.height(32.dp),
@@ -414,6 +426,28 @@ private fun MenuPickerItemCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun QuantityBadge(quantity: Int) {
+    val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
+
+    Box(
+        modifier = Modifier
+            .background(
+                color = colors.textPrimary.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = "${quantity}x",
+            style = typography.bodySmall,
+            color = colors.textPrimary,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 

@@ -634,23 +634,6 @@ private fun MenuItemCard(item: BookingSummaryMenuItem) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (item.quantity > 1) {
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = colors.textPrimary.copy(alpha = 0.1f),
-                                    shape = RoundedCornerShape(6.dp)
-                                )
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = "${item.quantity}x",
-                                style = typography.bodySmall.copy(fontSize = 12.sp),
-                                color = colors.textPrimary,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
                     Text(
                         text = item.title,
                         style = typography.cardTitle.copy(fontSize = 14.sp),
@@ -665,12 +648,40 @@ private fun MenuItemCard(item: BookingSummaryMenuItem) {
             }
             
             // Price
-            Text(
-                text = item.price,
-                style = typography.cardTitle,
-                color = colors.textPrimary
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                QuantityBadge(quantity = item.quantity)
+                Text(
+                    text = item.price,
+                    style = typography.cardTitle,
+                    color = colors.textPrimary
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun QuantityBadge(quantity: Int) {
+    val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
+
+    Box(
+        modifier = Modifier
+            .background(
+                color = colors.textPrimary.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = "${quantity}x",
+            style = typography.bodySmall,
+            color = colors.textPrimary,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 

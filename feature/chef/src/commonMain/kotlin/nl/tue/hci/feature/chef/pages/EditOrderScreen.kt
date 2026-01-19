@@ -27,12 +27,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import nl.tue.hci.core.ui.BesteChefColors
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
 import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.components.QuantitySelector
 import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.rememberImagePainter
+import nl.tue.hci.core.data.GlobalDatabase
 import nl.tue.hci.feature.chef.model.OrderDetails
 import nl.tue.hci.feature.chef.model.OrderStatus
 import nl.tue.hci.feature.chef.model.OfferMenuItem
@@ -110,14 +112,23 @@ fun EditOrderScreen(
     }
     
     // Menu items with quantities - reset to default when screen is opened
-    val menuItems = remember(orderId) {
-        mutableStateListOf<OfferMenuItem>().apply {
-            addAll(defaultMenuItems)
-        }
-    }
-    
+    val menuItems = remember(orderId) { mutableStateListOf<OfferMenuItem>() }
+
     // Track a key that changes when quantities change to trigger price recalculation
     var priceCalculationKey by remember(orderId) { mutableStateOf(0) }
+
+    // Load persisted menu if available; otherwise use defaults
+    LaunchedEffect(orderId) {
+        val stored = GlobalDatabase.readString("chef_order_menu_items")
+        val decoded = stored?.let { decodeMenuItems(it, colors) }
+        menuItems.clear()
+        if (decoded != null && decoded.isNotEmpty()) {
+            menuItems.addAll(decoded)
+        } else {
+            menuItems.addAll(defaultMenuItems)
+        }
+        priceCalculationKey++
+    }
     
     // Handle items added from MenuPickerScreen
     androidx.compose.runtime.LaunchedEffect(itemsToAdd) {
@@ -154,7 +165,7 @@ fun EditOrderScreen(
             val priceStr = item.price.replace("€", "").replace(",", ".")
             (priceStr.toDoubleOrNull() ?: 0.0) * item.quantity
         }
-        val serviceFee = 8.0
+        val serviceFee = 15.0
         val depositPercentage = 20
         val depositAmount = (subtotal + serviceFee) * depositPercentage / 100.0
         val total = subtotal + serviceFee
@@ -166,6 +177,11 @@ fun EditOrderScreen(
             depositPercentage = depositPercentage,
             total = "€${total.toInt()}"
         )
+    }
+
+    // Persist menu items whenever they change
+    LaunchedEffect(menuItems.size, priceCalculationKey) {
+        GlobalDatabase.writeString("chef_order_menu_items", encodeMenuItems(menuItems))
     }
     
     // Handle system back gesture
@@ -427,6 +443,36 @@ fun EditOrderScreen(
                     }
                 }
             }
+        )
+    }
+}
+
+// Encode menu items for persistence (simple pipe-separated format)
+private fun encodeMenuItems(items: List<OfferMenuItem>): String {
+    return items.joinToString(separator = "||") { item ->
+        listOf(
+            item.id,
+            item.title,
+            item.description,
+            item.price,
+            item.quantity.toString()
+        ).joinToString(separator = "|")
+    }
+}
+
+// Decode menu items; colors are recreated using a single placeholder so layout remains consistent
+private fun decodeMenuItems(data: String, colors: BesteChefColors): List<OfferMenuItem> {
+    if (data.isBlank()) return emptyList()
+    return data.split("||").mapNotNull { encoded ->
+        val parts = encoded.split("|")
+        if (parts.size < 5) return@mapNotNull null
+        OfferMenuItem(
+            id = parts[0],
+            title = parts[1],
+            description = parts[2],
+            price = parts[3],
+            imageColor = colors.imagePlaceholder1,
+            quantity = parts[4].toIntOrNull() ?: 1
         )
     }
 }

@@ -30,6 +30,8 @@ import nl.tue.hci.core.ui.getImageNameFromTitle
 import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.feature.chef.model.OrderDetails
 import nl.tue.hci.feature.chef.model.OfferMenuItem
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalDensity
 
 @Composable
 fun OrderConfirmedScreen(
@@ -274,6 +276,44 @@ private fun FinalMenuItemCard(item: OfferMenuItem) {
                     color = colors.textSecondary
                 )
             }
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                QuantityBadge(quantity = item.quantity)
+                if (item.price.isNotEmpty()) {
+                    Text(
+                        text = item.price,
+                        style = typography.cardTitle.copy(fontSize = 14.sp),
+                        color = colors.textPrimary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun QuantityBadge(quantity: Int) {
+    val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
+    val fontSize = with(LocalDensity.current) { 12.dp.toSp() }
+
+    Box(
+        modifier = Modifier
+            .background(
+                color = colors.textPrimary.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(6.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = "${quantity}x",
+            style = typography.bodySmall.copy(fontSize = fontSize),
+            color = colors.textPrimary,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }

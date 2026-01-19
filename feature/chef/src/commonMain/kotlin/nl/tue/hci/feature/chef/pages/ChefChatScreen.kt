@@ -44,11 +44,22 @@ fun ChefChatScreen(
     customerName: String,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onEditOrderClick: () -> Unit = {},
-    onBookingOfferClick: () -> Unit = {}
+    onEditOrderClick: (String) -> Unit = {},
+    onBookingOfferClick: (String) -> Unit = {}
 ) {
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
+    
+    // Read order data from database
+    val orderStatus = remember {
+        GlobalDatabase.readString("ichiraku_order_status") ?: "DRAFT"
+    }
+    val isSent = orderStatus == "SENT" || orderStatus == "CONFIRMED" || orderStatus == "ON_GOING" || orderStatus == "PENDING"
+    
+    // Calculate order price and item count from database
+    val (orderPrice, orderItemCount) = remember(orderStatus) {
+        calculateOrderPriceAndCount()
+    }
     
     // Full-screen image preview state
     var showImagePreview by rememberSaveable { mutableStateOf(false) }
@@ -56,9 +67,9 @@ fun ChefChatScreen(
     
     // Load messages from database or start with Sophie's initial message
     // For chef chat: isFromMe=true = chef, isFromMe=false = customer
-    val messages = remember(colors) {
+    val messages = remember(colors, orderPrice) {
         mutableStateListOf<ChatMessage>().apply {
-            val loadedMessages = loadChefChatMessagesFromDatabase(colors)
+            val loadedMessages = loadChefChatMessagesFromDatabase(colors, orderPrice)
             if (loadedMessages.isNotEmpty()) {
                 addAll(loadedMessages)
             } else {
@@ -278,15 +289,15 @@ fun ChefChatScreen(
                             color = colors.textPrimary
                         )
                         Text(
-                            text = "€120",
+                            text = orderPrice,
                             style = typography.bodyMedium,
                             color = colors.textSecondary
                         )
                     }
                     
-                    // Edit Offer button
+                    // Edit Offer / View Order button
                     Button(
-                        onClick = onEditOrderClick,
+                        onClick = { onEditOrderClick("1") },
                         modifier = Modifier
                             .height(32.dp)
                             .widthIn(min = 60.dp),
@@ -301,7 +312,7 @@ fun ChefChatScreen(
                         )
                     ) {
                         Text(
-                            text = "Edit Offer",
+                            text = if (isSent) "View Order" else "Edit Offer",
                             style = typography.buttonText,
                         )
                     }
@@ -577,10 +588,35 @@ fun saveChatMessagesToDatabase(messages: List<ChatMessage>) {
 }
 
 /**
+ * Calculate order price and item count from database.
+ * Includes €15 service fee. Returns default values (€136, 4 items) if no items in database.
+ */
+private fun calculateOrderPriceAndCount(): Pair<String, Int> {
+    val stored = GlobalDatabase.readString("chef_order_menu_items") ?: return Pair("€136", 4)
+    if (stored.isBlank()) return Pair("€136", 4)
+    
+    val items = stored.split("||").mapNotNull { encoded ->
+        val parts = encoded.split("|")
+        if (parts.size < 5) return@mapNotNull null
+        val price = parts[3].removePrefix("€").toDoubleOrNull() ?: 0.0
+        val quantity = parts[4].toIntOrNull() ?: 1
+        Pair(price, quantity)
+    }
+    
+    val subtotal = items.sumOf { it.first * it.second }
+    val serviceFee = 15.0
+    val totalPrice = subtotal + serviceFee
+    val totalItems = items.sumOf { it.second }
+    
+    return Pair("€${totalPrice.toInt()}", totalItems)
+}
+
+/**
  * Load chef chat messages from database and reconstruct ChatMessage objects.
  */
 fun loadChefChatMessagesFromDatabase(
-    colors: BesteChefColors
+    colors: BesteChefColors,
+    orderPrice: String
 ): List<ChatMessage> {
     val storedData = GlobalDatabase.readString("chef_chat_messages") ?: return emptyList()
     
@@ -609,7 +645,7 @@ fun loadChefChatMessagesFromDatabase(
                 )
             }
             "BOOKING" -> {
-                // Reconstruct booking offer message with fixed demo content
+                // Reconstruct booking offer message with order price from database
                 ChatMessage(
                     text = "Here's my offer for your event:",
                     timestamp = timestamp,
@@ -619,7 +655,7 @@ fun loadChefChatMessagesFromDatabase(
                         time = "18:30",
                         guests = "6 guests",
                         venue = "Private Dining Room",
-                        price = "€250"
+                        price = orderPrice
                     ),
                     avatarText = if (isFromMe) "ME" else "DH",
                     avatarImageName = if (isFromMe) "ichiraku" else "sophie",

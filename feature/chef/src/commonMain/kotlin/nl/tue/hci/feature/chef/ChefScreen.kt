@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 // Preview removed for multiplatform
@@ -24,6 +25,10 @@ import nl.tue.hci.core.ui.PlatformBackHandler
 import nl.tue.hci.core.ui.rememberAppExitHandler
 import nl.tue.hci.core.ui.components.InAppNotificationOverlay
 import nl.tue.hci.feature.chef.pages.ChefProfileScreen
+import nl.tue.hci.feature.chef.model.OrderStatus
+import nl.tue.hci.feature.chef.model.OrderDetails
+import nl.tue.hci.feature.chef.model.OfferMenuItem
+import nl.tue.hci.core.data.GlobalDatabase
 
 enum class ChefDestinations(
     val label: String,
@@ -51,6 +56,54 @@ fun ChefScreen(
     onLogout: () -> Unit = {}
 ) {
     BesteChefTheme {
+        val orderDetailsSaver = Saver<OrderDetails?, List<Any?>>(
+            save = { details ->
+                details?.let {
+                    listOf(it.date, it.time, it.guests, it.venue, it.status.name)
+                }
+            },
+            restore = { saved ->
+                (saved as? List<*>)?.let {
+                    OrderDetails(
+                        date = it.getOrNull(0) as? String ?: "",
+                        time = it.getOrNull(1) as? String ?: "",
+                        guests = (it.getOrNull(2) as? Int) ?: 0,
+                        venue = it.getOrNull(3) as? String ?: "",
+                        status = (it.getOrNull(4) as? String)?.let(OrderStatus::valueOf) ?: OrderStatus.DRAFT
+                    )
+                }
+            }
+        )
+
+        val offerMenuItemListSaver = Saver<List<OfferMenuItem>, List<List<Any?>>>(
+            save = { items ->
+                items.map { item ->
+                    listOf(
+                        item.id,
+                        item.title,
+                        item.description,
+                        item.price,
+                        item.imageColor.value,
+                        item.quantity
+                    )
+                }
+            },
+            restore = { saved ->
+                saved.mapNotNull { entry ->
+                    if (entry.size >= 6) {
+                        OfferMenuItem(
+                            id = entry[0] as? String ?: "",
+                            title = entry[1] as? String ?: "",
+                            description = entry[2] as? String ?: "",
+                            price = entry[3] as? String ?: "",
+                            imageColor = androidx.compose.ui.graphics.Color((entry[4] as? Long) ?: 0L),
+                            quantity = (entry[5] as? Int) ?: 0
+                        )
+                    } else null
+                }
+            }
+        )
+
         var currentDestination by rememberSaveable { mutableStateOf(
             when {
                 initialNavigateToChat -> ChefDestinations.CHAT
@@ -64,8 +117,8 @@ fun ChefScreen(
         var editOrderId by rememberSaveable { mutableStateOf("") }
         var editOrderStatus by rememberSaveable { mutableStateOf<String?>(null) }
         var editOrderSource by rememberSaveable { mutableStateOf<String?>(null) } // Track if edit order came from chat or orders
-        var orderDetailsForConfirmed by rememberSaveable { mutableStateOf<nl.tue.hci.feature.chef.model.OrderDetails?>(null) }
-        var menuItemsForConfirmed by remember { mutableStateOf<List<nl.tue.hci.feature.chef.model.OfferMenuItem>>(emptyList()) }
+        var orderDetailsForConfirmed by rememberSaveable(stateSaver = orderDetailsSaver) { mutableStateOf<OrderDetails?>(null) }
+        var menuItemsForConfirmed by rememberSaveable(stateSaver = offerMenuItemListSaver) { mutableStateOf<List<OfferMenuItem>>(emptyList()) }
         var sentOrderId by rememberSaveable { mutableStateOf<String?>(null) }
         
         val exitApp = rememberAppExitHandler()
@@ -76,10 +129,13 @@ fun ChefScreen(
             onBack = {
                 when {
                     showBookingConfirmedScreen -> {
-                        // On booking confirmed screen, go back to orders
+                        // On booking confirmed screen, go back to orders and mark as sent
                         showBookingConfirmedScreen = false
                         orderDetailsForConfirmed = null
                         menuItemsForConfirmed = emptyList()
+                        sentOrderId = "1"
+                        editOrderStatus = "SENT"
+                        currentDestination = ChefDestinations.ORDERS
                     }
                     showChatScreen -> {
                         // On chat screen, go back to chat history
@@ -107,12 +163,12 @@ fun ChefScreen(
                     onDoneClick = {
                         // Update the order status from DRAFT to SENT and store the sent order ID
                         sentOrderId = "1" // Store identifier for the sent order (order ID for Sophie)
+                        editOrderStatus = "SENT"
                         
                         showBookingConfirmedScreen = false
                         orderDetailsForConfirmed = null
                         menuItemsForConfirmed = emptyList()
-                        // Navigate to orders section home (clear any specific order being edited)
-                        editOrderId = ""
+                        // Return to edit order page showing SENT status (keep editOrderId set)
                         currentDestination = ChefDestinations.ORDERS
                     }
                 )
@@ -123,17 +179,17 @@ fun ChefScreen(
                     onBackClick = {
                         showChatScreen = false
                     },
-                    onEditOrderClick = {
+                    onEditOrderClick = { orderId ->
                         // Navigate to Orders section and open EditOrderScreen there
-                        editOrderId = "chat-${chatCustomerName}" // Generate order ID from customer name
+                        editOrderId = orderId
                         editOrderSource = "chat" // Track that we came from chat
                         currentDestination = ChefDestinations.ORDERS
                         showChatScreen = false
                     },
-                    onBookingOfferClick = {
+                    onBookingOfferClick = { orderId ->
                         // Navigate to booking offer in Orders
                         showChatScreen = false
-                        editOrderId = "chat-${chatCustomerName}"
+                        editOrderId = orderId
                         editOrderSource = "chat" // Track that we came from chat
                         currentDestination = ChefDestinations.ORDERS
                     }
@@ -201,6 +257,14 @@ fun ChefScreen(
                                 editOrderSource = "orders" // Track that we came from orders list
                             },
                             onSendOfferClick = { orderDetails, menuItems ->
+                                // Persist booking card into chat history so it shows on next open
+                                val bookingEntry = "BOOKING|Now|true"
+                                val existingChat = GlobalDatabase.readString("chef_chat_messages").orEmpty()
+                                val updatedChat = listOf(existingChat.takeIf { it.isNotBlank() }, bookingEntry)
+                                    .filterNotNull()
+                                    .joinToString("||")
+                                GlobalDatabase.writeString("chef_chat_messages", updatedChat)
+
                                 // Send notification before showing confirmation screen
                                 nl.tue.hci.feature.chef.notification.sendBookingConfirmedNotification {
                                     // When notification is clicked, dismiss booking confirmed screen and go to orders
