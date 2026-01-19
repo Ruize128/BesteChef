@@ -5,21 +5,25 @@ import nl.tue.hci.core.ui.components.ImagePreviewOverlay
 import nl.tue.hci.core.data.GlobalDatabase
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -100,6 +104,18 @@ private fun MenuContent(
     
     var imagePreviewShown by rememberSaveable { mutableStateOf(false) }
     var currentPreviewImage by rememberSaveable { mutableStateOf<String?>(null) }
+    var serviceAddress by rememberSaveable { mutableStateOf("Keizersgracht 123, 1015 CJ Amsterdam") }
+    var showAddressEditDialog by rememberSaveable { mutableStateOf(false) }
+    var tempAddress by rememberSaveable { mutableStateOf(serviceAddress) }
+    var serviceTime by rememberSaveable { mutableStateOf("19:00") }
+    var showTimePickerDialog by rememberSaveable { mutableStateOf(false) }
+    var selectedHour by rememberSaveable { mutableStateOf(19) }
+    var selectedMinute by rememberSaveable { mutableStateOf(0) }
+    
+    var isHourSnapping by remember { mutableStateOf(false) }
+    var isMinuteSnapping by remember { mutableStateOf(false) }
+    var centerHourIndex by remember { mutableStateOf(69) }
+    var centerMinuteIndex by remember { mutableStateOf(102) }
     
     // Hardcoded menu items
     val menuItems = remember(colors) {
@@ -394,8 +410,82 @@ private fun MenuContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
+                            // Time section
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "Service Time",
+                                        style = typography.labelSmall,
+                                        color = colors.textSecondary
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "Today $serviceTime",
+                                        style = typography.bodyMedium,
+                                        color = colors.textPrimary,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                                Text(
+                                    text = "edit",
+                                    style = typography.labelMedium,
+                                    color = colors.dinerPrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp)
+                                        .clickable { showTimePickerDialog = true }
+                                )
+                            }
+                            
+                            // Address section
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text(
+                                        text = "Service Address",
+                                        style = typography.labelSmall,
+                                        color = colors.textSecondary
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = serviceAddress,
+                                        style = typography.bodyMedium,
+                                        color = colors.textPrimary,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                                Text(
+                                    text = "edit",
+                                    style = typography.labelMedium,
+                                    color = colors.dinerPrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp)
+                                        .clickable { showAddressEditDialog = true }
+                                )
+                            }
+                            
+                            Divider(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                color = colors.textSecondary.copy(alpha = 0.2f)
+                            )
+                            
+                            // Price details
                             val subtotal = cartItems.entries.sumOf { (title, qty) ->
                                 val menuItem = menuItems.find { it.title == title }
                                 val priceValue = menuItem?.price?.replace("€", "")?.toDoubleOrNull() ?: 0.0
@@ -437,12 +527,7 @@ private fun MenuContent(
                                     fontWeight = FontWeight.SemiBold
                                 )
                             }
-                            
-                            Divider(
-                                modifier = Modifier.padding(vertical = 8.dp),
-                                color = colors.textSecondary.copy(alpha = 0.2f)
-                            )
-                            
+
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -559,6 +644,12 @@ private fun MenuContent(
                                 }.joinToString("||")
                                 GlobalDatabase.writeString("diner_order_menu_items", itemsData)
                                 
+                                // Save service address to database
+                                GlobalDatabase.writeString("diner_service_address", serviceAddress)
+                                
+                                // Save service time to database
+                                GlobalDatabase.writeString("diner_service_time", serviceTime)
+                                
                                 onBookClick()
                             },
                             modifier = Modifier
@@ -595,7 +686,388 @@ private fun MenuContent(
                 currentPreviewImage = null
             }
         )
+        
+        // Address Edit Dialog
+        if (showAddressEditDialog) {
+            AlertDialog(
+                onDismissRequest = { showAddressEditDialog = false },
+                title = {
+                    Text(
+                        text = "Edit Delivery Address",
+                        style = typography.cardTitle,
+                        color = colors.textPrimary
+                    )
+                },
+                text = {
+                    OutlinedTextField(
+                        value = tempAddress,
+                        onValueChange = { tempAddress = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = colors.surface,
+                            unfocusedContainerColor = colors.surface,
+                            focusedBorderColor = colors.dinerPrimary,
+                            unfocusedBorderColor = colors.outline,
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Enter delivery address",
+                                color = colors.textSecondary
+                            )
+                        }
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            serviceAddress = tempAddress
+                            showAddressEditDialog = false
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.dinerPrimary
+                        )
+                    ) {
+                        Text(
+                            text = "Save",
+                            color = colors.textPrimary
+                        )
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            tempAddress = serviceAddress
+                            showAddressEditDialog = false
+                        }
+                    ) {
+                        Text(
+                            text = "Cancel",
+                            color = colors.dinerPrimary
+                        )
+                    }
+                },
+                containerColor = colors.surface,
+                titleContentColor = colors.textPrimary,
+                textContentColor = colors.textPrimary
+            )
+        }
+        
+        // Time Picker Dialog
+        if (showTimePickerDialog) {
+            TimePickerDialog(
+                showDialog = showTimePickerDialog,
+                onDismiss = { showTimePickerDialog = false },
+                onSave = { 
+                    serviceTime = "${selectedHour.toString().padStart(2, '0')}:${selectedMinute.toString().padStart(2, '0')}"
+                    showTimePickerDialog = false
+                },
+                selectedHour = selectedHour,
+                onHourChange = { selectedHour = it },
+                centerHourIndex = centerHourIndex,
+                onCenterHourIndexChange = { centerHourIndex = it },
+                isHourSnapping = isHourSnapping,
+                onHourSnappingChange = { isHourSnapping = it },
+                selectedMinute = selectedMinute,
+                onMinuteChange = { selectedMinute = it },
+                centerMinuteIndex = centerMinuteIndex,
+                onCenterMinuteIndexChange = { centerMinuteIndex = it },
+                isMinuteSnapping = isMinuteSnapping,
+                onMinuteSnappingChange = { isMinuteSnapping = it }
+            )
+        }
     }
+}
+
+@Composable
+private fun TimePickerDialog(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onSave: () -> Unit,
+    selectedHour: Int,
+    onHourChange: (Int) -> Unit,
+    centerHourIndex: Int,
+    onCenterHourIndexChange: (Int) -> Unit,
+    isHourSnapping: Boolean,
+    onHourSnappingChange: (Boolean) -> Unit,
+    selectedMinute: Int,
+    onMinuteChange: (Int) -> Unit,
+    centerMinuteIndex: Int,
+    onCenterMinuteIndexChange: (Int) -> Unit,
+    isMinuteSnapping: Boolean,
+    onMinuteSnappingChange: (Boolean) -> Unit
+) {
+    val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
+    
+    val hourRange = (0..23).toList()
+    val hours = (1..5).flatMap { hourRange } // 120 items: 5 copies of 0-23
+    val minutes = List(100) { if (it % 2 == 0) 0 else 30 } + listOf(0, 30) + List(100) { if (it % 2 == 0) 0 else 30 } // 202 items: alternating 00,30 repeated
+    
+    val hourScrollState = rememberLazyListState(initialFirstVisibleItemIndex = 69) // Center 19 in third copy: 48 + 19 + 2 = 69
+    val minuteScrollState = rememberLazyListState(initialFirstVisibleItemIndex = 102) // Center the first original 00: 100 + 2 = 102
+    
+    // Initialize selection when dialog opens
+    LaunchedEffect(Unit) {
+        // Select the center item (index 2 in the visible viewport)
+        val firstVisibleIndex = hourScrollState.firstVisibleItemIndex
+        val firstVisibleOffset = hourScrollState.firstVisibleItemScrollOffset
+        
+        val itemsFromTop = (100 - firstVisibleOffset) / 40f
+        val centerItemIndex = firstVisibleIndex + itemsFromTop.toInt()
+        val actualHourIndex = (centerItemIndex - 2) % 24
+        
+        onHourChange(actualHourIndex)
+        onCenterHourIndexChange(centerItemIndex)
+        
+        val minuteFirstVisibleIndex = minuteScrollState.firstVisibleItemIndex
+        val minuteFirstVisibleOffset = minuteScrollState.firstVisibleItemScrollOffset
+        
+        val minuteItemsFromTop = (100 - minuteFirstVisibleOffset) / 40f
+        val minuteCenterItemIndex = minuteFirstVisibleIndex + minuteItemsFromTop.toInt()
+        val actualMinute = minutes.getOrNull(minuteCenterItemIndex - 2) ?: 0
+        
+        onMinuteChange(actualMinute)
+        onCenterMinuteIndexChange(minuteCenterItemIndex)
+    }
+    
+    // Continuously track scroll position and update center selection in real-time
+    LaunchedEffect(hourScrollState) {
+        snapshotFlow { 
+            hourScrollState.firstVisibleItemIndex to hourScrollState.firstVisibleItemScrollOffset 
+        }.collect { (firstVisibleIndex, firstVisibleOffset) ->
+            val itemsFromTop = (100 - firstVisibleOffset) / 40f
+            val centerItemIndex = firstVisibleIndex + itemsFromTop.toInt()
+            val actualHourIndex = (centerItemIndex - 2) % 24
+            
+            onHourChange(actualHourIndex)
+            onCenterHourIndexChange(centerItemIndex)
+        }
+    }
+    
+    LaunchedEffect(minuteScrollState) {
+        snapshotFlow { 
+            minuteScrollState.firstVisibleItemIndex to minuteScrollState.firstVisibleItemScrollOffset 
+        }.collect { (firstVisibleIndex, firstVisibleOffset) ->
+            val itemsFromTop = (100 - firstVisibleOffset) / 40f
+            val centerItemIndex = firstVisibleIndex + itemsFromTop.toInt()
+            val actualMinute = minutes.getOrNull(centerItemIndex - 2) ?: 0
+            
+            onMinuteChange(actualMinute)
+            onCenterMinuteIndexChange(centerItemIndex)
+        }
+    }
+    
+    // Track when user stops scrolling and snap to center
+    LaunchedEffect(hourScrollState.isScrollInProgress) {
+        snapshotFlow { hourScrollState.isScrollInProgress }
+            .collect { isScrolling ->
+                if (!isScrolling && !isHourSnapping) {
+                    // Calculate center item: viewport is 200dp, each item is 40dp
+                    // Center is at 100dp (item index 2 when accounting for padding)
+                    val firstVisibleIndex = hourScrollState.firstVisibleItemIndex
+                    val firstVisibleOffset = hourScrollState.firstVisibleItemScrollOffset
+                    
+                    // Determine which item is closest to center
+                    val itemsFromTop = (100 - firstVisibleOffset) / 40f
+                    val centerItemIndex = firstVisibleIndex + itemsFromTop.toInt()
+                    
+                    // Adjust for the 2 padding items at the top
+                    val actualHourIndex = (centerItemIndex - 2) % 24
+                    
+                    onHourChange(actualHourIndex)
+                    onCenterHourIndexChange(centerItemIndex)
+                    
+                    // Snap to center position in the same copy
+                    val copyIndex = (centerItemIndex - 2) / 24
+                    val targetIndex = copyIndex * 24 + actualHourIndex + 2
+                    onHourSnappingChange(true)
+                    hourScrollState.animateScrollToItem(targetIndex, scrollOffset = 0)
+                    onHourSnappingChange(false)
+                }
+            }
+    }
+    
+    LaunchedEffect(minuteScrollState.isScrollInProgress) {
+        snapshotFlow { minuteScrollState.isScrollInProgress }
+            .collect { isScrolling ->
+                if (!isScrolling && !isMinuteSnapping) {
+                    val firstVisibleIndex = minuteScrollState.firstVisibleItemIndex
+                    val firstVisibleOffset = minuteScrollState.firstVisibleItemScrollOffset
+                    
+                    val itemsFromTop = (100 - firstVisibleOffset) / 40f
+                    val centerItemIndex = firstVisibleIndex + itemsFromTop.toInt()
+                    
+                    val actualMinute = minutes.getOrNull(centerItemIndex - 2) ?: 0
+                    
+                    onMinuteChange(actualMinute)
+                    onCenterMinuteIndexChange(centerItemIndex)
+                    
+                    onMinuteSnappingChange(true)
+                    minuteScrollState.animateScrollToItem(centerItemIndex, scrollOffset = 0)
+                    onMinuteSnappingChange(false)
+                }
+            }
+    }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Select Service Time",
+                style = typography.cardTitle,
+                color = colors.textPrimary
+            )
+        },
+        text = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Hour wheel picker
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Background highlight for selected item (center position)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(40.dp)
+                            .background(
+                                color = colors.dinerPrimary.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                    )
+                    
+                    LazyColumn(
+                        state = hourScrollState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Top padding (2 items × 40dp = 80dp to center the first real item)
+                        items(2) {
+                            Spacer(modifier = Modifier.height(40.dp))
+                        }
+                        
+                        items(hours.size) { hourIndex ->
+                            val hour = hours[hourIndex]
+                            Text(
+                                text = hour.toString().padStart(2, '0'),
+                                style = typography.bodyLarge,
+                                color = colors.textPrimary,
+                                fontWeight = if (hourIndex + 2 == centerHourIndex) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(40.dp)
+                                    .alpha(if (hourIndex + 2 == centerHourIndex) 1f else 0.4f)
+                                    .wrapContentHeight(Alignment.CenterVertically),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        
+                        // Bottom padding
+                        items(2) {
+                            Spacer(modifier = Modifier.height(40.dp))
+                        }
+                    }
+                }
+                
+                // Separator
+                Text(
+                    text = ":",
+                    style = typography.bodyLarge,
+                    color = colors.textPrimary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+                
+                // Minute wheel picker
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Background highlight for selected item (center position)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(40.dp)
+                            .background(
+                                color = colors.dinerPrimary.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                    )
+                    
+                    LazyColumn(
+                        state = minuteScrollState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Top padding
+                        items(2) {
+                            Spacer(modifier = Modifier.height(40.dp))
+                        }
+                        
+                        items(minutes.size) { minuteIndex ->
+                            val minute = minutes[minuteIndex]
+                            Text(
+                                text = minute.toString().padStart(2, '0'),
+                                style = typography.bodyLarge,
+                                color = colors.textPrimary,
+                                fontWeight = if (minuteIndex + 2 == centerMinuteIndex) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(40.dp)
+                                    .alpha(if (minuteIndex + 2 == centerMinuteIndex) 1f else 0.4f)
+                                    .wrapContentHeight(Alignment.CenterVertically),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        
+                        // Bottom padding
+                        items(2) {
+                            Spacer(modifier = Modifier.height(40.dp))
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onSave,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colors.dinerPrimary
+                )
+            ) {
+                Text(
+                    text = "Save",
+                    color = colors.textPrimary
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text(
+                    text = "Cancel",
+                    color = colors.dinerPrimary
+                )
+            }
+        },
+        containerColor = colors.surface,
+        titleContentColor = colors.textPrimary,
+        textContentColor = colors.textPrimary
+    )
 }
 
 @Composable

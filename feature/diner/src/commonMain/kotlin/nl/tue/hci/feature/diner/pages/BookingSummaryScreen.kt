@@ -108,6 +108,16 @@ fun BookingSummaryScreen(
         )
     }
     
+    // Read service address from database
+    val serviceAddress = remember {
+        GlobalDatabase.readString("diner_service_address") ?: "Keizersgracht 123, 1015 CJ Amsterdam"
+    }
+    
+    // Read service time from database
+    val serviceTime = remember {
+        GlobalDatabase.readString("diner_service_time") ?: "19:00"
+    }
+    
     val menuItems = remember(colors) {
         // Read menu items from database
         val stored = GlobalDatabase.readString("diner_order_menu_items")
@@ -313,12 +323,22 @@ fun BookingSummaryScreen(
                     onGuestsChangeClick = {}
                 )
             }
-            
-            // Venue section
+
+            // Address section
             item {
                 BookingSection(
-                    title = "Venue",
-                    value = bookingDetails.venue,
+                    title = "Service Address",
+                    value = serviceAddress,
+                    onEditClick = {},
+                    editButtonText = "Edit"
+                )
+            }
+            
+            // Service Time section
+            item {
+                BookingSection(
+                    title = "Service Time",
+                    value = "Today $serviceTime",
                     onEditClick = {},
                     editButtonText = "Edit"
                 )
