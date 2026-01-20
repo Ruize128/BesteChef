@@ -13,6 +13,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
 // Preview removed for multiplatform
 import nl.tue.hci.core.ui.BesteChefTheme
@@ -280,10 +282,25 @@ fun DinerScreen(
                             NavigationBarItem(
                                 icon = {
                                     val painter = rememberImagePainter(destination.iconName)
-                                    Icon(
-                                        painter = painter,
-                                        contentDescription = destination.label
-                                    )
+                                    androidx.compose.foundation.layout.Box {
+                                        Icon(
+                                            painter = painter,
+                                            contentDescription = destination.label
+                                        )
+                                        // Show badge on Booking icon when there are pending bookings
+                                        if (destination == DinerDestinations.ORDERS) {
+                                            val pendingCount = orders.count { it.status == DinerOrderStatus.PENDING }
+                                            if (pendingCount > 0) {
+                                                Badge(
+                                                    modifier = Modifier
+                                                        .align(Alignment.TopEnd)
+                                                        .offset(x = 8.dp, y = (-4).dp)
+                                                ) {
+                                                    Text(text = pendingCount.toString())
+                                                }
+                                            }
+                                        }
+                                    }
                                 },
                                 label = { Text(destination.label) },
                                 selected = destination == currentDestination,
