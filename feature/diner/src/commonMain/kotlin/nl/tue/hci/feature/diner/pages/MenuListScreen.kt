@@ -353,13 +353,13 @@ private fun ReviewsCarousel(
 
     val reviews = listOf(
         Review(
-            author = "Sophie",
+            author = "Alice",
             rating = 5.0f,
             date = "Dec 2025",
             text = "Absolutely loved the Omakase course. Every dish was thoughtful and perfectly balanced. Highly recommended!"
         ),
         Review(
-            author = "Marco",
+            author = "Bob",
             rating = 5.0f,
             date = "Nov 2025",
             text = "Fantastic seasonal menu and great attention to dietary preferences. The Honey Nut & Caramel dessert was a standout."
