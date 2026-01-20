@@ -31,15 +31,24 @@ class LoginStateHolder(
      */
     fun updatePassword(password: String) {
         _uiState.update { currentState ->
-            // If password is now >= 8 characters AND error is about length, clear it
-            val isPasswordLengthError = currentState.errorMessage == "Password must be at least 8 characters long"
-            val isPasswordNowValid = password.length >= 8
-            
-            currentState.copy(
-                password = password,
-                errorMessage = if (isPasswordLengthError && isPasswordNowValid) null else currentState.errorMessage,
-                validationAttempted = false
-            )
+            // In sign-in mode: clear any error when user starts typing (allow retry)
+            if (currentState.isSigningIn) {
+                currentState.copy(
+                    password = password,
+                    errorMessage = null,
+                    validationAttempted = false
+                )
+            } else {
+                // In sign-up mode: only clear password length error if password is now >= 8
+                val isPasswordLengthError = currentState.errorMessage == "Password must be at least 8 characters long"
+                val isPasswordNowValid = password.length >= 8
+                
+                currentState.copy(
+                    password = password,
+                    errorMessage = if (isPasswordLengthError && isPasswordNowValid) null else currentState.errorMessage,
+                    validationAttempted = false
+                )
+            }
         }
     }
 

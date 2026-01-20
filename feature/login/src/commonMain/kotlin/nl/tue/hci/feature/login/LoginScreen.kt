@@ -291,7 +291,7 @@ fun LoginScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = animatedButtonColor
             ),
-            enabled = !uiState.isLoading && !(uiState.isSigningUp && uiState.password.length < 8) && uiState.errorMessage == null
+            enabled = !uiState.isLoading && !(uiState.isSigningUp && uiState.password.length < 8) && !(uiState.isSigningUp && uiState.errorMessage != null)
         ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
