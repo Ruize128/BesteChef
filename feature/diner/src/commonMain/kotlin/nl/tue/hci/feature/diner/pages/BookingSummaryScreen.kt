@@ -334,15 +334,15 @@ fun BookingSummaryScreen(
                 )
             }
             
-            // Service Time section
-            item {
-                BookingSection(
-                    title = "Service Time",
-                    value = "Today $serviceTime",
-                    onEditClick = {},
-                    editButtonText = "Edit"
-                )
-            }
+//            // Service Time section
+//            item {
+//                BookingSection(
+//                    title = "Service Time",
+//                    value = "Today $serviceTime",
+//                    onEditClick = {},
+//                    editButtonText = "Edit"
+//                )
+//            }
             
             // Menu summary section
             item {

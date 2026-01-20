@@ -514,6 +514,7 @@ fun ChefChatScreen(
                 )
                 
                 // Send button
+                val isSendEnabled = messageText.isNotBlank() || showImageBubble
                 IconButton(
                     onClick = {
                         // If image bubble is showing, send the image
@@ -557,13 +558,13 @@ fun ChefChatScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(colors.chefPrimary),
-                    enabled = messageText.isNotBlank() || showImageBubble
+                        .background(if (isSendEnabled) colors.chefPrimary else Color.Gray),
+                    enabled = isSendEnabled
                 ) {
                     Icon(
                         imageVector = Icons.Default.Send,
                         contentDescription = "Send",
-                        tint = colors.textOnPrimary,
+                        tint = if (isSendEnabled) colors.textOnPrimary else Color.White,
                         modifier = Modifier.size(20.dp)
                     )
                 }

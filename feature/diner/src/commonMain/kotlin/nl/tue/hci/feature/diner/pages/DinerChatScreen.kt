@@ -536,6 +536,7 @@ fun DinerChatScreen(
                 )
                 
                 // Send button
+                val isSendEnabled = messageText.isNotBlank()
                 IconButton(
                     onClick = {
                         if (messageText.isNotBlank()) {
@@ -562,13 +563,13 @@ fun DinerChatScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(colors.dinerPrimary),
-                    enabled = messageText.isNotBlank()
+                        .background(if (isSendEnabled) colors.dinerPrimary else Color.Gray),
+                    enabled = isSendEnabled
                 ) {
                     Icon(
                         imageVector = Icons.Default.Send,
                         contentDescription = "Send",
-                        tint = colors.textOnPrimary,
+                        tint = if (isSendEnabled) colors.textOnPrimary else Color.White,
                         modifier = Modifier.size(20.dp)
                     )
                 }
