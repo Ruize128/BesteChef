@@ -30,14 +30,32 @@ class LoginStateHolder(
      * Update password value
      */
     fun updatePassword(password: String) {
-        _uiState.update { it.copy(password = password, errorMessage = null, validationAttempted = false) }
+        _uiState.update { currentState ->
+            // If password is now >= 8 characters AND error is about length, clear it
+            val isPasswordLengthError = currentState.errorMessage == "Password must be at least 8 characters long"
+            val isPasswordNowValid = password.length >= 8
+            
+            currentState.copy(
+                password = password,
+                errorMessage = if (isPasswordLengthError && isPasswordNowValid) null else currentState.errorMessage,
+                validationAttempted = false
+            )
+        }
     }
 
     /**
      * Update confirm password value
      */
     fun updateConfirmPassword(confirmPassword: String) {
-        _uiState.update { it.copy(confirmPassword = confirmPassword, errorMessage = null, validationAttempted = false) }
+        _uiState.update { currentState ->
+            // Don't clear the password length error message
+            val shouldClearError = currentState.errorMessage != "Password must be at least 8 characters long"
+            currentState.copy(
+                confirmPassword = confirmPassword,
+                errorMessage = if (shouldClearError) null else currentState.errorMessage,
+                validationAttempted = false
+            )
+        }
     }
 
     /**
@@ -130,6 +148,22 @@ class LoginStateHolder(
         }
     }
 
+    /**
+     * Called when the password input loses focus: validate password length
+     */
+    fun onPasswordFocusLost() {
+        val currentState = _uiState.value
+        // Only validate when in sign-up mode
+        if (!currentState.isSigningUp) return
+
+        val password = currentState.password
+        if (password.isNotEmpty() && password.length < 8) {
+            _uiState.update {
+                it.copy(errorMessage = "Password must be at least 8 characters long")
+            }
+        }
+    }
+
     private fun switchToSignInMode() {
         _uiState.update {
             it.copy(
@@ -172,6 +206,19 @@ class LoginStateHolder(
         // Mark that validation has been attempted
         _uiState.update { it.copy(validationAttempted = true) }
         
+        // If there's already an error message, don't proceed with any processing
+        if (currentState.errorMessage != null) {
+            return
+        }
+        
+        // Check password length when signing up - block immediately if too short
+        if (currentState.isSigningUp && currentState.password.length < 8) {
+            _uiState.update { 
+                it.copy(errorMessage = "Password must be at least 8 characters long") 
+            }
+            return
+        }
+        
         if (email.isEmpty()) {
             _uiState.update { 
                 it.copy(errorMessage = "Please enter your email address") 
@@ -194,11 +241,35 @@ class LoginStateHolder(
             return
         }
 
+        // Check password is provided when signing in
+        if (currentState.isSigningIn && currentState.password.isEmpty()) {
+            _uiState.update { 
+                it.copy(errorMessage = "Please enter your password") 
+            }
+            return
+        }
+
         // Set loading state
         _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
         coroutineScope.launch {
             try {
+                // Final guard: if password still too short, stop immediately and show error.
+                val latest = _uiState.value
+                if (latest.isSigningUp && latest.password.length < 8) {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = "Password must be at least 8 characters long"
+                        )
+                    }
+                    return@launch
+                }
+                if (latest.errorMessage != null) {
+                    _uiState.update { it.copy(isLoading = false) }
+                    return@launch
+                }
+
                 // Simulate API call or validation
                 // TODO: Replace with actual authentication logic
                 delay(500) // Simulate network delay
@@ -207,14 +278,23 @@ class LoginStateHolder(
                     // Auto-login as DINER
                     val currentState = _uiState.value
                     
-                    // If isSigningIn == true, jump to Diner Main Page directly
+                    // If isSigningIn == true, validate password and jump to Diner Main Page
                     if (currentState.isSigningIn) {
-                        // mock check password
-                        _uiState.update { 
-                            it.copy(
-                                isLoading = false,
-                                navigationEvent = LoginNavigationEvent.NavigateToDinerMainPage(UserRole.DINER)
-                            ) 
+                        // Check password
+                        if (currentState.password == "12345678") {
+                            _uiState.update { 
+                                it.copy(
+                                    isLoading = false,
+                                    navigationEvent = LoginNavigationEvent.NavigateToDinerMainPage(UserRole.DINER)
+                                ) 
+                            }
+                        } else {
+                            _uiState.update { 
+                                it.copy(
+                                    isLoading = false,
+                                    errorMessage = "Incorrect password. Please try again."
+                                ) 
+                            }
                         }
                     } else {
                         _uiState.update { 
@@ -230,14 +310,23 @@ class LoginStateHolder(
                     // Auto-login as CHEF
                     val currentState = _uiState.value
 
-                    // If isSigningIn == true, jump to Chef Main Page directly
+                    // If isSigningIn == true, validate password and jump to Chef Main Page
                     if (currentState.isSigningIn) {
-                        // mock check password
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                navigationEvent = LoginNavigationEvent.NavigateToChefMainPage(UserRole.CHEF)
-                            )
+                        // Check password
+                        if (currentState.password == "12345678") {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    navigationEvent = LoginNavigationEvent.NavigateToChefMainPage(UserRole.CHEF)
+                                )
+                            }
+                        } else {
+                            _uiState.update { 
+                                it.copy(
+                                    isLoading = false,
+                                    errorMessage = "Incorrect password. Please try again."
+                                ) 
+                            }
                         }
                     } else {
                         _uiState.update {
@@ -312,6 +401,12 @@ class LoginStateHolder(
      */
     fun submitSignUp() {
         val currentState = _uiState.value
+
+        // Check password length FIRST - highest priority, block immediately
+        if (currentState.password.length < 8) {
+            _uiState.update { it.copy(errorMessage = "Password must be at least 8 characters long") }
+            return
+        }
 
         // mark that validation was attempted
         _uiState.update { it.copy(validationAttempted = true, errorMessage = null) }

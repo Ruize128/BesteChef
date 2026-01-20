@@ -291,7 +291,7 @@ fun LoginScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = animatedButtonColor
             ),
-            enabled = !uiState.isLoading
+            enabled = !uiState.isLoading && !(uiState.isSigningUp && uiState.password.length < 8) && uiState.errorMessage == null
         ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
@@ -589,7 +589,13 @@ fun ConfirmPasswordInput(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(56.dp)
+            .onFocusChanged { focusState ->
+                if (!focusState.isFocused) {
+                    // user left the password input: trigger length validation
+                    stateHolder.onPasswordFocusLost()
+                }
+            },
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = colors.surface,
@@ -616,11 +622,6 @@ fun ConfirmPasswordInput(
     Spacer(modifier = Modifier.height(1.dp))
 
     // Confirm password field
-    val passwordMismatch = uiState.validationAttempted &&
-                          uiState.password.isNotEmpty() && 
-                          uiState.confirmPassword.isNotEmpty() && 
-                          uiState.password != uiState.confirmPassword
-    
     OutlinedTextField(
         value = uiState.confirmPassword,
         onValueChange = { stateHolder.updateConfirmPassword(it) },
@@ -637,13 +638,13 @@ fun ConfirmPasswordInput(
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = colors.surface,
             unfocusedContainerColor = colors.surface,
-            focusedBorderColor = if (passwordMismatch) colors.error else colors.outline,
-            unfocusedBorderColor = if (passwordMismatch) colors.error else colors.outline,
+            focusedBorderColor = colors.outline,
+            unfocusedBorderColor = colors.outline,
             errorBorderColor = colors.error,
         ),
         singleLine = true,
         enabled = !uiState.isLoading,
-        isError = passwordMismatch || uiState.errorMessage != null,
+        isError = uiState.errorMessage != null,
         visualTransformation = if (uiState.confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             IconButton(onClick = { stateHolder.toggleConfirmPasswordVisibility() }) {
@@ -655,17 +656,6 @@ fun ConfirmPasswordInput(
             }
         }
     )
-    
-    // Password mismatch warning
-    if (passwordMismatch) {
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "Passwords do not match",
-            color = colors.error,
-            style = BesteChefThemeTypography.current().labelSmall,
-            modifier = Modifier.padding(start = 16.dp)
-        )
-    }
 }
 
 /**
