@@ -40,6 +40,8 @@ import nl.tue.hci.feature.diner.BookingSummaryMenuItem
 import nl.tue.hci.feature.diner.BookingPriceSummary
 import nl.tue.hci.feature.diner.DinerOrder
 import nl.tue.hci.feature.diner.DinerOrderStatus
+import nl.tue.hci.feature.diner.components.formatDate
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun BookingSummaryScreen(
@@ -99,9 +101,25 @@ fun BookingSummaryScreen(
     
     // Hardcoded booking summary data
     val bookingDetails = remember {
+        // Read selected date from database, fallback to default
+        val selectedDateStr = GlobalDatabase.readString("diner_selected_date")
+        val selectedDate = if (selectedDateStr != null) {
+            try {
+                LocalDate.parse(selectedDateStr)
+            } catch (e: Exception) {
+                null
+            }
+        } else null
+        
+        val dateString = if (selectedDate != null) {
+            formatDate(selectedDate)
+        } else {
+            "Dec 12, 2025"
+        }
+        
         BookingSummaryDetails(
             location = "Eindhoven",
-            date = "Dec 12, 2025",
+            date = dateString,
             time = "19:00",
             guests = 6,
             venue = "123 Food Street, Eindhoven"

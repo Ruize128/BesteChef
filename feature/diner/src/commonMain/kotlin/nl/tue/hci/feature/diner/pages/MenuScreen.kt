@@ -44,6 +44,8 @@ import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.ui.components.QuantitySelector
 import nl.tue.hci.core.ui.icons.rememberIconPainter
 import nl.tue.hci.feature.diner.MenuItem
+import nl.tue.hci.feature.diner.components.formatDate
+import kotlinx.datetime.LocalDate
 
 
 @Composable
@@ -467,8 +469,25 @@ private fun MenuContent(
                                         color = colors.textSecondary
                                     )
                                     Spacer(modifier = Modifier.height(4.dp))
+                                    
+                                    // Get selected date from database
+                                    val selectedDateStr = GlobalDatabase.readString("diner_selected_date")
+                                    val selectedDate = if (selectedDateStr != null) {
+                                        try {
+                                            LocalDate.parse(selectedDateStr)
+                                        } catch (e: Exception) {
+                                            null
+                                        }
+                                    } else null
+                                    
+                                    val dateDisplay = if (selectedDate != null) {
+                                        formatDate(selectedDate)
+                                    } else {
+                                        "Today"
+                                    }
+                                    
                                     Text(
-                                        text = "Today $serviceTime",
+                                        text = "$dateDisplay $serviceTime",
                                         style = typography.bodyMedium,
                                         color = colors.textPrimary,
                                         fontWeight = FontWeight.SemiBold

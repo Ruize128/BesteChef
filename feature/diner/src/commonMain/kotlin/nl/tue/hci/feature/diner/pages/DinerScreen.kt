@@ -344,6 +344,10 @@ fun DinerScreen(
                             selectedSearchGuests = guests
                             selectedSearchAllergens = allergens
                             selectedSearchCuisine = cuisine
+                            // Save selected date to GlobalDatabase
+                            date?.let {
+                                GlobalDatabase.writeString("diner_selected_date", it.toString())
+                            }
                         },
                         onChatClick = { chefName ->
                             // Navigate to chat section and open chat
