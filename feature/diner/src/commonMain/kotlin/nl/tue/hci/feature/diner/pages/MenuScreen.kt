@@ -691,7 +691,7 @@ private fun MenuContent(
                                 showBookConfirmDialog = false
                                 showCartSheet = false
                                 // Write order status and items to database
-                                GlobalDatabase.writeString("ichiraku_order_status", "PENDING")
+                                GlobalDatabase.writeString("diner_booking_status", "PENDING")
                                 
                                 // Encode and save menu items with quantities
                                 val itemsData = menuItems.mapNotNull { item ->

@@ -436,7 +436,7 @@ fun EditOrderScreen(
                         onClick = {
                             showCancelDialog = false
                             // Write CANCELLED status to database
-                            nl.tue.hci.core.data.GlobalDatabase.writeString("ichiraku_order_status", "CANCELLED")
+                            nl.tue.hci.core.data.GlobalDatabase.writeString("chef_order_status", "CANCELLED")
                             scope.launch {
                                 snackbarHostState.showSnackbar("Delete order complete")
                             }

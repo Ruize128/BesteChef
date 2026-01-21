@@ -98,7 +98,7 @@ fun DinerScreen(
             val ordersList = mutableListOf<DinerOrder>()
             
             // Check if Ichiraku order exists in database
-            val ichirakuStatus = GlobalDatabase.readString("ichiraku_order_status")
+            val ichirakuStatus = GlobalDatabase.readString("diner_booking_status")
             if (ichirakuStatus != null) {
                 val orderStatus = when (ichirakuStatus) {
                     "PENDING" -> DinerOrderStatus.PENDING

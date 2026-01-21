@@ -73,7 +73,7 @@ fun BookingSummaryScreen(
         }
     } else {
         // Read status from database if order is not provided
-        GlobalDatabase.readString("ichiraku_order_status") ?: "PENDING"
+        GlobalDatabase.readString("diner_booking_status") ?: "PENDING"
     }
     
     // Handle processing delay
@@ -85,12 +85,12 @@ fun BookingSummaryScreen(
             when (orderStatus) {
                 "PENDING" -> {
                     // Book & Pay clicked - change from PENDING to ONGOING
-                    GlobalDatabase.writeString("ichiraku_order_status", "ONGOING")
+                    GlobalDatabase.writeString("diner_booking_status", "ONGOING")
                     onBookAndPayClick()
                 }
                 "ONGOING" -> {
                     // Pay remaining clicked - change from ONGOING to COMPLETED
-                    GlobalDatabase.writeString("ichiraku_order_status", "COMPLETED")
+                    GlobalDatabase.writeString("diner_booking_status", "COMPLETED")
                     onPayRemainingClick?.invoke()
                 }
                 else -> onBookAndPayClick()
@@ -491,7 +491,7 @@ fun BookingSummaryScreen(
                         onClick = {
                             showCancelDialog = false
                             // Write CANCELLED status to database
-                            GlobalDatabase.writeString("ichiraku_order_status", "CANCELLED")
+                            GlobalDatabase.writeString("diner_booking_status", "CANCELLED")
                             scope.launch {
                                 snackbarHostState.showSnackbar("Delete order complete")
                             }

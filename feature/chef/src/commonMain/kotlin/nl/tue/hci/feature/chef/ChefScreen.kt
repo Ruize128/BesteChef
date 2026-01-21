@@ -259,6 +259,11 @@ fun ChefScreen(
                             onChatClick = { customerName ->
                                 chatCustomerName = customerName
                                 showChatScreen = true
+                                // Clear unread count when opening Sophie's chat
+                                if (customerName == "Sophie") {
+                                    unreadMessageCount = 0
+                                    GlobalDatabase.writeString("chef_unread_count", "0")
+                                }
                             },
                             onOrderClick = { bookingId, status ->
                                 editOrderId = bookingId
@@ -294,6 +299,9 @@ fun ChefScreen(
                                 editOrderSource = "orders" // Track that we came from orders list
                             },
                             onSendOfferClick = { orderDetails, menuItems ->
+                                // Update booking status to SENT in GlobalDatabase
+                                GlobalDatabase.writeString("chef_order_status", "SENT")
+                                
                                 // Persist booking card into chat history so it shows on next open
                                 val bookingEntry = "BOOKING|Now|true"
                                 val existingChat = GlobalDatabase.readString("chef_chat_messages").orEmpty()
@@ -372,7 +380,7 @@ fun ChefOrdersScreen(
     // Mock orders list (same as in ChefOrdersListScreen)
     // Read order status from database for order 1
     val order1Status = remember(sentOrderId, showEditOrder) {
-        val dbStatus = nl.tue.hci.core.data.GlobalDatabase.readString("ichiraku_order_status")
+        val dbStatus = nl.tue.hci.core.data.GlobalDatabase.readString("chef_order_status")
         when (dbStatus) {
             "CANCELLED" -> nl.tue.hci.feature.chef.model.OrderStatus.CANCELLED
             "COMPLETED" -> nl.tue.hci.feature.chef.model.OrderStatus.COMPLETED

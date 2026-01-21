@@ -37,7 +37,7 @@ fun ChefOrdersListScreen(
     
     // Read order status from database for order 1
     val order1Status = remember(sentOrderId) {
-        val dbStatus = nl.tue.hci.core.data.GlobalDatabase.readString("ichiraku_order_status")
+        val dbStatus = nl.tue.hci.core.data.GlobalDatabase.readString("chef_order_status")
         when (dbStatus) {
             "CANCELLED" -> OrderStatus.CANCELLED
             "COMPLETED" -> OrderStatus.COMPLETED

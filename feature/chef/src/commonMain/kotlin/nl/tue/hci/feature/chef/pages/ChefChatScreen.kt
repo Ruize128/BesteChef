@@ -62,7 +62,7 @@ fun ChefChatScreen(
     
     // Read order data from database
     val orderStatus = remember {
-        GlobalDatabase.readString("ichiraku_order_status") ?: "DRAFT"
+        GlobalDatabase.readString("chef_order_status") ?: "DRAFT"
     }
     val isSent = orderStatus == "SENT" || orderStatus == "CONFIRMED" || orderStatus == "ON_GOING" || orderStatus == "PENDING"
     

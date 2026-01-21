@@ -270,7 +270,7 @@ fun DinerChatScreen(
                 }
                 
                 // Create a new order in the database when booking offer is sent
-                GlobalDatabase.writeString("ichiraku_order_status", "PENDING")
+                GlobalDatabase.writeString("diner_booking_status", "PENDING")
                 
                 // Replace "Honey Nut & Caramel" with "Yuzu mousse" in cart
                 val storedCart = GlobalDatabase.readString("diner_order_menu_items")
