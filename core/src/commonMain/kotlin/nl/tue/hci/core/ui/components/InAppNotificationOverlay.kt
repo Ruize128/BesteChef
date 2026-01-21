@@ -194,7 +194,7 @@ private fun InAppNotificationCard(
                 ) {
                     Text(
                         text = notification.title,
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = colors.textPrimary
                     )

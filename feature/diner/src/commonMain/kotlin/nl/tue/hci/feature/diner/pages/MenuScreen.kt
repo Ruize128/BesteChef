@@ -246,7 +246,7 @@ private fun MenuContent(
 
                     Text(
                         text = if (menuName.isNotEmpty()) menuName else chefName,
-                        style = typography.sectionTitle,
+                        style = typography.titleLarge,
                         color = colors.textPrimary,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
@@ -305,7 +305,7 @@ private fun MenuContent(
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
             containerColor = colors.dinerPrimary,
-            contentColor = colors.textPrimary
+            contentColor = colors.textOnPrimary
         ) {
             Icon(
                 imageVector = Icons.Default.ShoppingCart,
@@ -332,7 +332,7 @@ private fun MenuContent(
                 ) {
                     Text(
                         text = "Menu items",
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary
                     )
 
@@ -592,13 +592,13 @@ private fun MenuContent(
                             ) {
                                 Text(
                                     text = "Total",
-                                    style = typography.cardTitle,
+                                    style = typography.titleMedium,
                                     color = colors.textPrimary,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
                                     text = "€${total.toInt()}",
-                                    style = typography.cardTitle,
+                                    style = typography.titleMedium,
                                     color = colors.dinerPrimary,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -638,7 +638,7 @@ private fun MenuContent(
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = colors.dinerPrimary,
-                                contentColor = colors.textPrimary
+                                contentColor = colors.textOnPrimary
                             )
                         ) {
                             Text("Book")
@@ -654,7 +654,7 @@ private fun MenuContent(
                 title = {
                     Text(
                         text = "Confirm booking?",
-                        style = typography.sectionTitle,
+                        style = typography.titleLarge,
                         color = colors.textPrimary
                     )
                 },
@@ -716,7 +716,7 @@ private fun MenuContent(
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = colors.dinerPrimary,
-                                contentColor = colors.textPrimary
+                                contentColor = colors.textOnPrimary
                             )
                         ) {
                             Text("Confirm")
@@ -752,7 +752,7 @@ private fun MenuContent(
                 title = {
                     Text(
                         text = "Edit Delivery Address",
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary
                     )
                 },
@@ -785,12 +785,12 @@ private fun MenuContent(
                             showAddressEditDialog = false
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = colors.dinerPrimary
+                            containerColor = colors.dinerPrimary,
+                            contentColor = colors.textOnPrimary
                         )
                     ) {
                         Text(
                             text = "Save",
-                            color = colors.textPrimary
                         )
                     }
                 },
@@ -975,7 +975,7 @@ private fun TimePickerDialog(
         title = {
             Text(
                 text = "Select Service Time",
-                style = typography.cardTitle,
+                style = typography.titleMedium,
                 color = colors.textPrimary
             )
         },
@@ -1103,12 +1103,12 @@ private fun TimePickerDialog(
             Button(
                 onClick = onSave,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colors.dinerPrimary
+                    containerColor = colors.dinerPrimary,
+                    contentColor = colors.textOnPrimary
                 )
             ) {
                 Text(
                     text = "Save",
-                    color = colors.textPrimary
                 )
             }
         },
@@ -1161,7 +1161,7 @@ fun MenuItemCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(160.dp)
                     .alpha(if (isZero) 0.5f else 1f)
             ) {
                 if (carouselImages != null && carouselImages.isNotEmpty()) {
@@ -1221,7 +1221,7 @@ fun MenuItemCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 // Title with star icon
                 Row(
@@ -1231,7 +1231,7 @@ fun MenuItemCard(
                 ) {
                     Text(
                         text = menuItem.title,
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary,
                         modifier = Modifier.weight(1f).alpha(if (isZero) 0.5f else 1f)
                     )
@@ -1285,7 +1285,7 @@ fun MenuItemCard(
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(8.dp))
+                //Spacer(modifier = Modifier.height(8.dp))
                 
                 // Action buttons removed; chat icon on title navigates to chat
             }

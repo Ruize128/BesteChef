@@ -118,7 +118,7 @@ private fun CustomCalendar(
             
             Text(
                 text = "${getMonthName(currentMonth.monthNumber)} ${currentMonth.year}",
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     color = colors.textPrimary

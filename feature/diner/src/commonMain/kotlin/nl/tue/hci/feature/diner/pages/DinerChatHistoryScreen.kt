@@ -71,7 +71,7 @@ fun DinerChatHistoryScreen(
             ) {
                 Text(
                     text = "Chats",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary,
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
@@ -93,7 +93,7 @@ fun DinerChatHistoryScreen(
                 ) {
                     Text(
                         text = "No chats yet",
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary
                     )
                     Text(
@@ -173,7 +173,7 @@ private fun ChatHistoryItemCard(
                 ) {
                     Text(
                         text = chatItem.chefName,
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary
                     )
                     

@@ -347,7 +347,7 @@ fun DinerChatScreen(
                 ) {
                     Text(
                         text = "Chat with $chefName",
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary
                     )
                     Text(
@@ -473,7 +473,7 @@ fun DinerChatScreen(
                     ) {
                         Text(
                             text = "5-course Omakase",
-                            style = typography.cardTitle,
+                            style = typography.titleMedium,
                             color = colors.textPrimary
                         )
                         Text(
@@ -507,7 +507,7 @@ fun DinerChatScreen(
                     ) {
                         Text(
                             text = if (hasBookingOffer) "View Booking" else "View Cart",
-                            style = typography.buttonText,
+                            style = typography.labelLarge,
                         )
                     }
                 }

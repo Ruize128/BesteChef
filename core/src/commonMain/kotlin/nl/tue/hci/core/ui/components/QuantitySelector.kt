@@ -12,12 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.Dp
 import nl.tue.hci.core.ui.BesteChefThemeColors
+import nl.tue.hci.core.ui.BesteChefThemeTypography
 
 @Composable
 fun QuantitySelector(
@@ -25,13 +28,13 @@ fun QuantitySelector(
     onDecrease: () -> Unit,
     onIncrease: () -> Unit,
     modifier: Modifier = Modifier,
-    buttonSize: Dp = 32.dp
+    buttonSize: Dp = 24.dp
 ) {
     val colors = BesteChefThemeColors.current()
+    val typography = BesteChefThemeTypography.current()
     
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Decrease button
@@ -45,8 +48,8 @@ fun QuantitySelector(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "-",
-                fontSize = (buttonSize.value / 2).sp,
+                text = "–",
+                fontSize = (buttonSize.value / 3 * 2).sp,
                 fontWeight = FontWeight.Bold,
                 color = colors.textPrimary.copy(alpha = if (isZero) 0.5f else 1f)
             )
@@ -55,8 +58,7 @@ fun QuantitySelector(
         // Quantity display
         Text(
             text = quantity.toString(),
-            fontSize = (buttonSize.value / 2.2).sp,
-            fontWeight = FontWeight.Medium,
+            style = typography.bodyMedium.copy(lineHeight = (buttonSize.value).sp),
             color = colors.textPrimary,
             modifier = Modifier.width(buttonSize),
             textAlign = TextAlign.Center
@@ -73,7 +75,7 @@ fun QuantitySelector(
         ) {
             Text(
                 text = "+",
-                fontSize = (buttonSize.value / 2).sp,
+                fontSize = (buttonSize.value / 3 * 2).sp,
                 fontWeight = FontWeight.Bold,
                 color = colors.textPrimary
             )

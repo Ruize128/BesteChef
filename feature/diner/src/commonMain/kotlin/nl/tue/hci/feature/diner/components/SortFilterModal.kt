@@ -96,7 +96,7 @@ fun SortFilterModal(
                 item {
                     Text(
                         text = "Filter & Sort",
-                        style = typography.sectionTitle,
+                        style = typography.titleLarge,
                         color = colors.textPrimary
                     )
                 }
@@ -393,7 +393,7 @@ fun SortFilterModal(
                         ) {
                             Text(
                                 text = "Cancel",
-                                style = typography.buttonText,
+                                style = typography.labelLarge,
                                 color = colors.textPrimary,
                             )
                         }
@@ -413,13 +413,13 @@ fun SortFilterModal(
                                 .height(40.dp),
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = colors.dinerPrimary
+                                containerColor = colors.dinerPrimary,
+                                contentColor = colors.textOnPrimary,
                             )
                         ) {
                             Text(
                                 text = "Confirm",
-                                style = typography.buttonText,
-                                color = colors.textOnPrimary
+                                style = typography.labelLarge,
                             )
                         }
                     }

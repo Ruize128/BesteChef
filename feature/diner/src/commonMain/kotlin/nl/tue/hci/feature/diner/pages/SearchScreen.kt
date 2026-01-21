@@ -56,8 +56,8 @@ fun SearchScreen(
     val locationPlaceholder = "Where?"
     val datePlaceholder = "When?"
     val guestsPlaceholder = "Who?"
-    val allergensPlaceholder = "Allergens (optional) — e.g. nuts, dairy"
-    val cuisinePlaceholder = "Cuisine (optional) — e.g. Japanese"
+    val allergensPlaceholder = "Allergens (optional) — nuts, dairy, …"
+    val cuisinePlaceholder = "Cuisine (optional) — Japanese, French, …"
     
     // Location state
     var selectedLocation by rememberSaveable { mutableStateOf<String?>("Amsterdam") }
@@ -98,7 +98,7 @@ fun SearchScreen(
         Text(
             text = "Find a private chef for\nany occasion",
             style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold,
+            fontWeight = FontWeight.SemiBold,
             fontStyle = FontStyle.Italic,
             textAlign = TextAlign.Center,
             color = colors.textPrimary,
@@ -135,7 +135,7 @@ fun SearchScreen(
                         Text(
                             text = selectedLocation ?: locationPlaceholder,
                             style = typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Medium,
                             color = if (selectedLocation != null) {
                                 colors.textPrimary
                             } else {
@@ -189,6 +189,7 @@ fun SearchScreen(
                                 datePlaceholder
                             },
                             style = typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
                             color = if (selectedDate != null) {
                                 colors.textPrimary
                             } else {
@@ -239,6 +240,7 @@ fun SearchScreen(
                             .fillMaxWidth()
                             .padding(top = 4.dp),
                         textStyle = typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Medium,
                             color = if (guestsNumber.isNotEmpty()) {
                                 colors.textPrimary
                             } else {
@@ -283,7 +285,6 @@ fun SearchScreen(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search",
-                        tint = colors.textOnPrimary,
                         modifier = Modifier.size(20.dp)
                     )
                 }

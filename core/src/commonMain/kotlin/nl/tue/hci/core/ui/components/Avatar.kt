@@ -29,7 +29,7 @@ fun Avatar(
 ) {
     val colors = BesteChefThemeColors.current()
     val finalBackgroundColor = backgroundColor ?: colors.dinerSecondary
-    val finalTextColor = textColor ?: colors.textPrimary
+    val finalTextColor = textColor ?: colors.textOnSecondary
     Box(
         modifier = modifier
             .size(size.dp)

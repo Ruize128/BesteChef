@@ -45,7 +45,7 @@ fun ChefProfileScreen(
         // User Name
         Text(
             text = "Ichiraku",
-            style = typography.sectionTitle,
+            style = typography.titleLarge,
             color = colors.textPrimary,
             fontWeight = FontWeight.Bold
         )
@@ -68,7 +68,7 @@ fun ChefProfileScreen(
         ) {
             Text(
                 text = "Logout",
-                style = typography.buttonText
+                style = typography.labelLarge
             )
         }
     }

@@ -71,7 +71,7 @@ private fun MenuListContent(
                 name = "Classic Japanese",
                 description = "Traditional Japanese cuisine with fresh ingredients",
                 dishCount = 4,
-                priceRange = "€95-€125",
+                priceRange = "€95–125",
                 imageColor = colors.imagePlaceholder1 // Light mint green
             ),
             ChefMenu(
@@ -79,7 +79,7 @@ private fun MenuListContent(
                 name = "Fusion Delights",
                 description = "East meets West in creative dishes",
                 dishCount = 6,
-                priceRange = "€60-€95",
+                priceRange = "€60–95",
                 imageColor = colors.imagePlaceholder2 // Light orange/peach
             ),
             ChefMenu(
@@ -87,7 +87,7 @@ private fun MenuListContent(
                 name = "Premium Selection",
                 description = "Chef's special premium dishes",
                 dishCount = 4,
-                priceRange = "€45-€75",
+                priceRange = "€45–75",
                 imageColor = colors.imagePlaceholder3 // Light blue
             ),
             ChefMenu(
@@ -95,7 +95,7 @@ private fun MenuListContent(
                 name = "Seasonal Specials",
                 description = "Fresh seasonal ingredients",
                 dishCount = 7,
-                priceRange = "€30-€50",
+                priceRange = "€30–50",
                 imageColor = colors.imagePlaceholder4 // Light beige
             )
         )
@@ -140,7 +140,7 @@ private fun MenuListContent(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = chefName,
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -168,6 +168,8 @@ private fun MenuListContent(
                 )
             }
 
+            item { Spacer(modifier = Modifier.height(4.dp)) }
+
             // Reviews carousel as a list item
             item {
                 ReviewsCarousel(
@@ -176,17 +178,18 @@ private fun MenuListContent(
                 )
             }
 
+            item { Spacer(modifier = Modifier.height(4.dp)) }
+
             // Menu section header
             item {
                 val colors = BesteChefThemeColors.current()
                 val typography = BesteChefThemeTypography.current()
                 Text(
-                    text = "Menu",
-                    style = typography.sectionTitle,
+                    text = "Menus",
+                    style = typography.titleLarge,
                     color = colors.textPrimary
                 )
             }
-            item { Spacer(modifier = Modifier.height(4.dp)) }
 
             // Menu items
             items(menus, key = { it.id }) { menu ->
@@ -254,7 +257,7 @@ private fun ChefInfoHeader(
                 ) {
                     Text(
                         text = chefName,
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary
                     )
                     Text(
@@ -377,7 +380,7 @@ private fun ReviewsCarousel(
     ) {
         Text(
             text = "Reviews",
-            style = typography.sectionTitle,
+            style = typography.titleLarge,
             color = colors.textPrimary,
             modifier = Modifier.padding(horizontal = 0.dp)
         )
@@ -408,7 +411,7 @@ private fun ReviewsCarousel(
                         ) {
                             Text(
                                 text = review.author,
-                                style = typography.cardTitle,
+                                style = typography.titleMedium,
                                 color = colors.textPrimary
                             )
                             RatingStars(rating = review.rating)
@@ -478,7 +481,7 @@ private fun ReviewsCarousel(
                             ) {
                                 Text(
                                     text = review.author,
-                                    style = typography.cardTitle,
+                                    style = typography.titleMedium,
                                     color = colors.textPrimary
                                 )
                                 RatingStars(rating = review.rating)
@@ -546,7 +549,7 @@ private fun MenuCard(
             ) {
                 Text(
                     text = menu.name,
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     color = colors.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -598,10 +601,9 @@ private fun MenuCard(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Text(
-                    text = "View Menu",
+                    text = "View",
                     style = typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
-                    color = colors.textPrimary
                 )
             }
         }

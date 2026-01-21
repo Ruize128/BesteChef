@@ -84,7 +84,7 @@ fun SortModal(
                     // Header
                     Text(
                         text = "Sort",
-                        style = typography.sectionTitle,
+                        style = typography.titleLarge,
                         color = colors.textPrimary
                     )
 

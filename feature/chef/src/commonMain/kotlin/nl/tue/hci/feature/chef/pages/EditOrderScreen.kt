@@ -242,7 +242,7 @@ fun EditOrderScreen(
 
                 Text(
                     text = if (orderStatus == OrderStatus.DRAFT) "Edit Booking" else "Booking Summary",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary,
                     modifier = Modifier.weight(1f)
                 )
@@ -292,7 +292,7 @@ fun EditOrderScreen(
             item {
                 Text(
                     text = "Menu Preview",
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     color = colors.textPrimary,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
@@ -376,13 +376,11 @@ fun EditOrderScreen(
                 ) {
                     Text(
                         text = "Send Proposal",
-                        style = typography.cardTitle,
-                        color = colors.textPrimary,
+                        style = typography.titleMedium,
                     )
                     Text(
                         text = priceSummary.total,
-                        style = typography.cardTitle,
-                        color = colors.textPrimary,
+                        style = typography.titleMedium,
                     )
                 }
             }
@@ -396,7 +394,7 @@ fun EditOrderScreen(
             title = {
                 Text(
                     text = "Cancel Booking?",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary
                 )
             },
@@ -469,7 +467,7 @@ fun EditOrderScreen(
             title = {
                 Text(
                     text = "Send Proposal?",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary
                 )
             },
@@ -593,7 +591,7 @@ private fun BookingSection(
             ) {
                 Text(
                     text = "Booking",
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     color = colors.textPrimary
                 )
 
@@ -687,7 +685,7 @@ private fun OfferMenuItemCard(
             ) {
                 Text(
                     text = item.title,
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     color = colors.textPrimary
                 )
                 Text(
@@ -704,7 +702,7 @@ private fun OfferMenuItemCard(
             ) {
                 Text(
                     text = item.price,
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     color = colors.textPrimary
                 )
                 if (isEditable) {
@@ -743,7 +741,7 @@ private fun PriceSummarySection(priceSummary: PriceSummary, orderStatus: OrderSt
     ) {
         Text(
             text = "Price summary",
-            style = typography.cardTitle,
+            style = typography.titleMedium,
             color = colors.textPrimary
         )
         

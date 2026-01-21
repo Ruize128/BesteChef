@@ -143,7 +143,6 @@ fun ChefResultCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
             ) {
                 val carouselImages = remember(chef.name) { getChefCarouselImageNames(chef.name) }
                 val singleImageName = remember(chef.name) { getChefImageName(chef.name) }
@@ -152,8 +151,7 @@ fun ChefResultCard(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(12.dp))
+                        .height(160.dp)
                 ) {
                     if (carouselImages != null && carouselImages.isNotEmpty()) {
                         // Use carousel for chefs with multiple images (e.g., Chef Marius)
@@ -213,7 +211,7 @@ fun ChefResultCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 // Chef name with avatar (reuse Avatar component from chat)
                 Row(
@@ -241,10 +239,10 @@ fun ChefResultCard(
                         )
                     }
 
-                    Column {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
                             text = chef.name,
-                            style = typography.cardTitle,
+                            style = typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = colors.textPrimary
                         )
@@ -305,13 +303,13 @@ fun ChefResultCard(
                 
                 // Quote
                 Text(
-                    text = "\"${chef.quote}\"",
+                    text = "“${chef.quote}”",
                     style = typography.bodyMedium,
                     fontStyle = FontStyle.Italic,
                     color = colors.textSecondary.copy(alpha = 0.7f)
                 )
                 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 
                 // CTA Button
                 Button(
@@ -325,11 +323,9 @@ fun ChefResultCard(
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                 ) {
                     Text(
-                        text = "View Detail",
+                        text = "View Details",
                         style = typography.bodyLarge,
                         fontWeight = FontWeight.Medium,
-                        color = colors.textPrimary,
-                        modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
             }

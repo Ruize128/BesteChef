@@ -228,7 +228,7 @@ fun ChefChatScreen(
                 ) {
                     Text(
                         text = "Chat with $customerName",
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary
                     )
                     Text(
@@ -350,7 +350,7 @@ fun ChefChatScreen(
                     ) {
                         Text(
                             text = "5-course Omakase",
-                            style = typography.cardTitle,
+                            style = typography.titleMedium,
                             color = colors.textPrimary
                         )
                         Text(
@@ -378,7 +378,7 @@ fun ChefChatScreen(
                     ) {
                         Text(
                             text = if (isSent) "View Booking" else "Edit Booking",
-                            style = typography.buttonText,
+                            style = typography.labelLarge,
                         )
                     }
                 }

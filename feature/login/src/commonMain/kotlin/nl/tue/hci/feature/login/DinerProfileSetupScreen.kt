@@ -45,7 +45,7 @@ fun DinerProfileSetupScreen(
         
         Text(
             text = "Complete Your Profile",
-            style = typography.sectionTitle,
+            style = typography.titleLarge,
             color = colors.textPrimary,
             fontWeight = FontWeight.Bold
         )
@@ -157,12 +157,12 @@ fun DinerProfileSetupScreen(
                 .height(48.dp),
             shape = RoundedCornerShape(24.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = colors.dinerPrimary
+                containerColor = colors.dinerPrimary,
+                contentColor = colors.textOnPrimary
             )
         ) {
             Text(
                 text = "Continue",
-                color = colors.textPrimary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )

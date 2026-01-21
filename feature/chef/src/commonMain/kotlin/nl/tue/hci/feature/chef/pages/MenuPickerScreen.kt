@@ -168,7 +168,7 @@ fun MenuPickerScreen(
                 
                 Text(
                     text = "Menu picker",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary
                 )
             }
@@ -272,9 +272,9 @@ fun MenuPickerScreen(
                 contentPadding = PaddingValues(0.dp),
                 colors = ButtonColors(
                     containerColor = colors.chefPrimary,
-                    contentColor = colors.textPrimary,
+                    contentColor = colors.textOnPrimary,
                     disabledContainerColor = colors.chefSecondary,
-                    disabledContentColor = colors.textSecondary,
+                    disabledContentColor = colors.textOnSecondary,
                 ),
                 shape = RoundedCornerShape(20.dp),
                 enabled = selectedItems.isNotEmpty(),
@@ -292,16 +292,14 @@ fun MenuPickerScreen(
                 ) {
                     Text(
                         text = "Insert ${selectedItems.sumOf { it.quantity }} item${if (selectedItems.sumOf { it.quantity } > 1) "s" else ""}",
-                        style = typography.buttonText,
-                        color = colors.textPrimary,
+                        style = typography.labelLarge,
                     )
                     Text(
                         text = "€${selectedItems.sumOf { 
                             val priceStr = it.menuItem.price.replace("€", "").replace(",", ".")
                             (priceStr.toDoubleOrNull()?.times(it.quantity) ?: 0.0).toInt()
                         }}",
-                        style = typography.cardTitle,
-                        color = colors.textPrimary,
+                        style = typography.titleMedium,
                     )
                 }
             }
@@ -363,7 +361,7 @@ private fun MenuPickerItemCard(
             ) {
                 Text(
                     text = item.title,
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = colors.textPrimary
                 )
@@ -403,7 +401,7 @@ private fun MenuPickerItemCard(
                     QuantityBadge(quantity = quantity)
                     Text(
                         text = item.price,
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = colors.textPrimary
                     )
@@ -414,14 +412,13 @@ private fun MenuPickerItemCard(
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colors.chefSecondary,
-                        contentColor = colors.textPrimary,
+                        contentColor = colors.textOnSecondary,
                     )
                 ) {
                     Text(
                         text = "Add",
                         style = typography.bodySmall,
                         fontWeight = FontWeight.Medium,
-                        color = colors.textPrimary,
                     )
                 }
             }

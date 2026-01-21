@@ -47,6 +47,7 @@ import nl.tue.hci.feature.diner.components.formatDate
 import nl.tue.hci.core.ui.icons.rememberIconPainter
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.zIndex
 import kotlinx.coroutines.delay
 import nl.tue.hci.feature.diner.ChefResult
 
@@ -251,24 +252,28 @@ private fun SearchResultsContent(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Search Result",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            verticalArrangement = Arrangement.spacedBy((-20).dp),
+        ) {
         
         // Search parameters row
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .zIndex(1f),
             shape = RoundedCornerShape(20.dp),
             color = colors.surface,
             border = BorderStroke(width = 1.dp, color = colors.outline),
             shadowElevation = 0.dp,
-            tonalElevation = 0.dp
+            tonalElevation = 0.dp,
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -286,7 +291,7 @@ private fun SearchResultsContent(
                     ) {
                         Text(
                             text = selectedLocation ?: "Location",
-                            style = typography.cardTitle,
+                            style = typography.titleMedium,
                             color = colors.textPrimary,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
@@ -448,7 +453,7 @@ private fun SearchResultsContent(
                 onCuisineSelected = { selectedCuisine = it }
             )
         }
-        
+
         // Chef results list (initial load hides list; transient edits show faded overlay)
         Box(modifier = Modifier.fillMaxSize()) {
             if (isInitialLoading) {
@@ -464,7 +469,7 @@ private fun SearchResultsContent(
                 // Render list
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(chefs) { chef ->
@@ -510,7 +515,7 @@ private fun SearchResultsContent(
                     )
                 }
             }
-        }
+        }}
     }
 
     // Full-screen image preview overlay

@@ -264,7 +264,7 @@ fun BookingSummaryScreen(
                 
                 Text(
                     text = "Booking summary",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary,
                     modifier = Modifier.weight(1f)
                 )
@@ -366,7 +366,7 @@ fun BookingSummaryScreen(
             item {
                 Text(
                     text = "Menu summary",
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     color = colors.textPrimary,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
@@ -400,7 +400,7 @@ fun BookingSummaryScreen(
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colors.dinerPrimary,
-                    contentColor = colors.textPrimary
+                    contentColor = colors.textOnPrimary
                 ),
                 enabled = !isProcessing
             ) {
@@ -408,28 +408,23 @@ fun BookingSummaryScreen(
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
                         strokeWidth = 2.dp,
-                        color = colors.textPrimary
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Processing...",
-                        style = typography.cardTitle,
-                        fontStyle = FontStyle.Italic,
+                        style = typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = colors.textPrimary
                     )
                 } else {
-                    val buttonText = when (orderStatus) {
+                    val labelLarge = when (orderStatus) {
                         "PENDING" -> "Book & Pay ${priceSummary.depositAmount} deposit (${priceSummary.depositPercentage}%)"
                         "ONGOING" -> "Pay remaining balance ${priceSummary.depositAmount}"
                         else -> "Book & Pay ${priceSummary.depositAmount}"
                     }
                     Text(
-                        text = buttonText,
-                        style = typography.cardTitle,
-                        fontStyle = FontStyle.Italic,
+                        text = labelLarge,
+                        style = typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = colors.textPrimary
                     )
                 }
             }
@@ -451,7 +446,7 @@ fun BookingSummaryScreen(
             title = {
                 Text(
                     text = "Cancel booking?",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary
                 )
             },
@@ -527,7 +522,7 @@ fun BookingSummaryScreen(
             title = {
                 Text(
                     text = "Pay remaining balance?",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary
                 )
             },
@@ -555,7 +550,7 @@ fun BookingSummaryScreen(
                         shape = RoundedCornerShape(20.dp)
                     ) {
                         Text(
-                            text = "Not\nyet",
+                            text = "Not yet",
                             style = typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.fillMaxWidth(),
@@ -571,7 +566,7 @@ fun BookingSummaryScreen(
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colors.dinerPrimary,
-                            contentColor = colors.textPrimary
+                            contentColor = colors.textOnPrimary
                         ),
                         shape = RoundedCornerShape(20.dp)
                     ) {
@@ -626,7 +621,7 @@ private fun DateAndGuestsCard(
                 ) {
                     Text(
                         text = "Date & time",
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary,
                     )
                     Text(
@@ -657,7 +652,7 @@ private fun DateAndGuestsCard(
                 ) {
                     Text(
                         text = "Guests",
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary,
                     )
                     Text(
@@ -708,8 +703,7 @@ private fun BookingSection(
             ) {
                 Text(
                     text = title,
-                    style = typography.cardTitle,
-                    fontStyle = FontStyle.Italic,
+                    style = typography.titleMedium,
                     color = colors.textPrimary,
                 )
                 Text(
@@ -782,7 +776,7 @@ private fun MenuItemCard(item: BookingSummaryMenuItem) {
                 ) {
                     Text(
                         text = item.title,
-                        style = typography.cardTitle.copy(fontSize = 14.sp),
+                        style = typography.titleMedium.copy(fontSize = 14.sp),
                         color = colors.textPrimary
                     )
                 }
@@ -801,7 +795,7 @@ private fun MenuItemCard(item: BookingSummaryMenuItem) {
                 QuantityBadge(quantity = item.quantity)
                 Text(
                     text = item.price,
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     color = colors.textPrimary
                 )
             }
@@ -846,12 +840,11 @@ private fun PriceSummarySection(priceSummary: BookingPriceSummary, orderStatus: 
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
                 text = "Price summary",
-                style = typography.cardTitle,
-                fontStyle = FontStyle.Italic,
+                style = typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = colors.textPrimary,
                 modifier = Modifier.padding(bottom = 4.dp)
@@ -913,8 +906,7 @@ private fun PriceSummarySection(priceSummary: BookingPriceSummary, orderStatus: 
                         "CANCELLED" -> "Total price"
                         else -> "Deposit due now"
                     },
-                    style = typography.cardTitle,
-                    fontStyle = FontStyle.Italic,
+                    style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = colors.textPrimary
                 )
@@ -926,7 +918,7 @@ private fun PriceSummarySection(priceSummary: BookingPriceSummary, orderStatus: 
                         "CANCELLED" -> priceSummary.depositAmount
                         else -> "${priceSummary.depositAmount} (${priceSummary.depositPercentage}%)"
                     },
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = colors.dinerPrimary
                 )

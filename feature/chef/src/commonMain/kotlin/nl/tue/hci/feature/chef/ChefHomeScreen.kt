@@ -135,7 +135,7 @@ fun ChefHomeScreen(
                 )
                 Text(
                     text = "Chef Dashboard",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary,
                     modifier = Modifier.align(alignment = Alignment.Center)
                 )
@@ -158,35 +158,34 @@ fun ChefHomeScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(
-                    text = "Today",
-                    style = typography.labelMedium,
-                    color = colors.textSecondary,
-                )
-                
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "$bookings bookings • $inquiries inquiries",
-                        style = typography.cardTitle,
-                        color = colors.textPrimary
+                        text = "Today",
+                        style = typography.labelMedium,
+                        color = colors.textSecondary,
                     )
-                    
+
                     Text(
                         text = "View calendar",
                         style = typography.bodySmall,
                         color = colors.chefPrimary,
                         modifier = Modifier
-                            .width(64.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .clickable(onClick = { showCalendar = true })
                             .padding(vertical = 4.dp),
                         textAlign = TextAlign.Center,
                     )
                 }
+
+                Text(
+                    text = "$bookings bookings • $inquiries inquiries",
+                    style = typography.titleMedium,
+                    color = colors.textPrimary
+                )
             }
         }
 
@@ -337,7 +336,7 @@ private fun BookingInquiryCard(
                     
                     Text(
                         text = booking.customerName,
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary
                     )
                 }
