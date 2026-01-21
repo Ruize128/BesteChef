@@ -193,7 +193,9 @@ fun ChefScreen(
                     },
                     onEditOrderClick = { orderId ->
                         // Navigate to Orders section and open EditOrderScreen there
+                        val status = GlobalDatabase.readString("chef_order_status") ?: if (sentOrderId == orderId) "SENT" else null
                         editOrderId = orderId
+                        editOrderStatus = status
                         editOrderSource = "chat" // Track that we came from chat
                         currentDestination = ChefDestinations.ORDERS
                         showChatScreen = false
@@ -202,6 +204,8 @@ fun ChefScreen(
                         // Navigate to booking offer in Orders
                         showChatScreen = false
                         editOrderId = orderId
+                        val status = GlobalDatabase.readString("chef_order_status") ?: if (sentOrderId == orderId) "SENT" else null
+                        editOrderStatus = status
                         editOrderSource = "chat" // Track that we came from chat
                         currentDestination = ChefDestinations.ORDERS
                     }
@@ -316,7 +320,10 @@ fun ChefScreen(
                                     showBookingConfirmedScreen = false
                                     orderDetailsForConfirmed = null
                                     menuItemsForConfirmed = emptyList()
-                                    editOrderId = ""
+                                    val orderId = sentOrderId ?: "1"
+                                    editOrderId = orderId
+                                    editOrderStatus = "SENT"
+                                    editOrderSource = "notification"
                                     currentDestination = ChefDestinations.ORDERS
                                 }
                                 orderDetailsForConfirmed = orderDetails
