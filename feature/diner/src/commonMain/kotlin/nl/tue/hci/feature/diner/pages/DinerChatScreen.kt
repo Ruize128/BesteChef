@@ -56,6 +56,7 @@ import nl.tue.hci.core.model.ChatMessage
 import nl.tue.hci.core.data.GlobalDatabase
 import nl.tue.hci.core.notification.NotificationState
 import nl.tue.hci.core.notification.NotificationType
+import nl.tue.hci.core.utils.formatDate
 
 
 
@@ -112,6 +113,33 @@ fun DinerChatScreen(
     var messageText by rememberSaveable { mutableStateOf(initialMessageText) }
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    
+    // Calculate booking date and price from GlobalDatabase
+    val bookingDate = remember {
+        val dateString = nl.tue.hci.core.data.GlobalDatabase.readString("diner_selected_date")
+        if (!dateString.isNullOrEmpty()) {
+            try {
+                nl.tue.hci.core.utils.formatDate(kotlinx.datetime.LocalDate.parse(dateString))
+            } catch (e: Exception) {
+                // Calculate tomorrow's date dynamically (current date is Jan 21, 2026, so tomorrow is Jan 22, 2026)
+                val tomorrow = kotlinx.datetime.LocalDate(2026, 1, 22)
+                nl.tue.hci.core.utils.formatDate(tomorrow)
+            }
+        } else {
+            // Calculate tomorrow's date dynamically (current date is Jan 21, 2026, so tomorrow is Jan 22, 2026)
+            val tomorrow = kotlinx.datetime.LocalDate(2026, 1, 22)
+            nl.tue.hci.core.utils.formatDate(tomorrow)
+        }
+    }
+    
+//    val bookingPrice = nl.tue.hci.core.data.GlobalDatabase.readString("diner_booking_price") ?: "€250"
+    val bookingPrice = calculateDinerCartPriceAndCount()
+    
+    // Calculate today's date for date separator
+    val todayDate = remember {
+        val today = kotlinx.datetime.LocalDate(2026, 1, 21) // Current date is Jan 21, 2026
+        nl.tue.hci.core.utils.formatDate(today)
+    }
     
     // Initialize chat in database when screen opens for the first time
     LaunchedEffect(Unit) {
@@ -213,11 +241,11 @@ fun DinerChatScreen(
                         timestamp = "Now",
                         isFromMe = false,
                         bookingOffer = nl.tue.hci.core.model.BookingOfferData(
-                            date = "Dec 12, 2025",
-                            time = "18:30",
+                            date = bookingDate,
+                            time = "19:00",
                             guests = "6 guests",
                             venue = "Private Dining Room",
-                            price = "€250"
+                            price = bookingPrice.first
                         ),
                         avatarText = "DH",
                         avatarImageName = "ichiraku",
@@ -354,7 +382,7 @@ fun DinerChatScreen(
             ) {
                 // Date separator
                 item {
-                    DateSeparator(dateText = "Today • Dec 12, 2025")
+                    DateSeparator(dateText = "Today • $todayDate")
                 }
 
                 var currentIndex = 0
@@ -657,6 +685,23 @@ private fun loadChatMessagesFromDatabase(
     
     if (storedData.isBlank()) return emptyList()
     
+    // Calculate booking date and price from GlobalDatabase
+    val bookingDate = GlobalDatabase.readString("diner_selected_date")?.let { dateString ->
+        try {
+            nl.tue.hci.core.utils.formatDate(kotlinx.datetime.LocalDate.parse(dateString))
+        } catch (e: Exception) {
+            // Calculate today's date dynamically (current date is Jan 21, 2026)
+            val today = kotlinx.datetime.LocalDate(2026, 1, 21)
+            nl.tue.hci.core.utils.formatDate(today)
+        }
+    } ?: run {
+        // Calculate today's date dynamically (current date is Jan 21, 2026)
+        val today = kotlinx.datetime.LocalDate(2026, 1, 21)
+        nl.tue.hci.core.utils.formatDate(today)
+    }
+    
+    val bookingPrice = GlobalDatabase.readString("diner_booking_price") ?: "€250"
+    
     return storedData.split("||").mapNotNull { encodedMessage ->
         val parts = encodedMessage.split("|")
         if (parts.size < 3) return@mapNotNull null
@@ -680,17 +725,17 @@ private fun loadChatMessagesFromDatabase(
                 )
             }
             "BOOKING" -> {
-                // Reconstruct booking offer message with fixed demo content
+                // Reconstruct booking offer message with dynamic content from GlobalDatabase
                 ChatMessage(
                     text = "Here's my offer for your event:",
                     timestamp = timestamp,
                     isFromMe = isFromMe,
                     bookingOffer = nl.tue.hci.core.model.BookingOfferData(
-                        date = "Dec 12, 2025",
-                        time = "18:30",
+                        date = bookingDate,
+                        time = "19:00",
                         guests = "6 guests",
                         venue = "Private Dining Room",
-                        price = "€250"
+                        price = bookingPrice
                     ),
                     avatarText = if (isFromMe) "ME" else "DH",
                     avatarImageName = if (isFromMe) "sophie" else "ichiraku",

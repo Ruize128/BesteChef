@@ -21,6 +21,10 @@ import nl.tue.hci.core.ui.components.Avatar
 import nl.tue.hci.core.ui.components.StatusBadge
 import nl.tue.hci.feature.chef.model.Order
 import nl.tue.hci.feature.chef.model.OrderStatus
+import nl.tue.hci.core.utils.formatDate
+import nl.tue.hci.core.utils.getMonthName
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 @Composable
 fun ChefOrdersListScreen(
@@ -49,12 +53,28 @@ fun ChefOrdersListScreen(
         calculateOrderPriceAndCountForOrdersList()
     }
     
+    // Read selected date from GlobalDatabase (set by diner), default to tomorrow if not found
+    val selectedDate = remember {
+        val dateString = nl.tue.hci.core.data.GlobalDatabase.readString("diner_selected_date")
+        if (!dateString.isNullOrEmpty()) {
+            try {
+                LocalDate.parse(dateString)
+            } catch (e: Exception) {
+                // If parsing fails, default to tomorrow
+                LocalDate(2026, 1, 22) // Tomorrow from current date (2026-01-21)
+            }
+        } else {
+            // Default to tomorrow if no date found
+            LocalDate(2026, 1, 22) // Tomorrow from current date (2026-01-21)
+        }
+    }
+    
     // Orders list with Sophie's data from database
     val orders = listOf(
         Order(
             id = "1",
             customerName = "Sophie",
-            orderDate = "Dec 12, 2025",
+            orderDate = formatDate(selectedDate),
             status = order1Status,
             totalPrice = order1Price,
             itemCount = order1ItemCount,
@@ -63,7 +83,7 @@ fun ChefOrdersListScreen(
         Order(
             id = "2",
             customerName = "Liam",
-            orderDate = "Dec 12, 2025",
+            orderDate = formatDate(selectedDate),
             status = OrderStatus.CONFIRMED,
             totalPrice = "€65",
             itemCount = 1,

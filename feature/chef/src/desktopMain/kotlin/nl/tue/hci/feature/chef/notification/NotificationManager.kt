@@ -12,14 +12,14 @@ actual fun sendBookingConfirmedNotification(onNavigate: (() -> Unit)?) {
     if (NotificationConfig.USE_IN_APP_NOTIFICATIONS) {
         // Use in-app notification
         NotificationState.showNotification(
-            title = "Booking Confirmed",
-            message = "Your offer has been sent successfully",
+            title = "Booking Proposal Sent",
+            message = "Your booking proposal has been sent successfully",
             type = NotificationType.BOOKING,
             onAction = onNavigate
         )
     } else {
         // Fallback: just print and navigate
-        println("Desktop: Booking confirmed notification")
+        println("Desktop: Booking Proposal Sent notification")
         onNavigate?.invoke()
     }
 }

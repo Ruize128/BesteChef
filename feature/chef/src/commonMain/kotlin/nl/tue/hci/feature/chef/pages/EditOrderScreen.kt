@@ -38,7 +38,9 @@ import nl.tue.hci.feature.chef.model.OrderStatus
 import nl.tue.hci.feature.chef.model.OfferMenuItem
 import nl.tue.hci.feature.chef.model.PriceSummary
 import nl.tue.hci.feature.chef.model.SelectedMenuItem
+import nl.tue.hci.core.utils.formatDate
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun EditOrderScreen(
@@ -60,10 +62,26 @@ fun EditOrderScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     
+    // Read selected date from GlobalDatabase (set by diner), default to tomorrow if not found
+    val selectedOrderDate = remember {
+        val dateString = nl.tue.hci.core.data.GlobalDatabase.readString("diner_selected_date")
+        if (!dateString.isNullOrEmpty()) {
+            try {
+                LocalDate.parse(dateString)
+            } catch (e: Exception) {
+                // If parsing fails, default to tomorrow
+                LocalDate(2026, 1, 22) // Tomorrow from current date (2026-01-21)
+            }
+        } else {
+            // Default to tomorrow if no date found
+            LocalDate(2026, 1, 22) // Tomorrow from current date (2026-01-21)
+        }
+    }
+    
     // Hardcoded booking details
     val orderDetails = remember {
         OrderDetails(
-            date = "Dec 12, 2025",
+            date = formatDate(selectedOrderDate) ?: "Jan 22, 2026",
             time = "7:00 PM",
             guests = 6,
             address = "Keizersgracht 123, 1015 CJ Amsterdam",

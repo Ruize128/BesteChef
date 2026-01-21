@@ -38,6 +38,7 @@ import nl.tue.hci.core.ui.components.ImagePreviewOverlay
 import nl.tue.hci.core.ui.rememberImagePainter
 import nl.tue.hci.core.model.ChatMessage
 import nl.tue.hci.core.data.GlobalDatabase
+import nl.tue.hci.core.utils.formatDate
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
@@ -119,6 +120,21 @@ fun ChefChatScreen(
                 "Yes! I can replace the original dessert with a nut-free yuzu mousse. Here's a photo."
             }
         )
+    }
+    
+    // Calculate date from GlobalDatabase for date separator
+    val bookingDate = nl.tue.hci.core.data.GlobalDatabase.readString("diner_selected_date")?.let { dateString ->
+        try {
+            nl.tue.hci.core.utils.formatDate(kotlinx.datetime.LocalDate.parse(dateString))
+        } catch (e: Exception) {
+            // Calculate today's date dynamically (current date is Jan 21, 2026)
+            val today = kotlinx.datetime.LocalDate(2026, 1, 21)
+            nl.tue.hci.core.utils.formatDate(today)
+        }
+    } ?: run {
+        // Calculate today's date dynamically (current date is Jan 21, 2026)
+        val today = kotlinx.datetime.LocalDate(2026, 1, 21)
+        nl.tue.hci.core.utils.formatDate(today)
     }
     
     val listState = rememberLazyListState()
@@ -247,7 +263,7 @@ fun ChefChatScreen(
             ) {
                 // Date separator
                 item {
-                    DateSeparator(dateText = "Today • Dec 12, 2025")
+                    DateSeparator(dateText = "Today • $bookingDate")
                 }
                 
                 var currentIndex = 0
@@ -672,6 +688,21 @@ fun loadChefChatMessagesFromDatabase(
     
     if (storedData.isBlank()) return emptyList()
     
+    // Calculate booking date from GlobalDatabase
+    val bookingDate = GlobalDatabase.readString("diner_selected_date")?.let { dateString ->
+        try {
+            nl.tue.hci.core.utils.formatDate(kotlinx.datetime.LocalDate.parse(dateString))
+        } catch (e: Exception) {
+            // Calculate today's date dynamically (current date is Jan 21, 2026)
+            val today = kotlinx.datetime.LocalDate(2026, 1, 21)
+            nl.tue.hci.core.utils.formatDate(today)
+        }
+    } ?: run {
+        // Calculate today's date dynamically (current date is Jan 21, 2026)
+        val today = kotlinx.datetime.LocalDate(2026, 1, 21)
+        nl.tue.hci.core.utils.formatDate(today)
+    }
+    
     return storedData.split("||").mapNotNull { encodedMessage ->
         val parts = encodedMessage.split("|")
         if (parts.size < 3) return@mapNotNull null
@@ -701,8 +732,8 @@ fun loadChefChatMessagesFromDatabase(
                     timestamp = timestamp,
                     isFromMe = isFromMe,
                     bookingOffer = nl.tue.hci.core.model.BookingOfferData(
-                        date = "Dec 12, 2025",
-                        time = "18:30",
+                        date = bookingDate,
+                        time = "19:00",
                         guests = "6 guests",
                         venue = "Private Dining Room",
                         price = orderPrice

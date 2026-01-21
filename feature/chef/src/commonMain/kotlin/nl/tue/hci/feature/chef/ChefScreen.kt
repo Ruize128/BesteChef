@@ -31,6 +31,8 @@ import nl.tue.hci.feature.chef.model.OrderStatus
 import nl.tue.hci.feature.chef.model.OrderDetails
 import nl.tue.hci.feature.chef.model.OfferMenuItem
 import nl.tue.hci.core.data.GlobalDatabase
+import nl.tue.hci.core.utils.formatDate
+import kotlinx.datetime.LocalDate
 
 enum class ChefDestinations(
     val label: String,
@@ -381,12 +383,28 @@ fun ChefOrdersScreen(
         }
     }
     
+    // Read selected date from GlobalDatabase (set by diner), default to tomorrow if not found
+    val selectedOrderDate = remember {
+        val dateString = nl.tue.hci.core.data.GlobalDatabase.readString("diner_selected_date")
+        if (!dateString.isNullOrEmpty()) {
+            try {
+                LocalDate.parse(dateString)
+            } catch (e: Exception) {
+                // If parsing fails, default to tomorrow
+                LocalDate(2026, 1, 22) // Tomorrow from current date (2026-01-21)
+            }
+        } else {
+            // Default to tomorrow if no date found
+            LocalDate(2026, 1, 22) // Tomorrow from current date (2026-01-21)
+        }
+    }
+    
     val orders = remember(sentOrderId, showEditOrder, order1Status) {
         listOf(
             nl.tue.hci.feature.chef.model.Order(
                 id = "1",
                 customerName = "Sophie",
-                orderDate = "Dec 12, 2025",
+                orderDate = formatDate(selectedOrderDate) ?: "Jan 22, 2026",
                 status = order1Status,
                 totalPrice = "€22",
                 itemCount = 2,
@@ -395,7 +413,7 @@ fun ChefOrdersScreen(
             nl.tue.hci.feature.chef.model.Order(
                 id = "2",
                 customerName = "Liam",
-                orderDate = "Dec 12, 2025",
+                orderDate = formatDate(selectedOrderDate) ?: "Jan 22, 2026",
                 status = nl.tue.hci.feature.chef.model.OrderStatus.CONFIRMED,
                 totalPrice = "€65",
                 itemCount = 1,

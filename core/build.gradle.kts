@@ -32,6 +32,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.datetime)
                 // Compose Multiplatform uses androidx.compose namespace
                 implementation(libs.compose.multiplatform.ui)
                 implementation(libs.compose.multiplatform.ui.graphics)

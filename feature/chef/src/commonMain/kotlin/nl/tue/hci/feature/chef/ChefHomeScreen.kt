@@ -29,7 +29,8 @@ import nl.tue.hci.core.ui.components.StatusBadge
 import nl.tue.hci.feature.chef.model.BookingInquiry
 import nl.tue.hci.feature.chef.model.BookingStatus
 import nl.tue.hci.feature.chef.notification.sendChatNotification
-
+import nl.tue.hci.core.utils.formatDate
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun ChefHomeScreen(
@@ -60,12 +61,22 @@ fun ChefHomeScreen(
     val bookings = 1
     val inquiries = 1
     
+    // Read selected date from GlobalDatabase (set by diner), default to tomorrow if not found
+    val selectedBookingDate = nl.tue.hci.core.data.GlobalDatabase.readString("diner_selected_date")?.let { dateString ->
+        try {
+            LocalDate.parse(dateString)
+        } catch (e: Exception) {
+            // If parsing fails, default to tomorrow
+            LocalDate(2026, 1, 22) // Tomorrow from current date (2026-01-21)
+        }
+    } ?: LocalDate(2026, 1, 22) // Tomorrow from current date (2026-01-21)
+    
     val bookingsList = listOf(
         BookingInquiry(
             id = "1",
             customerName = "Sophie",
             message = "Question about dessert...",
-            date = "Dec 12",
+            date = formatDate(selectedBookingDate)?.take(6) ?: "Jan 22", // Take first 6 chars like "Dec 12"
             guests = 6,
             timeAgo = "2m",
             status = BookingStatus.NEW,
@@ -86,7 +97,7 @@ fun ChefHomeScreen(
     var selectedFilter by remember { mutableStateOf("All") }
     var isLoading by remember { mutableStateOf(false) }
     var showCalendar by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf("Dec 12") }
+    var selectedDate by remember { mutableStateOf(formatDate(selectedBookingDate)?.take(6) ?: "Jan 22") }
     val colors = BesteChefThemeColors.current()
     val typography = BesteChefThemeTypography.current()
     
