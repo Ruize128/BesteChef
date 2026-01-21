@@ -1,5 +1,6 @@
 package nl.tue.hci.feature.diner.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,6 +15,37 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
+import kotlin.math.roundToInt
+
+// Non-uniform distance values: small increments at start, larger at end
+private val distanceValues = listOf(
+    1f, 2f, 3f, 5f, 7f, 10f, 15f, 20f, 30f, 50f, 75f, 100f
+)
+
+// Convert slider position (0-100) to distance value
+private fun sliderPositionToDistance(position: Float): Float {
+    if (position <= 0f) return distanceValues.first()
+    if (position >= 100f) return distanceValues.last()
+    
+    val index = ((position / 100f) * (distanceValues.size - 1)).roundToInt()
+    return distanceValues[index.coerceIn(0, distanceValues.size - 1)]
+}
+
+// Convert distance value to slider position (0-100)
+private fun distanceToSliderPosition(distance: Float): Float {
+    val index = distanceValues.indexOfFirst { it >= distance }
+    if (index == -1) return 100f
+    if (index == 0) return 0f
+    
+    val prevValue = distanceValues[index - 1]
+    val nextValue = distanceValues[index]
+    val ratio = (distance - prevValue) / (nextValue - prevValue)
+    
+    val prevPosition = (index - 1).toFloat() / (distanceValues.size - 1) * 100f
+    val nextPosition = index.toFloat() / (distanceValues.size - 1) * 100f
+    
+    return prevPosition + (nextPosition - prevPosition) * ratio
+}
 
 @Composable
 fun SortModal(
@@ -126,17 +158,46 @@ fun SortModal(
                             )
                         }
 
-                        Slider(
-                            value = selectedDistance,
-                            onValueChange = { onDistanceChange(it) },
-                            valueRange = 1f..100f,
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = SliderDefaults.colors(
-                                thumbColor = colors.dinerPrimary,
-                                activeTrackColor = colors.dinerPrimary,
-                                inactiveTrackColor = colors.surfaceVariant
+                        // Distance slider with tick marks
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Slider(
+                                value = distanceToSliderPosition(selectedDistance),
+                                onValueChange = { sliderPos ->
+                                    val distance = sliderPositionToDistance(sliderPos)
+                                    onDistanceChange(distance)
+                                },
+                                valueRange = 0f..100f,
+                                steps = distanceValues.size - 2, // Number of steps between min and max
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = colors.dinerPrimary,
+                                    activeTrackColor = colors.dinerPrimary,
+                                    inactiveTrackColor = colors.surfaceVariant
+                                )
                             )
-                        )
+                            
+                            // Tick marks
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                distanceValues.forEach { distance ->
+                                    Box(
+                                        modifier = Modifier
+                                            .width(2.dp)
+                                            .height(8.dp)
+                                            .background(
+                                                if (selectedDistance >= distance) colors.dinerPrimary
+                                                else colors.surfaceVariant
+                                            )
+                                    )
+                                }
+                            }
+                        }
                     }
 
                     // Action buttons

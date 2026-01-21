@@ -1,6 +1,7 @@
 package nl.tue.hci.feature.diner.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -19,6 +20,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nl.tue.hci.core.ui.BesteChefThemeColors
 import nl.tue.hci.core.ui.BesteChefThemeTypography
+import kotlin.math.roundToInt
+
+// Non-uniform distance values for better granularity at lower distances
+private val distanceValues = listOf(1f, 2f, 3f, 5f, 7f, 10f, 15f, 20f, 30f, 50f, 75f, 100f)
+
+// Convert slider position (0-100) to distance value
+private fun sliderPositionToDistance(position: Float): Float {
+    val index = (position / 100f * (distanceValues.size - 1)).roundToInt().coerceIn(0, distanceValues.size - 1)
+    return distanceValues[index]
+}
+
+// Convert distance value to slider position (0-100)
+private fun distanceToSliderPosition(distance: Float): Float {
+    val index = distanceValues.indexOfFirst { it >= distance }.takeIf { it >= 0 } ?: (distanceValues.size - 1)
+    return (index.toFloat() / (distanceValues.size - 1)) * 100f
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -315,17 +332,46 @@ fun SortFilterModal(
                                 fontWeight = FontWeight.Medium
                             )
                         }
-                        Slider(
-                            value = tempDistance,
-                            onValueChange = { tempDistance = it },
-                            valueRange = 1f..100f,
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = SliderDefaults.colors(
-                                thumbColor = colors.dinerPrimary,
-                                activeTrackColor = colors.dinerPrimary,
-                                inactiveTrackColor = colors.surfaceVariant
+                        // Distance slider with tick marks
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Slider(
+                                value = distanceToSliderPosition(tempDistance),
+                                onValueChange = { sliderPos ->
+                                    val distance = sliderPositionToDistance(sliderPos)
+                                    tempDistance = distance
+                                },
+                                valueRange = 0f..100f,
+                                steps = distanceValues.size - 2, // Number of steps between min and max
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = colors.dinerPrimary,
+                                    activeTrackColor = colors.dinerPrimary,
+                                    inactiveTrackColor = colors.surfaceVariant
+                                )
                             )
-                        )
+                            
+                            // Tick marks
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                distanceValues.forEach { distance ->
+                                    Box(
+                                        modifier = Modifier
+                                            .width(2.dp)
+                                            .height(8.dp)
+                                            .background(
+                                                if (tempDistance >= distance) colors.dinerPrimary
+                                                else colors.surfaceVariant
+                                            )
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
