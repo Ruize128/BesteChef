@@ -509,6 +509,7 @@ fun EditOrderScreen(
                         onClick = {
                             showSendOfferDialog = false
                             onSendOfferClick(orderDetails, menuItems.toList())
+                            onBackClick()
                         },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
