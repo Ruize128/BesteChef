@@ -68,7 +68,7 @@ fun PaymentSuccessfulScreen(
         // Confirmation text
         Text(
             text = "Payment successful",
-            style = typography.sectionTitle,
+            style = typography.titleLarge,
             color = colors.textPrimary
         )
         
@@ -85,13 +85,12 @@ fun PaymentSuccessfulScreen(
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = colors.dinerPrimary, // Green
-                contentColor = colors.textPrimary,
+                contentColor = colors.textOnPrimary,
             )
         ) {
             Text(
                 text = "Done",
-                style = typography.buttonText,
-                color = colors.textPrimary,
+                style = typography.labelLarge,
             )
         }
     }

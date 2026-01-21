@@ -55,7 +55,7 @@ fun FilterModal(
                 // Title
                 Text(
                     text = "Filters",
-                    style = typography.sectionTitle
+                    style = typography.titleLarge
                 )
                 
                 // Allergens field
@@ -181,7 +181,7 @@ fun FilterModal(
                 ) {
                     Text(
                         text = "Confirm",
-                        style = typography.buttonText
+                        style = typography.labelLarge
                     )
                 }
             }

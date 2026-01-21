@@ -51,7 +51,7 @@ fun DinerProfileScreen(
         // User Name
         Text(
             text = "Sophie",
-            style = typography.sectionTitle,
+            style = typography.titleLarge,
             color = colors.textPrimary,
             fontWeight = FontWeight.Bold
         )
@@ -110,13 +110,13 @@ fun DinerProfileScreen(
                 .height(40.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = colors.dinerPrimary,
-                contentColor = colors.textPrimary
+                contentColor = colors.textOnPrimary
             ),
             shape = RoundedCornerShape(20.dp)
         ) {
             Text(
                 text = "Logout",
-                style = typography.buttonText
+                style = typography.labelLarge
             )
         }
     }
@@ -128,7 +128,7 @@ fun DinerProfileScreen(
             title = {
                 Text(
                     text = "Edit Service Address",
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     color = colors.textPrimary
                 )
             },
@@ -161,12 +161,12 @@ fun DinerProfileScreen(
                         showAddressEditDialog = false
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colors.dinerPrimary
+                        containerColor = colors.dinerPrimary,
+                        contentColor = colors.textOnPrimary
                     )
                 ) {
                     Text(
                         text = "Save",
-                        color = colors.textPrimary
                     )
                 }
             },

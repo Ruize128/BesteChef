@@ -58,7 +58,7 @@ fun CuisineSelectionModal(
                 // Title
                 Text(
                     text = "Select Cuisine",
-                    style = typography.sectionTitle
+                    style = typography.titleLarge
                 )
                 
                 // Cuisine items
@@ -158,7 +158,7 @@ fun CuisineSelectionModal(
                     ) {
                         Text(
                             text = "Done",
-                            style = typography.buttonText,
+                            style = typography.labelLarge,
                             fontWeight = FontWeight.Bold,
                         )
                     }

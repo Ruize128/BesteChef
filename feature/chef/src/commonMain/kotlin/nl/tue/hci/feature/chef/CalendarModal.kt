@@ -109,7 +109,7 @@ fun CalendarModal(
                 ) {
                     Text(
                         text = "Calendar",
-                        style = typography.sectionTitle,
+                        style = typography.titleLarge,
                         color = colors.textPrimary
                     )
                     IconButton(
@@ -144,7 +144,7 @@ fun CalendarModal(
                     }
                     Text(
                         text = "December 2025",
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = colors.textPrimary
                     )
@@ -267,7 +267,7 @@ fun CalendarModal(
 
                 Text(
                     text = "Reservations",
-                    style = typography.cardTitle,
+                    style = typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = colors.textPrimary
                 )
@@ -313,7 +313,7 @@ fun CalendarModal(
                                     ) {
                                         Text(
                                             text = booking.date.split(" ").getOrNull(1) ?: "",
-                                            style = typography.cardTitle,
+                                            style = typography.titleMedium,
                                             fontWeight = FontWeight.Bold,
                                             color = colors.textOnPrimary,
                                             fontSize = 18.sp
@@ -333,7 +333,7 @@ fun CalendarModal(
                                 ) {
                                     Text(
                                         text = booking.customerName,
-                                        style = typography.cardTitle,
+                                        style = typography.titleMedium,
                                         color = colors.textPrimary
                                     )
                                     Text(

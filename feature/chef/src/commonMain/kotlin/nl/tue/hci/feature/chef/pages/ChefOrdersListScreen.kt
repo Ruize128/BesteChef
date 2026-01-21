@@ -122,7 +122,7 @@ fun ChefOrdersListScreen(
             ) {
                 Text(
                     text = "Bookings",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary
                 )
             }
@@ -172,7 +172,7 @@ private fun OrderCard(
             // Avatar
             Avatar(
                 text = order.customerName.take(1).uppercase(),
-                size = 48,
+                size = 56,
                 backgroundColor = when (order.customerName) {
                     "Sophie" -> colors.imagePlaceholder3 // Light pink
                     "Liam" -> colors.imagePlaceholder1 // Light green
@@ -180,62 +180,71 @@ private fun OrderCard(
                 },
                 imageName = if (order.customerName == "Sophie") "sophie" else null
             )
-            
-            // Content
+
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = order.customerName,
-                    style = typography.cardTitle,
-                    color = colors.textPrimary
-                )
-                Text(
-                    text = "${order.itemCount} items • ${order.orderDate}",
-                    style = typography.bodyMedium,
-                    color = colors.textSecondary
-                )
-            }
-            
-            // Right side: status and price
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                StatusBadge(
-                    text = when (order.status) {
-                        OrderStatus.DRAFT -> "Draft"
-                        OrderStatus.SENT -> "Sent"
-                        OrderStatus.CONFIRMED -> "Confirmed"
-                        OrderStatus.COMPLETED -> "Completed"
-                        OrderStatus.CANCELLED -> "Cancelled"
-                    },
-                    backgroundColor = when (order.status) {
-                        OrderStatus.DRAFT -> colors.statusNewBackground
-                        OrderStatus.SENT -> colors.statusOngoingBackground
-                        OrderStatus.CONFIRMED -> colors.statusConfirmedBackground
-                        OrderStatus.COMPLETED -> colors.statusConfirmedBackground
-                        OrderStatus.CANCELLED -> colors.buttonBackground
-                    },
-                    textColor = when (order.status) {
-                        OrderStatus.DRAFT -> colors.statusNewText
-                        OrderStatus.SENT -> colors.statusOngoingText
-                        OrderStatus.CONFIRMED -> colors.statusConfirmedText
-                        OrderStatus.COMPLETED -> colors.statusConfirmedText
-                        OrderStatus.CANCELLED -> colors.textPrimary
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = order.customerName,
+                        style = typography.titleMedium,
+                        color = colors.textPrimary
+                    )
+
+
+                    StatusBadge(
+                        text = when (order.status) {
+                            OrderStatus.DRAFT -> "Created ${order.timeAgo}"
+                            OrderStatus.SENT -> "Sent ${order.timeAgo}"
+                            OrderStatus.CONFIRMED -> "Confirmed ${order.timeAgo}"
+                            OrderStatus.COMPLETED -> "Completed ${order.timeAgo}"
+                            OrderStatus.CANCELLED -> "Cancelled ${order.timeAgo}"
+                        },
+                        backgroundColor = when (order.status) {
+                            OrderStatus.DRAFT -> colors.statusNewBackground
+                            OrderStatus.SENT -> colors.statusOngoingBackground
+                            OrderStatus.CONFIRMED -> colors.statusConfirmedBackground
+                            OrderStatus.COMPLETED -> colors.statusConfirmedBackground
+                            OrderStatus.CANCELLED -> colors.buttonBackground
+                        },
+                        textColor = when (order.status) {
+                            OrderStatus.DRAFT -> colors.statusNewText
+                            OrderStatus.SENT -> colors.statusOngoingText
+                            OrderStatus.CONFIRMED -> colors.statusConfirmedText
+                            OrderStatus.COMPLETED -> colors.statusConfirmedText
+                            OrderStatus.CANCELLED -> colors.textPrimary
+                        }
+                    )
+                }
+
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = order.orderDate,
+                        style = typography.bodyMedium,
+                        color = colors.textSecondary
+                    )
+
+                    Row {
+                        Text(
+                            text = "${order.itemCount} items · ",
+                            style = typography.bodyMedium,
+                            color = colors.textSecondary
+                        )
+                        Text(
+                            text = order.totalPrice,
+                            style = typography.bodyMedium,
+                            color = colors.textPrimary
+                        )
                     }
-                )
-                Text(
-                    text = order.totalPrice,
-                    style = typography.cardTitle,
-                    color = colors.textPrimary
-                )
-                Text(
-                    text = order.timeAgo,
-                    style = typography.bodySmall,
-                    color = colors.textSecondary
-                )
+                }
             }
         }
     }

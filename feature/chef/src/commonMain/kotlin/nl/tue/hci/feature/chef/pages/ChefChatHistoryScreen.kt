@@ -109,7 +109,7 @@ fun ChefChatHistoryScreen(
             ) {
                 Text(
                     text = "Chats",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary,
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
@@ -184,7 +184,7 @@ private fun ChatHistoryItemCard(
                 ) {
                     Text(
                         text = chatItem.customerName,
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary
                     )
                     

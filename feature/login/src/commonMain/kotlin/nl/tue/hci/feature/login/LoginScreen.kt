@@ -147,16 +147,16 @@ fun LoginScreen(
         // Welcome Title
         Text(
             text = "BesteChef",
-            style = typography.sectionTitle,
-                modifier = Modifier.padding(bottom = 8.dp),
-                color = colors.textPrimary,
+            style = typography.headlineLarge.copy(fontWeight = FontWeight.Medium),
+            modifier = Modifier.padding(bottom = 8.dp),
+            color = colors.textPrimary,
         )
         
         Text(
             text = "Great meals, right at home.",
             style = typography.bodyLarge,
-                modifier = Modifier.padding(bottom = 32.dp),
-                color = colors.textPrimary,
+            modifier = Modifier.padding(bottom = 32.dp),
+            color = colors.textPrimary,
         )
         
         Spacer(modifier = Modifier.height(16.dp))
@@ -289,25 +289,24 @@ fun LoginScreen(
                 .height(40.dp),
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = animatedButtonColor
+                containerColor = animatedButtonColor,
+                contentColor = colors.textOnPrimary
             ),
             enabled = !uiState.isLoading && !(uiState.isSigningUp && uiState.password.length < 8) && !(uiState.isSigningUp && uiState.errorMessage != null)
         ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
-                        color = colors.textPrimary,
                         strokeWidth = 2.dp
                     )
                 } else {
-                    val buttonText = when {
+                    val labelLarge = when {
                         uiState.isSigningIn -> "Sign in"
                         uiState.isSigningUp -> "Sign up"
                         else -> "Sign in/Sign up"
                     }
                     Text(
-                        text = buttonText,
-                        color = colors.textPrimary,
+                        text = labelLarge,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )

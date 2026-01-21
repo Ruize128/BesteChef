@@ -111,7 +111,7 @@ fun DinerOrdersScreen(
             ) {
                 Text(
                     text = "Bookings",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary
                 )
             }
@@ -131,7 +131,7 @@ fun DinerOrdersScreen(
                 ) {
                     Text(
                         text = "No bookings yet",
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary
                     )
                     Text(
@@ -192,7 +192,7 @@ private fun OrderCard(
             // Avatar (chef avatar)
             Avatar(
                 text = order.chefName.take(1).uppercase(),
-                size = 48,
+                size = 56,
                 backgroundColor = when (order.chefName) {
                     "Sophie" -> colors.imagePlaceholder3 // Light pink
                     "Chef Marco" -> colors.imagePlaceholder1 // Light green
@@ -200,62 +200,71 @@ private fun OrderCard(
                 },
                 imageName = if (order.chefName == "Chef Ichiraku") "ichiraku" else null
             )
-            
-            // Content
+
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Text(
-                    text = order.chefName,
-                    style = typography.cardTitle,
-                    color = colors.textPrimary
-                )
-                Text(
-                    text = "${order.itemCount} items • ${order.orderDate}",
-                    style = typography.bodyMedium,
-                    color = colors.textSecondary
-                )
-            }
-            
-            // Right side: status and price
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                StatusBadge(
-                    text = when (order.status) {
-                        DinerOrderStatus.PENDING -> "Pending"
-                        DinerOrderStatus.CONFIRMED -> "Ongoing"
-                        DinerOrderStatus.IN_PROGRESS -> "Ongoing"
-                        DinerOrderStatus.COMPLETED -> "Completed"
-                        DinerOrderStatus.CANCELLED -> "Cancelled"
-                    },
-                    backgroundColor = when (order.status) {
-                        DinerOrderStatus.CONFIRMED -> colors.statusOngoingBackground
-                        DinerOrderStatus.IN_PROGRESS -> colors.statusOngoingBackground
-                        DinerOrderStatus.COMPLETED -> colors.statusConfirmedBackground
-                        DinerOrderStatus.PENDING -> colors.statusNewBackground
-                        else -> colors.buttonBackground
-                    },
-                    textColor = when (order.status) {
-                        DinerOrderStatus.CONFIRMED -> colors.statusOngoingText
-                        DinerOrderStatus.IN_PROGRESS -> colors.statusOngoingText
-                        DinerOrderStatus.COMPLETED -> colors.statusConfirmedText
-                        DinerOrderStatus.PENDING -> colors.statusNewText
-                        else -> colors.textPrimary
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = order.chefName,
+                        style = typography.titleMedium,
+                        color = colors.textPrimary
+                    )
+
+
+                    StatusBadge(
+                        text = when (order.status) {
+                            DinerOrderStatus.PENDING -> "Created ${order.timeAgo}"
+                            DinerOrderStatus.CONFIRMED -> "Placed ${order.timeAgo}"
+                            DinerOrderStatus.IN_PROGRESS -> "Placed ${order.timeAgo}"
+                            DinerOrderStatus.COMPLETED -> "Completed ${order.timeAgo}"
+                            DinerOrderStatus.CANCELLED -> "Cancelled ${order.timeAgo}"
+                        },
+                        backgroundColor = when (order.status) {
+                            DinerOrderStatus.CONFIRMED -> colors.statusOngoingBackground
+                            DinerOrderStatus.IN_PROGRESS -> colors.statusOngoingBackground
+                            DinerOrderStatus.COMPLETED -> colors.statusConfirmedBackground
+                            DinerOrderStatus.PENDING -> colors.statusNewBackground
+                            else -> colors.buttonBackground
+                        },
+                        textColor = when (order.status) {
+                            DinerOrderStatus.CONFIRMED -> colors.statusOngoingText
+                            DinerOrderStatus.IN_PROGRESS -> colors.statusOngoingText
+                            DinerOrderStatus.COMPLETED -> colors.statusConfirmedText
+                            DinerOrderStatus.PENDING -> colors.statusNewText
+                            else -> colors.textPrimary
+                        }
+                    )
+                }
+
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = order.orderDate,
+                        style = typography.bodyMedium,
+                        color = colors.textSecondary
+                    )
+
+                    Row {
+                        Text(
+                            text = "${order.itemCount} items · ",
+                            style = typography.bodyMedium,
+                            color = colors.textSecondary
+                        )
+                        Text(
+                            text = order.totalPrice,
+                            style = typography.bodyMedium,
+                            color = colors.textPrimary
+                        )
                     }
-                )
-                Text(
-                    text = order.totalPrice,
-                    style = typography.cardTitle,
-                    color = colors.textPrimary
-                )
-                Text(
-                    text = order.timeAgo,
-                    style = typography.bodySmall,
-                    color = colors.textSecondary
-                )
+                }
             }
         }
     }

@@ -99,7 +99,7 @@ fun ChatBubble(
                             // Title
                             Text(
                                 text = "Classic Japanese",
-                                style = typography.cardTitle.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold),
+                                style = typography.titleMedium.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold),
                                 color = colors.textPrimary,
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
@@ -196,12 +196,12 @@ fun ChatBubble(
                             ) {
                                 Text(
                                     text = message.bookingOffer.price,
-                                    style = typography.cardTitle.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold),
+                                    style = typography.titleMedium.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold),
                                     color = colors.chefPrimary
                                 )
                                 
                                 Text(
-                                    text = "View Details →",
+                                    text = "View Details ›",
                                     style = typography.bodySmall.copy(fontWeight = FontWeight.Medium),
                                     color = colors.chefPrimary
                                 )

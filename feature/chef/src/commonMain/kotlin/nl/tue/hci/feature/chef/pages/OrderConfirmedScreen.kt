@@ -95,7 +95,7 @@ fun OrderConfirmedScreen(
                 // Confirmation text
                 Text(
                     text = "Booking Proposal Sent",
-                    style = typography.sectionTitle,
+                    style = typography.titleLarge,
                     color = colors.textPrimary
                 )
                 
@@ -126,7 +126,7 @@ fun OrderConfirmedScreen(
                     ) {
                         Text(
                             text = "${orderDetails.date} • ${orderDetails.time}",
-                            style = typography.cardTitle,
+                            style = typography.titleMedium,
                             color = colors.textPrimary
                         )
                         
@@ -162,7 +162,7 @@ fun OrderConfirmedScreen(
                 ) {
                     Text(
                         text = "Final menu (summary)",
-                        style = typography.cardTitle,
+                        style = typography.titleMedium,
                         color = colors.textPrimary,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
@@ -198,7 +198,7 @@ fun OrderConfirmedScreen(
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = colors.chefPrimary,
-                contentColor = colors.textPrimary
+                contentColor = colors.textOnPrimary
             ),
             contentPadding = PaddingValues(0.dp),
         ) {
@@ -206,8 +206,7 @@ fun OrderConfirmedScreen(
                 text = "Done",
                 modifier = Modifier
                     .padding(horizontal = 24.dp),
-                style = typography.buttonText,
-                color = colors.textPrimary,
+                style = typography.labelLarge,
                 textAlign = TextAlign.Center,
             )
         }
@@ -264,7 +263,7 @@ private fun FinalMenuItemCard(item: OfferMenuItem) {
             ) {
                 Text(
                     text = item.title,
-                    style = typography.cardTitle.copy(fontSize = 14.sp),
+                    style = typography.titleMedium.copy(fontSize = 14.sp),
                     color = colors.textPrimary
                 )
                 Text(
@@ -282,7 +281,7 @@ private fun FinalMenuItemCard(item: OfferMenuItem) {
                 if (item.price.isNotEmpty()) {
                     Text(
                         text = item.price,
-                        style = typography.cardTitle.copy(fontSize = 14.sp),
+                        style = typography.titleMedium.copy(fontSize = 14.sp),
                         color = colors.textPrimary,
                         fontWeight = FontWeight.SemiBold
                     )

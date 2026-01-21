@@ -57,7 +57,7 @@ fun AllergensSelectionModal(
                 // Title
                 Text(
                     text = "Select Allergens",
-                    style = typography.sectionTitle
+                    style = typography.titleLarge
                 )
                 
                 // Allergen items
@@ -165,7 +165,7 @@ fun AllergensSelectionModal(
                     ) {
                         Text(
                             text = "Done",
-                            style = typography.buttonText,
+                            style = typography.labelLarge,
                             fontWeight = FontWeight.Bold,
                         )
                     }

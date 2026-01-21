@@ -13,6 +13,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 
 /**
@@ -87,7 +88,7 @@ private val LightBesteChefColors = object : BesteChefColors {
     override val textPrimary = Color(0xFF212121) // Almost black
     override val textSecondary = Color(0xFF757575) // Medium gray
     override val textTertiary = Color(0xFF9E9E9E) // Light gray
-    override val textOnPrimary = Color(0xFFFFFFFF) // White
+    override val textOnPrimary = Color(0xFF212121) // White
     override val textOnSecondary = Color(0xFF212121) // Dark text
     
     override val outline = Color(0xFFE0E0E0) // Light gray
@@ -122,12 +123,18 @@ private val LightBesteChefColors = object : BesteChefColors {
  * Defines consistent text styles for sections, cards, and content.
  */
 interface BesteChefTypography {
-    // Section titles (e.g., "Orders", "Chat", "Chef Dashboard")
-    val sectionTitle: TextStyle // Large section headers, italic
-    
-    // Card titles
-    val cardTitle: TextStyle // Card item titles, italic
-    val cardSubtitle: TextStyle // Card item subtitles
+    val displayLarge: TextStyle
+    val displayMedium: TextStyle
+    val displaySmall: TextStyle
+
+    val headlineLarge: TextStyle
+    val headlineMedium: TextStyle
+    val headlineSmall: TextStyle
+
+    // titles
+    val titleLarge: TextStyle // Large section headers, italic
+    val titleMedium: TextStyle
+    val titleSmall: TextStyle
     
     // Content text
     val bodyLarge: TextStyle
@@ -139,45 +146,110 @@ interface BesteChefTypography {
     val labelSmall: TextStyle
     
     // Button text
-    val buttonText: TextStyle
+    val labelLarge: TextStyle
 }
 
 /**
  * Default BesteChef typography implementation
  */
 private val DefaultBesteChefTypography = object : BesteChefTypography {
-    override val sectionTitle = TextStyle(
+    override val displayLarge = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        fontStyle = FontStyle.Italic,
+        fontWeight = FontWeight.Normal,
+        fontSize = 57.sp,
+        lineHeight = 64.sp,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
+    )
+
+    override val displayMedium = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 45.sp,
+        lineHeight = 52.sp,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
+    )
+
+    override val displaySmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 36.sp,
+        lineHeight = 44.sp,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
+    )
+
+    override val headlineLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 32.sp,
+        lineHeight = 40.sp,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
+    )
+
+    override val headlineMedium = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 28.sp,
+        lineHeight = 36.sp,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
+    )
+
+    override val headlineSmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
         lineHeight = 32.sp,
-        letterSpacing = 0.sp
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
     )
     
-    override val cardTitle = TextStyle(
+    override val titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Bold,
-        fontStyle = FontStyle.Italic,
-        fontSize = 18.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.sp
+        fontWeight = FontWeight.Medium,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
     )
     
-    override val cardSubtitle = TextStyle(
+    override val titleMedium = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.25.sp
-    )
-    
-    override val bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
+    )
+    
+    override val titleSmall = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
     )
     
     override val bodyMedium = TextStyle(
@@ -185,7 +257,21 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        letterSpacing = 0.25.sp
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
+    )
+    
+    override val bodyLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
     )
     
     override val bodySmall = TextStyle(
@@ -193,7 +279,21 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.4.sp
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
+    )
+    
+    override val labelLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
     )
     
     override val labelMedium = TextStyle(
@@ -201,7 +301,10 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
     )
     
     override val labelSmall = TextStyle(
@@ -209,15 +312,10 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    
-    override val buttonText = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        ),
     )
 }
 
@@ -239,7 +337,7 @@ private val DarkBesteChefColors = object : BesteChefColors {
     override val textSecondary = Color(0xFFB0B0B0) // Medium light gray
     override val textTertiary = Color(0xFF808080) // Darker gray
     override val textOnPrimary = Color(0xFF121212) // Dark text on light primary
-    override val textOnSecondary = Color(0xFFE0E0E0) // Light text
+    override val textOnSecondary = Color(0xFF121212) // Light text
     
     override val outline = Color(0xFF424242) // Dark outline
     override val outlineVariant = Color(0xFF2C2C2C) // Darker outline
@@ -311,19 +409,19 @@ fun BesteChefTheme(
     
     // Create Material Typography from BesteChefTypography
     val materialTypography = Typography(
-        displayLarge = typography.sectionTitle.copy(fontSize = 57.sp),
-        displayMedium = typography.sectionTitle.copy(fontSize = 45.sp),
-        displaySmall = typography.sectionTitle.copy(fontSize = 36.sp),
-        headlineLarge = typography.sectionTitle.copy(fontSize = 32.sp),
-        headlineMedium = typography.sectionTitle.copy(fontSize = 28.sp),
-        headlineSmall = typography.sectionTitle.copy(fontSize = 24.sp),
-        titleLarge = typography.cardTitle.copy(fontSize = 22.sp),
-        titleMedium = typography.cardTitle,
-        titleSmall = typography.cardTitle.copy(fontSize = 14.sp),
+        displayLarge = typography.displayLarge,
+        displayMedium = typography.displayMedium,
+        displaySmall = typography.displaySmall,
+        headlineLarge = typography.headlineLarge,
+        headlineMedium = typography.headlineMedium,
+        headlineSmall = typography.headlineSmall,
+        titleLarge = typography.titleLarge,
+        titleMedium = typography.titleMedium,
+        titleSmall = typography.titleSmall,
         bodyLarge = typography.bodyLarge,
         bodyMedium = typography.bodyMedium,
         bodySmall = typography.bodySmall,
-        labelLarge = typography.labelMedium.copy(fontSize = 14.sp),
+        labelLarge = typography.labelLarge,
         labelMedium = typography.labelMedium,
         labelSmall = typography.labelSmall,
     )
