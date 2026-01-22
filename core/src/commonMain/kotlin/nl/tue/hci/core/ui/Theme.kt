@@ -150,6 +150,17 @@ interface BesteChefTypography {
 }
 
 /**
+ * Helper function to get platform-specific line height style
+ * Desktop Compose has text baseline offset issues, so we use different trim settings
+ */
+private fun getLineHeightStyle(): LineHeightStyle {
+    return LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.Both  // Changed from None to Both for desktop compatibility
+    )
+}
+
+/**
  * Default BesteChef typography implementation
  */
 private val DefaultBesteChefTypography = object : BesteChefTypography {
@@ -158,10 +169,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 57.sp,
         lineHeight = 64.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
 
     override val displayMedium = TextStyle(
@@ -169,10 +177,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 45.sp,
         lineHeight = 52.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
 
     override val displaySmall = TextStyle(
@@ -180,10 +185,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 36.sp,
         lineHeight = 44.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
 
     override val headlineLarge = TextStyle(
@@ -191,10 +193,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 32.sp,
         lineHeight = 40.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
 
     override val headlineMedium = TextStyle(
@@ -202,10 +201,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 28.sp,
         lineHeight = 36.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
 
     override val headlineSmall = TextStyle(
@@ -213,10 +209,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
         lineHeight = 32.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
     
     override val titleLarge = TextStyle(
@@ -224,10 +217,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Medium,
         fontSize = 22.sp,
         lineHeight = 28.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
     
     override val titleMedium = TextStyle(
@@ -235,10 +225,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
     
     override val titleSmall = TextStyle(
@@ -246,10 +233,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
     
     override val bodyMedium = TextStyle(
@@ -257,10 +241,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
     
     override val bodyLarge = TextStyle(
@@ -268,10 +249,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
     
     override val bodySmall = TextStyle(
@@ -279,10 +257,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 16.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
     
     override val labelLarge = TextStyle(
@@ -290,10 +265,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
     
     override val labelMedium = TextStyle(
@@ -301,10 +273,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 16.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
     
     override val labelSmall = TextStyle(
@@ -312,10 +281,7 @@ private val DefaultBesteChefTypography = object : BesteChefTypography {
         fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
         lineHeight = 16.sp,
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        ),
+        lineHeightStyle = getLineHeightStyle(),
     )
 }
 
