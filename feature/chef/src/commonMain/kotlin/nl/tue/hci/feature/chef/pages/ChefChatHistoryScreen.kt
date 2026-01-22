@@ -42,13 +42,13 @@ fun ChefChatHistoryScreen(
                 if (parts.size >= 4 && parts[0] == "TEXT") {
                     parts[3] // The text content
                 } else {
-                    "Can desserts on the menu be replaced with sugar-free options?"
+                    "Can desserts on the menu be replaced with nut-free options?"
                 }
             } else {
-                "Can desserts on the menu be replaced with sugar-free options?"
+                "Can desserts on the menu be replaced with nut-free options?"
             }
         } else {
-            "Can desserts on the menu be replaced with sugar-free options?"
+            "Can desserts on the menu be replaced with nut-free options?"
         }
     }
     

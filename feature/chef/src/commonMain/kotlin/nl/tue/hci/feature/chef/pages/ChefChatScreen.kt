@@ -86,7 +86,7 @@ fun ChefChatScreen(
                 // Show Sophie's initial message
                 add(
                     ChatMessage(
-                        text = "Can desserts on the menu be replaced with sugar-free options?",
+                        text = "Can desserts on the menu be replaced with nut-free options?",
                         timestamp = "10:10",
                         isFromMe = false, // From customer
                         avatarText = "DH",
