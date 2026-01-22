@@ -272,7 +272,7 @@ compose.desktop {
         mainClass = "nl.tue.hci.bestechef.MainKt"
         
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Pkg)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Pkg, TargetFormat.Exe)
             packageName = "BesteChef"
             packageVersion = "1.0.0"
             description = "BesteChef - Restaurant Management Application"
@@ -283,6 +283,11 @@ compose.desktop {
                 bundleID = "nl.tue.hci.bestechef"
                 // Icon is optional; uncomment if you provide icon.icns
                 iconFile.set(project.file("src/desktopMain/resources/icon.icns"))
+            }
+
+            windows {
+                upgradeUuid = "019be623-467f-78bc-9720-ab0e7d43b86d"
+                iconFile.set(project.file("src/desktopMain/resources/icon.ico"))
             }
         }
     }
