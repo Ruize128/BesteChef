@@ -69,6 +69,7 @@ fun MenuPickerScreen(
                 imageColor = colors.imagePlaceholder2, // Light orange-beige
                 dietaryTag = "Fish",
                 dietaryTagColor = colors.dinerPrimary, // Light blue/cyan
+                dietaryTagTextColor = colors.textOnPrimary,
                 category = "Mains"
             ),
             MenuPickerItem(
@@ -79,6 +80,7 @@ fun MenuPickerScreen(
                 imageColor = colors.imagePlaceholder1, // Light green
                 dietaryTag = "Nut-free",
                 dietaryTagColor = colors.chefPrimary,
+                dietaryTagTextColor = colors.textOnPrimary,
                 category = "Desserts"
             ),
             MenuPickerItem(
@@ -99,6 +101,7 @@ fun MenuPickerScreen(
                 imageColor = colors.imagePlaceholder1,
                 dietaryTag = "Fish",
                 dietaryTagColor = colors.dinerPrimary,
+                dietaryTagTextColor = colors.textOnPrimary,
                 category = "Mains"
             ),
             MenuPickerItem(
@@ -119,6 +122,7 @@ fun MenuPickerScreen(
                 imageColor = colors.imagePlaceholder1,
                 dietaryTag = "Vegetarian",
                 dietaryTagColor = colors.statusConfirmedBackground, // Light green
+                dietaryTagTextColor = colors.statusConfirmedText,
                 category = "Starters"
             )
         )
@@ -374,11 +378,19 @@ private fun MenuPickerItemCard(
                 // Dietary tag or text
                 if (item.dietaryTag != null) {
                     if (item.dietaryTagColor != null) {
-                        Tag(
-                            text = item.dietaryTag,
-                            backgroundColor = item.dietaryTagColor,
-                            textColor = colors.textPrimary
-                        )
+                        if (item.dietaryTagTextColor != null) {
+                            Tag(
+                                text = item.dietaryTag,
+                                backgroundColor = item.dietaryTagColor,
+                                textColor = item.dietaryTagTextColor,
+                            )
+                        } else {
+                            Tag(
+                                text = item.dietaryTag,
+                                backgroundColor = item.dietaryTagColor,
+                                textColor = colors.textPrimary
+                            )
+                        }
                     } else {
                         Text(
                             text = item.dietaryTag,
