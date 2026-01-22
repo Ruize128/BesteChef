@@ -106,7 +106,7 @@ fun DinerChatScreen(
     val initialMessageText = when {
         hasSecondAutoReply -> "" // Booking offer already sent
         hasFirstAutoReply -> "Thanks — yes please, that would help." // First reply received, waiting for second message
-        else -> "Can desserts on the menu be replaced with sugar-free options?" // Initial state
+        else -> "Can desserts on the menu be replaced with nut-free options?" // Initial state
     }
     
     // Initialize message text with default message
@@ -283,7 +283,7 @@ fun DinerChatScreen(
                             updatedParts[0] = "Yuzu mousse"
                             // Update description if needed
                             if (updatedParts.size > 1) {
-                                updatedParts[1] = "Light, citrusy yuzu mousse (sugar-free)"
+                                updatedParts[1] = "Light, citrusy yuzu mousse (nut-free)"
                             }
                             updatedParts.joinToString("|")
                         } else {
