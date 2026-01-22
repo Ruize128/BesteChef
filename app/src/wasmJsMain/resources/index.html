@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BesteChef</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        #ComposeTarget {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="ComposeTarget"></canvas>
+    <script>
+        // Global error handler for unhandled promise rejections
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+            let errorMsg = 'Unknown error';
+            
+            if (event.reason instanceof WebAssembly.Exception) {
+                try {
+                    // Try to get exception arguments
+                    const args = [];
+                    let argCount = 0;
+                    try {
+                        // Try to get the number of arguments
+                        while (true) {
+                            try {
+                                const arg = event.reason.getArg(argCount);
+                                args.push(String(arg));
+                                argCount++;
+                            } catch (e) {
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        // If getArg fails, try is() method
+                        console.error('getArg failed, trying is() method');
+                    }
+                    
+                    // Try to get stack trace if available
+                    let stackInfo = '';
+                    if (event.reason.stack) {
+                        stackInfo = '<br><br>Stack trace:<br><pre>' + event.reason.stack + '</pre>';
+                    }
+                    
+                    errorMsg = 'WebAssembly.Exception' + 
+                        (args.length > 0 ? ': ' + JSON.stringify(args) : ' (no args)') +
+                        stackInfo;
+                    console.error('Exception details:', {
+                        args: args,
+                        stack: event.reason.stack,
+                        toString: event.reason.toString(),
+                        fullException: event.reason
+                    });
+                } catch (e) {
+                    errorMsg = 'WebAssembly.Exception (could not extract details: ' + e.message + ')';
+                    console.error('Error extracting exception details:', e);
+                }
+            } else if (event.reason && event.reason.message) {
+                errorMsg = event.reason.message;
+            } else if (typeof event.reason === 'string') {
+                errorMsg = event.reason;
+            }
+            
+            document.body.innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-family: monospace;">' +
+                '<h2>Application Error</h2>' +
+                '<p>' + errorMsg + '</p>' +
+                '<p>Check console for more details.</p>' +
+                '</div>';
+            
+            event.preventDefault();
+        });
+
+        // Global error handler
+        window.addEventListener('error', function(event) {
+            console.error('Global error:', event.error);
+        });
+
+        // Ensure WASM is supported
+        if (typeof WebAssembly === 'undefined') {
+            document.body.innerHTML = '<div style="padding: 20px; text-align: center;">WebAssembly is not supported in this browser. Please use Chrome 119+, Firefox 120+, or Safari with WasmGC support.</div>';
+        } else {
+            // Check for WasmGC support
+            try {
+                const testModule = new WebAssembly.Module(new Uint8Array([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+                // If we get here, basic WASM works
+                console.log('WebAssembly is supported');
+            } catch (e) {
+                console.error('WebAssembly test failed:', e);
+            }
+        }
+        </script>
+        <script src="app.js"></script>
+    </body>
+</html>
+

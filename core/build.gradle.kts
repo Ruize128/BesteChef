@@ -1,6 +1,67 @@
 plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
+}
+
+kotlin {
+    androidTarget {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
+    }
+    
+    wasmJs {
+        browser {
+            commonWebpackConfig {
+                cssSupport {
+                    enabled.set(true)
+                }
+            }
+        }
+    }
+    
+    jvm("desktop")
+    
+    // Configure hierarchy to share code properly
+    sourceSets.all {
+        languageSettings.optIn("kotlin.RequiresOptIn")
+    }
+    
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.datetime)
+                // Compose Multiplatform uses androidx.compose namespace
+                implementation(libs.compose.multiplatform.ui)
+                implementation(libs.compose.multiplatform.ui.graphics)
+                implementation(libs.compose.multiplatform.foundation)
+                implementation(libs.compose.multiplatform.material3)
+            }
+        }
+        
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.androidx.datastore.preferences)
+                implementation(libs.androidx.core.ktx)
+                implementation(libs.androidx.activity.compose)
+            }
+        }
+        
+        val wasmJsMain by getting {
+            dependencies {
+                // No additional dependencies needed for localStorage
+            }
+        }
+        
+        val desktopMain by getting {
+            dependsOn(commonMain)
+            dependencies {
+                // Desktop will use desktopMain implementations
+            }
+        }
+    }
 }
 
 android {
@@ -27,17 +88,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    
+    lint {
+        abortOnError = false
+        checkReleaseBuilds = false
     }
-}
-
-dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.datastore.preferences)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }

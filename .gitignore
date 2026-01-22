@@ -42,6 +42,7 @@ captures/
 # Keystore files
 *.jks
 *.keystore
+keystore.properties
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
@@ -86,6 +87,8 @@ Thumbs.db
 
 # Kotlin
 *.kotlin_module
+.kotlin/
+.kotlinc/
 
 # Kapt
 .kapt/
@@ -97,3 +100,6 @@ Thumbs.db
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+.vscode/
