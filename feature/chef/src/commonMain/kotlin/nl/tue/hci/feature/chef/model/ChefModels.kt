@@ -79,6 +79,7 @@ data class MenuPickerItem(
     val imageColor: Color,
     val dietaryTag: String? = null,
     val dietaryTagColor: Color? = null,
+    val dietaryTagTextColor: Color? = null,
     val category: String = "All"
 )
 

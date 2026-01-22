@@ -363,7 +363,7 @@ fun EditOrderScreen(
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colors.chefPrimary,
-                    contentColor = colors.textPrimary,
+                    contentColor = colors.textOnPrimary,
                 ),
                 contentPadding = PaddingValues(0.dp),
             ) {
