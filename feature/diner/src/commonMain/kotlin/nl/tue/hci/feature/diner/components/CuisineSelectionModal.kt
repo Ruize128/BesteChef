@@ -153,7 +153,7 @@ fun CuisineSelectionModal(
                         shape = RoundedCornerShape(20.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colors.dinerPrimary,
-                            contentColor = colors.textPrimary
+                            contentColor = colors.textOnPrimary
                         )
                     ) {
                         Text(
